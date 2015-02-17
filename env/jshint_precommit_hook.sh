@@ -14,22 +14,22 @@ REPO=$(pwd)
 ENV_DIR="$UI_PROJ_DIR/env"
 JSHINT="$ENV_DIR/node_modules/jshint/bin/jshint"
 EXIT_CODE=0
-for FILE in `git diff-index --name-only ${against} -- | grep .*.js`; do
+for FILE in `git diff-index --name-only ${against} -- | grep ".*.js$"`; do
     # with jsc:
     echo $JSHINT --config $ENV_DIR/config.txt ${REPO}/${FILE}
-    $JSHINT --config $ENV_DIR/config.txt ${REPO}/${FILE} | 
-    
+    $JSHINT --config $ENV_DIR/config.txt ${REPO}/${FILE} > log.txt
     # could similarly wrap Rhino or Node...
-    
     EXIT_CODE=$((${EXIT_CODE} + $?))
+    cat log.txt | sed "s#^$UI_PROJ_DIR/##g"
 done
 
 echo "JSHINT: JavaScript validation complete"
 
+
 if [[ ${EXIT_CODE} -ne 0 ]]; then
     echo ""
-    echo "JSHint detected syntax problems."
-    echo "Commit aborted."
+    echo "ERROR: JSHint detected syntax problems."
+    echo "ERROR: Commit Aborted."
 fi
  
 exit $((${EXIT_CODE}))

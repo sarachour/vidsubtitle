@@ -1,9 +1,11 @@
 function foo(){
-	if(i in a) return foo
-        foo = 4
-    moo=5
-    moo=6
-    moo=5
+	var i = "a";
+	var a = {"a":4};
+	if(i in a) 
+		return foo;
+    var moo=5;
+    moo=6;
+    moo=5;
 }
 
-foo()
+foo();
