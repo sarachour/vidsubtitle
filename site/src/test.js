@@ -6,7 +6,7 @@ function foo(){
     var moo=5
     moo=6;
     moo=5;
-    moo2=4;
+    moo2=4
 }
 
 foo();
