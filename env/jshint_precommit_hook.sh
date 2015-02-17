@@ -7,7 +7,7 @@ then
     against=HEAD
 else
     # Initial commit: diff against an empty tree object
-    against=4b825dc642cb6eb9a060e54bf8d69288fbee4904
+    against=912c33f56c3f99a5be61722ed49403c39c14dfff
 fi
  
 REPO=$(pwd)
