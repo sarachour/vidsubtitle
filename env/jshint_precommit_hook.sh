@@ -17,8 +17,8 @@ JSHINT="$ENV_DIR/node_modules/jshint/bin/jshint"
 EXIT_CODE=0
 for FILE in `git diff-index --name-only ${against} -- | grep ".*.js$"`; do
     # with jsc:
-    echo $JSHINT --config "$ENV_DIR/config.txt" ${REPO}/${FILE}
-    $JSHINT --config "$ENV_DIR/config.txt" ${REPO}/${FILE} > log.txt
+    echo "$JSHINT" --config "$ENV_DIR/config.txt" "${REPO}/${FILE}"
+    "$JSHINT" --config "$ENV_DIR/config.txt" "${REPO}/${FILE}" > log.txt
     # could similarly wrap Rhino or Node...
     EXIT_CODE=$((${EXIT_CODE} + $?))
     cat log.txt | sed "s#^$UI_PROJ_DIR/##g"
