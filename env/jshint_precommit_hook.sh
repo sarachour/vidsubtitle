@@ -22,7 +22,7 @@ for FILE in `git diff-index --name-only ${against} -- | grep *.js`; do
     EXIT_CODE=$((${EXIT_CODE} + $?))
 done
 
-echo "\nJavaScript validation complete\n"
+echo "JSHINT: JavaScript validation complete"
 
 if [[ ${EXIT_CODE} -ne 0 ]]; then
     echo ""
