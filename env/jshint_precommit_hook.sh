@@ -10,8 +10,7 @@ else
     against=912c33f56c3f99a5be61722ed49403c39c14dfff
 fi
 
-exit 0 
- 
+
 REPO=$(pwd)
 ENV_DIR="$UI_PROJ_DIR/env"
 JSHINT="$ENV_DIR/node_modules/jshint/bin/jshint"
