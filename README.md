@@ -26,6 +26,10 @@
 ##### Setting up the environment
 To set up the environment, navigate to the project directory in a bash terminal, and run:
 
+   ./gen_env.sh
+
+This will generate an environmental script that sets your base directory. Run the following.
+
 	source ./env.sh
 	
 You can add this to _~/.bashrc_ if you want the command to run automatically.
