@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 # A pre-commit hook for git to lint JavaScript files with jshint
 # @see https://github.com/jshint/jshint/
  
@@ -11,12 +11,12 @@ else
 fi
  
 REPO=$(pwd)
-JSHINT="${UI_PROJ_DIR}/env/node_modules/jshint/bin/jshint"
+JSHINT="$UI_PROJ_DIR/env/node_modules/jshint/bin/jshint"
 EXIT_CODE=0
-for FILE in `git diff-index --name-only ${against} -- | grep *.js`; do
+for FILE in `git diff-index --name-only ${against} -- | grep .*.js`; do
     # with jsc:
     echo $JSHINT ${REPO}/${FILE}
-    $JSHINT ${REPO}/${FILE}
+    $JSHINT ${REPO}/${FILE} | 
     
     # could similarly wrap Rhino or Node...
     
