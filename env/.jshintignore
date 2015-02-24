@@ -1,2 +1,4 @@
 mock/**/*.js
 mock/**/**/*.js
+**/site/bin/*.js
+**/site/lib/*.js
