@@ -1,0 +1,17 @@
+Calibrating ...INFO: cont_fileseg.c(397): Default parameters:
+	min-noise = 2, max-noise = 70
+	delta-sil = 10, delta-speech = 17
+	sil-onset = 18, speech-onset = 9
+	adapt_rate = 0.200
+INFO: cont_fileseg.c(428): Current parameters:
+	min-noise = 2, max-noise = 70
+	delta-sil = 10, delta-speech = 17
+	sil-onset = 18, speech-onset = 9
+	adapt_rate = 0.200
+INFO: cont_fileseg.c(436): Sampling rate: 16000; Byteswap: No; Max ad-read size: 2147483632
+ done
+Utt 00000000, st=     1.79s, et=   102.93s, seg=  101.14s (#samp=    1618176)
+Utt 00000001, st=   127.38s, et=   128.75s, seg=    1.38s (#samp=      22016)
+Utt 00000002, st=   173.60s, et=   773.70s, seg=  600.10s (#samp=    9601536)
+INFO: cont_fileseg.c(533): Total raw input speech = 49103 frames, 12570368 samples, 785.65 sec
+INFO: cont_fileseg.c(536): Total speech detected = 11241728 samples, 702.61 sec
