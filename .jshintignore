@@ -1,1 +1,4 @@
-**/*.js
+mock/**/*.js
+env/**/*.js
+**/lib/**/*.js
+**/bin/**/*.js
