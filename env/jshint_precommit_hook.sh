@@ -18,8 +18,8 @@ EXIT_CODE=0
 
 
 echo "Starting JSHINT CHECK"
-echo "$JSHINT" --exclude-path "$ENV_DIR/.jshintignore" --config "$ENV_DIR/config.txt" "$UI_PROJ_DIR/srv" 
-"$JSHINT" --exclude-path "$ENV_DIR/.jshintignore" --config "$ENV_DIR/config.txt" "$UI_PROJ_DIR/srv" &> log.txt
+echo "$JSHINT" --exclude-path ".jshintignore" --config "$ENV_DIR/config.txt" "$UI_PROJ_DIR" 
+"$JSHINT" --exclude-path ".jshintignore" --config "$ENV_DIR/config.txt" "$UI_PROJ_DIR" &> log.txt
 EXIT_CODE=$((${EXIT_CODE} + $?))
 cat log.txt | sed "s#^$UI_PROJ_DIR/##g"
 
