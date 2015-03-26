@@ -13,6 +13,18 @@
 .text-label {
 	text-align: center;
 }
+
+/*
+chunk specific rules
+*/
 .chunk #video-container{
 	height: 400px;
+}
+
+/*
+scribe specific rules
+*/
+
+.scribe #video-container{
+   height: 200px;
 }

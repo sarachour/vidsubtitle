@@ -27,6 +27,7 @@ var YoutubeVideo = function(id) {
       args.error = function(){
          console.log("ERROR: Could not play");
       }
+      args.features = [];
       this.player = $("#"+that.id).mediaelementplayer(args);
    }
    this.stop = function(){

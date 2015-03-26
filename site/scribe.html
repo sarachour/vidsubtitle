@@ -16,7 +16,7 @@
 
 <body>
 
-<div class="container chunk">
+<div class="container scribe">
 
 <div class="row" id="header">
    <div class="column one-fourth text-label">DEMO HERE</div>
@@ -28,25 +28,35 @@
 INSTRUCTIONS
 <h5>
 </div>
+
 <!-- content pane -->
 <div id="content">
-<!-- video -->
+<!-- video and buttons-->
 <div class="row">
-   <div class="offset-by-one-fourth one-half column" id="video-container">
-      <video class="fill-parent" id="player1" preload="none" controls="none" width="100%" height="100%">
-        <source type="video/youtube" src="http://www.youtube.com/watch?v=Lt6CUH9bVzI" />
-      </video>
+   <div class="column one-third">
+      <div class="row" id="video-container">
+         <video class="fill-parent" id="player1" preload="none" controls="none" width="100%" height="100%">
+           <source type="video/youtube" src="http://www.youtube.com/watch?v=Lt6CUH9bVzI" />
+         </video>
+      </div>
+      <div id="controls" class="fill-parent-width text-label">CONTROLS HERE</div>
+      <!-- buttons -->
+      <button id="start" class="button-primary fill-parent-width">Start</button>
+      <button id="replay" class="button-primary fill-parent-width">Replay</button>
+      <button id="next" class="button-primary fill-parent-width">Next</button>
+      <button id="prev" class="button-primary fill-parent-width">Previous</button>
    </div>
+   <div class="column two-thirds text-label">
+   HISTORY HERE
+   </div> 
 </div>
 
-<!-- progress bar -->
-<div class="row">
-<div id="controls" class="fill-parent-width text-label">PROGRESS BAR HERE</div>
-</div>
+<!-- text window bar -->
 
-<!-- break button -->
+
+<!-- text field -->
 <div class="row">
-<button id="break" class="button-primary fill-parent-width">Break</button>
+<input type="text" id="break" class="button-primary fill-parent-width"></input>
 </div>
 
 
