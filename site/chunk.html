@@ -6,17 +6,44 @@
 <script src="src/observer.js"></script>
 <script src="src/youtube.js"></script>
 <script src="src/chunk.js"></script>
+
 <link rel="stylesheet" href="css/jquery-ui-1.11.3.css" />
+<link rel="stylesheet" href="css/skeleton.css" />
 <link rel="stylesheet" href="lib/mejs/mediaelementplayer.min.css" />
+<link rel="stylesheet" href="css/base.css" />
+
 </head>
+
 <body>
-<div class="content">
-<video width="640" height="360" id="player1" preload="none" controls="none">
-    <source type="video/youtube" src="http://www.youtube.com/watch?v=Lt6CUH9bVzI" />
-</video>
-<div id="break">
-Break
+
+<div class="container chunk">
+
+<div class="row" id="header">
+   <div class="column one-fourth text-label">DEMO HERE</div>
+   <div class="column one-half text-label">PROGRESS HERE</div>
+   <div class="column one-fourth text-label">STATS HERE</div>
 </div>
+<div class="row">
+<h5 class="text-label">
+INSTRUCTIONS
+<h5>
 </div>
 
+<div class="row">
+   <div class="offset-by-one-fourth one-half column" id="video-container">
+      <video class="fill-parent" id="player1" preload="none" controls="none" width="100%" height="100%">
+        <source type="video/youtube" src="http://www.youtube.com/watch?v=Lt6CUH9bVzI" />
+      </video>
+   </div>
+</div>
+
+<div class="row">
+<div id="progress" class="fill-parent-width text-label">PROGRESS BAR HERE</div>
+</div>
+
+<div class="row">
+<button id="break" class="button-primary fill-parent-width">Break</button>
+</div>
+
+</div>
 </body>
