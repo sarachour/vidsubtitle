@@ -1,0 +1,69 @@
+
+<head>
+<script src="lib/jquery-2.1.3.js"></script>
+<script src="lib/jquery-ui-1.11.3.js"></script>
+<script src="lib/mejs/mediaelementplayer.min.js"></script>
+<script src="src/util.js"></script>
+<script src="src/observer.js"></script>
+<script src="src/youtube.js"></script>
+<script src="src/edit.js"></script>
+
+<link rel="stylesheet" href="css/jquery-ui-1.11.3.css" />
+<link rel="stylesheet" href="css/skeleton.css" />
+<link rel="stylesheet" href="lib/mejs/mediaelementplayer.min.css" />
+<link rel="stylesheet" href="css/base.css" />
+
+</head>
+
+<body>
+
+<div class="container scribe">
+
+<div class="row" id="header">
+   <div class="column one-fourth text-label">DEMO HERE</div>
+   <div class="column one-half text-label">PROGRESS HERE</div>
+   <div class="column one-fourth text-label">STATS HERE</div>
+</div>
+<div class="row">
+<h5 class="text-label">
+INSTRUCTIONS
+<h5>
+</div>
+
+<!-- content pane -->
+<div id="content">
+<!-- video and buttons-->
+<div class="row">
+   <div class="column one-third">
+      <div class="row" id="video-container">
+         <video class="fill-parent" id="player1" preload="none" controls="none" width="100%" height="100%">
+           <source type="video/youtube" src="http://www.youtube.com/watch?v=Lt6CUH9bVzI" />
+         </video>
+      </div>
+      <div id="controls" class="fill-parent-width text-label">CONTROLS HERE</div>
+      <!-- buttons -->
+      <button id="start" class="button-primary fill-parent-width">Start</button>
+      <button id="replay" class="button-primary fill-parent-width">Replay</button>
+      <button id="next" class="button-primary fill-parent-width">Next</button>
+      <button id="prev" class="button-primary fill-parent-width">Previous</button>
+   </div>
+   <div class="column two-thirds text-label">
+   HISTORY HERE
+   </div> 
+</div>
+
+<!-- text window bar -->
+
+
+<!-- text field -->
+<div class="row">
+<input type="text" id="break" class="button-primary fill-parent-width"></input>
+</div>
+
+
+<!-- end of content -->
+</div>
+
+<!-- end of window -->
+</div>
+</body>
