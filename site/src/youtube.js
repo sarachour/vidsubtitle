@@ -11,8 +11,6 @@ var YoutubeVideo = function(id) {
       args.success = function(me, d){
          that.media = me;
          that.loaded = true;
-         console.log("success")
-         that.events.trigger('load', {obj:that, ev:me});
          me.addEventListener('timeupdate', function(e){
             that.events.trigger('update', {ev:e, obj:that});
          },false);
@@ -22,13 +20,36 @@ var YoutubeVideo = function(id) {
          me.addEventListener('ended', function(e){
             that.events.trigger('done',{ev:e, obj:that});
          },false);
+         me.addEventListener('play', function(e){
+            that.events.trigger('play',{obj:that})
+         })
+         me.addEventListener('loadedmetadata', function(e){
+
+         })
+         me.addEventListener('loadeddata', function(e){
+            
+         })
+
+         that.events.trigger('load', {obj:that, ev:me});
 
       }
       args.error = function(){
          console.log("ERROR: Could not play");
       }
       args.features = [];
+      args.enableKeyboard = false;
+      //args.mode = "auto"
+      args.mode = "native"
       this.player = $("#"+that.id).mediaelementplayer(args);
+   }
+   this.rate = function(e){
+      this.media.playbackRate = e;
+   }
+   this.time = function(){
+      return this.media.currentTime;
+   }
+   this.duration = function(){
+      return this.media.duration;
    }
    this.stop = function(){
       if(!this.is_loaded()){
