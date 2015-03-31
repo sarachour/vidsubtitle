@@ -13,4 +13,4 @@ SRVDIR=$ROOTDIR/srv
 SERVER_CMD="$SRVDIR/dummy/dummy_server.sh"
 
 echo $SERVER_CMD
-$SERVER_CMD
+bash "$SERVER_CMD"
