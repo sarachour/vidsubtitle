@@ -6,7 +6,7 @@ var NumericalSortedArray = function(key){
    this._sort = function(){
       var key = this.sort_key;
       this.arr.sort(function(a,b){
-         return a[key] < b[key];
+         return a[key] > b[key];
       })
    }
    this.clear = function(){
@@ -24,6 +24,7 @@ var NumericalSortedArray = function(key){
    }
    this.push = function(e){
       this.arr.push(e);
+      this._sort();
    }
    this.push_all = function(e){
       var that = this;

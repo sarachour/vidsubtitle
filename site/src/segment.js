@@ -1,6 +1,8 @@
 var video;
 var seg;
 
+
+
 var SegmentController = function(ctrls,player,mark,repeat){
   this.init = function(ctrls, player,mark, repeat){
     var that = this;
@@ -10,13 +12,36 @@ var SegmentController = function(ctrls,player,mark,repeat){
     this.mark = $("#"+mark);
     this.repeat = $("#"+repeat);
     this.obs = new Observer();
+
+
     //initialize button
     this.mark.html("Start");
     this.mark.prop('disabled', true);
     this.repeat.prop('disabled', true);
+    
+    //initialize data
     this.segdata = {};
     this.segdata.start = null
+    this.segdata.isdown = false;
+    //initialize hotkeys
+    $(document).bind("keydown", jwerty.event('↩', function(){
+      if(that.segdata.isdown) return;
+      console.log("enter down");
+      that.mark.mousedown();
+      that.segdata.isdown = true;
+    }))
+    $(document).bind("keyup", jwerty.event('↩', function(){
+      console.log("enter up");
+      that.mark.mouseup();
+      that.segdata.isdown = false;
+      that.mark.click();
+    }))
 
+    jwerty.key('←', function(){
+      console.log("left");
+      that.repeat.click();
+    })
+    //initialize handlers
     this.mark.click(function(){
       that.mark.html("Break");
       that.repeat.prop('disabled',false);
