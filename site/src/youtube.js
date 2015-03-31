@@ -7,7 +7,7 @@ var YoutubeVideo = function(id) {
       this.id = id;
 
       var args = {};    
-      args.seekable = false;
+      args.seekable = true;
       args.success = function(me, d){
          that.media = me;
          that.loaded = true;
@@ -36,7 +36,7 @@ var YoutubeVideo = function(id) {
       args.error = function(){
          console.log("ERROR: Could not play");
       }
-      args.features = [];
+      //args.features = [];
       args.enableKeyboard = false;
       //args.mode = "auto"
       args.mode = "native"
@@ -57,6 +57,9 @@ var YoutubeVideo = function(id) {
          return;
       }
       this.media.stop();
+   }
+   this.jump = function(startTime){
+      this.media.setCurrentTime(startTime);
    }
    this.segment = function(starttime, endtime){
       var that = this;

@@ -5,6 +5,7 @@
 <script src="src/util.js"></script>
 <script src="src/observer.js"></script>
 <script src="src/youtube.js"></script>
+<script src="src/sorted_array.js"></script>
 <script src="src/segmentbar.js"></script>
 <script src="src/segment.js"></script>
 
@@ -34,8 +35,9 @@ INSTRUCTIONS
 <!-- video -->
 <div class="row">
    <div class="offset-by-one-fourth one-half column" id="video-container">
-      <video class="fill-parent" id="player1" preload="metadata" controls="none" width="100%" height="100%">
-        <source src="media/vid1.webm" />
+   <!-- controls="none" --> 
+      <video class="fill-parent" id="player1" width="100" height="100" controls>
+        <source src="media/vid1.mp4" type="video/mp4" />
       </video>
    </div>
 </div>

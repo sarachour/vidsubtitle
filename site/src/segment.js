@@ -5,7 +5,8 @@ var SegmentController = function(ctrls,player,mark,repeat){
   this.init = function(ctrls, player,mark, repeat){
     var that = this;
     this.video = new YoutubeVideo(player);
-    this.bar  =new SegmentBar(ctrls);
+    this.segs = new SegmentModel();
+    this.bar  =new SegmentBar(ctrls, this.segs);
     this.mark = $("#"+mark);
     this.repeat = $("#"+repeat);
     this.obs = new Observer();
@@ -15,8 +16,6 @@ var SegmentController = function(ctrls,player,mark,repeat){
     this.repeat.prop('disabled', true);
     this.segdata = {};
     this.segdata.start = null
-    this.segdata.end = null
-    this.segdata.eps = 0.5;
 
     this.mark.click(function(){
       that.mark.html("Break");
@@ -26,22 +25,24 @@ var SegmentController = function(ctrls,player,mark,repeat){
 
       that.mark.mousedown(function(){
         that.segdata.start = that.video.time();
-        that.bar.hold(that.segdata.start);
+        that.segs.hold();
       })
       that.mark.mouseup(function(){
         that.segdata.end = that.video.time();
         var s = that.segdata.start;
         var e = that.segdata.end;
-        var eps = that.segdata.eps;
-        console.log(s,e);
-        that.bar.hold(null);
-        that.bar.mark(s,e);
+        that.segs.unhold();
+        that.segs.add_segment(s,e);
 
       })
 
 
     })
-    this
+    this.repeat.click(function(){
+        that.segs.redo();
+        console.log(that.segs.redo_start_time());
+        that.video.jump(that.segs.redo_start_time());
+    })
 
     //initialize video
     this.video.listen('load', function(evt){
@@ -58,12 +59,12 @@ var SegmentController = function(ctrls,player,mark,repeat){
 
     this.video.listen('play', function(e){
       console.log(e.obj.duration());
-      that.bar.duration(e.obj.duration());
+      that.segs.duration(e.obj.duration());
       e.obj.rate(0.75);
     })
     
     this.video.listen('update', function(){
-      that.bar.progress(that.video.time());
+      that.segs.time(that.video.time());
     });
 
     this.started = false;
@@ -85,6 +86,6 @@ var SegmentController = function(ctrls,player,mark,repeat){
 }
 var ctrl;
 $("document").ready(function() {
-  ctrl = new SegmentController("controls","player1","break","repeat");
-  ctrl.load_video("media/vid1.webm");
+  //ctrl = new SegmentController("controls","player1","break","repeat");
+  //ctrl.load_video("media/vid1.webm");
 });
