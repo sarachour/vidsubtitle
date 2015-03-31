@@ -1,13 +1,12 @@
 #!/usr/bin/python
 
-import SimpleHTTPServer
+from range_http_request_handler import *
 import SocketServer
+import BaseHTTPServer
 
 PORT = 8080
 
-Handler = SimpleHTTPServer.SimpleHTTPRequestHandler
-
-httpd = SocketServer.TCPServer(("", PORT), Handler)
+httpd = BaseHTTPServer.HTTPServer(("localhost", PORT), RangeHTTPRequestHandler)
 
 print "serving at port", PORT
 httpd.serve_forever()

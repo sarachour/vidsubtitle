@@ -160,7 +160,7 @@ var SegmentBar = function(id, model){
          ctx.fillRect(x(d.redo.start_time),y(0),x(d.redo.time-d.redo.start_time),y(1));
          //draw the hold with respect of the redo time
          if(d.hold != null){
-            if(d.redo.time-d.hold > d.eps) ctx.fillStyle = "#4444DD" 
+            if(d.redo.time-d.hold < d.eps) ctx.fillStyle = "#4444DD" 
             else  ctx.fillStyle = "#DD4444"
             ctx.fillRect(x(d.hold),y(0),x(d.redo.time-d.hold),y(1));
          }

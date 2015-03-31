@@ -11,6 +11,7 @@ ROOTDIR=$UI_PROJ_DIR
 SRVDIR=$ROOTDIR/srv
 #Spawn dummy server
 SERVER_CMD="$SRVDIR/dummy/dummy_server.sh"
+VIDSERVER_CMD="$SRVDIR/vidsrv/server.sh"
 
 echo $SERVER_CMD
 bash "$SERVER_CMD"

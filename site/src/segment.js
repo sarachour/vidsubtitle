@@ -53,8 +53,8 @@ var SegmentController = function(ctrls,player,mark,repeat){
     this.video.listen('ready', function(e){
       that.mark.prop('disabled',false);
       that.ready = true;
+      that.segs.duration(e.obj.duration());
       that.obs.trigger('ready');
-      console.log("B");
     }, "ctrlr-ready");
 
     this.video.listen('play', function(e){
@@ -86,6 +86,6 @@ var SegmentController = function(ctrls,player,mark,repeat){
 }
 var ctrl;
 $("document").ready(function() {
-  //ctrl = new SegmentController("controls","player1","break","repeat");
-  //ctrl.load_video("media/vid1.webm");
+  ctrl = new SegmentController("controls","player1","break","repeat");
+  ctrl.load_video("media/vid1.webm");
 });
