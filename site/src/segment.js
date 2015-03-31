@@ -1,31 +1,34 @@
 var video;
 var seg;
 
-var SegmentController = function(ctrls,player,button){
-  this.init = function(ctrls, player,button){
+var SegmentController = function(ctrls,player,mark,repeat){
+  this.init = function(ctrls, player,mark, repeat){
     var that = this;
     this.video = new YoutubeVideo(player);
     this.bar  =new SegmentBar(ctrls);
-    this.but = $("#"+button);
+    this.mark = $("#"+mark);
+    this.repeat = $("#"+repeat);
     this.obs = new Observer();
     //initialize button
-    this.but.html("Start");
-    this.but.prop('disabled', true);
+    this.mark.html("Start");
+    this.mark.prop('disabled', true);
+    this.repeat.prop('disabled', true);
     this.segdata = {};
     this.segdata.start = null
     this.segdata.end = null
     this.segdata.eps = 0.5;
 
-    this.but.click(function(){
-      that.but.html("Break");
+    this.mark.click(function(){
+      that.mark.html("Break");
+      that.repeat.prop('disabled',false);
       that.video.play();
-      that.but.unbind('click');
+      that.mark.unbind('click');
 
-      that.but.mousedown(function(){
+      that.mark.mousedown(function(){
         that.segdata.start = that.video.time();
         that.bar.hold(that.segdata.start);
       })
-      that.but.mouseup(function(){
+      that.mark.mouseup(function(){
         that.segdata.end = that.video.time();
         var s = that.segdata.start;
         var e = that.segdata.end;
@@ -38,6 +41,7 @@ var SegmentController = function(ctrls,player,button){
 
 
     })
+    this
 
     //initialize video
     this.video.listen('load', function(evt){
@@ -46,7 +50,7 @@ var SegmentController = function(ctrls,player,button){
     }, "ctrlr-load");
 
     this.video.listen('ready', function(e){
-      that.but.prop('disabled',false);
+      that.mark.prop('disabled',false);
       that.ready = true;
       that.obs.trigger('ready');
       console.log("B");
@@ -77,28 +81,10 @@ var SegmentController = function(ctrls,player,button){
       that.video.load(url);
     }
   }
-  this.init(ctrls,player,button);
+  this.init(ctrls,player,mark,repeat);
 }
 var ctrl;
 $("document").ready(function() {
-  ctrl = new SegmentController("controls","player1","break");
+  ctrl = new SegmentController("controls","player1","break","repeat");
   ctrl.load_video("media/vid1.webm");
-  /*
-    seg = new SegmentBar("controls");
-    video = new YoutubeVideo("player1");
-    seg.pause(0.5);
-    seg.pause(0.4);
-    seg.silence(0.8,0.9);
-    console.log("created video");
-    video.listen('load', function(evt){
-      var vid = evt.obj;
-      console.log("updating", evt);
-      vid.load("https://www.youtube.com/watch?v=kE75vRV9tos");
-      
-      vid.listen('ready', function(e){
-        e.obj.segment(55, 59);
-        e.obj.play();
-      },'autoplay');
-    }, "load-video");
-  */
 });
