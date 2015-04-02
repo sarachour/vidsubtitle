@@ -15,47 +15,25 @@ var SegmentController = function(ctrls,player,mark,repeat){
 
 
     //initialize button
-    this.mark.html("Start");
+    this.mark.data("button-title","Start");
     this.mark.prop('disabled', true);
     this.repeat.prop('disabled', true);
-    
-    //initialize data
-    this.segdata = {};
-    this.segdata.start = null
-    this.segdata.isdown = false;
-    //initialize hotkeys
-    $(document).bind("keydown", jwerty.event('↩', function(){
-      if(that.segdata.isdown) return;
-      console.log("enter down");
-      that.mark.mousedown();
-      that.segdata.isdown = true;
-    }))
-    $(document).bind("keyup", jwerty.event('↩', function(){
-      console.log("enter up");
-      that.mark.mouseup();
-      that.segdata.isdown = false;
-      that.mark.click();
-    }))
 
-    jwerty.key('←', function(){
-      console.log("left");
-      that.repeat.click();
-    })
+
     //initialize handlers
     this.mark.click(function(){
-      that.mark.html("Break");
+      that.mark.data("button-title","Break");
       that.repeat.prop('disabled',false);
       that.video.play();
       that.mark.unbind('click');
 
       that.mark.mousedown(function(){
-        that.segdata.start = that.video.time();
+        $(this).data('start', that.video.time());
         that.segs.hold();
       })
       that.mark.mouseup(function(){
-        that.segdata.end = that.video.time();
-        var s = that.segdata.start;
-        var e = that.segdata.end;
+        var e = that.video.time();
+        var s = $(this).data('start');
         that.segs.unhold();
         that.segs.add_segment(s,e);
 
@@ -110,6 +88,7 @@ var SegmentController = function(ctrls,player,mark,repeat){
   this.init(ctrls,player,mark,repeat);
 }
 var ctrl;
+
 $("document").ready(function() {
   ctrl = new SegmentController("controls","player1","break","repeat");
   ctrl.load_video("media/vid1.webm");

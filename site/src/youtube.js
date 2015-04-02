@@ -36,11 +36,14 @@ var YoutubeVideo = function(id) {
       args.error = function(){
          console.log("ERROR: Could not play");
       }
-      //args.features = [];
+      args.features = [];
       args.enableKeyboard = false;
       //args.mode = "auto"
       args.mode = "native"
       this.player = $("#"+that.id).mediaelementplayer(args);
+   }
+   this.dims = function(w,h){
+      this.media.se
    }
    this.rate = function(e){
       this.media.playbackRate = e;

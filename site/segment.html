@@ -3,7 +3,10 @@
 <script src="lib/jquery-ui-1.11.3.js"></script>
 <script src="lib/jwerty.js"></script>
 <script src="lib/mejs/mediaelementplayer.min.js"></script>
+
+
 <script src="src/util.js"></script>
+<script src="src/domhotkey.js"></script>
 <script src="src/observer.js"></script>
 <script src="src/youtube.js"></script>
 <script src="src/sorted_array.js"></script>
@@ -37,8 +40,8 @@ INSTRUCTIONS
 <div class="row">
    <div class="offset-by-one-fourth one-half column" id="video-container">
    <!-- controls="none" --> 
-      <video class="fill-parent" id="player1" preload="metadata" width="400" height="400" controls="none">
-        <source src="media/vid1.webm" type="video/mp4" />
+      <video class="fill-parent" id="player1" preload="none" width="400" height="400" controls="none">
+        <source src="media/vid1.mp4" type="video/mp4" />
       </video>
    </div>
 </div>
@@ -48,10 +51,10 @@ INSTRUCTIONS
 <div id="controls" class="fill-parent-width text-label">PROGRESS BAR HERE</div>
 </div>
 
-<!-- break button -->
+<!-- break button crarr : use this http://www.amp-what.com/unicode/search/arrow to find unicode characters-->
 <div class="row">
-<button id="break" class="button-primary one-half column">Break</button>
-<button id="repeat" class="button-primary one-half column">Repeat</button>
+<div id="break" button-title="Start" hotkey-name="enter" hotkey-code="space" class="hotkey button one-half column"></div>
+<div id="repeat" button-title="Repeat" hotkey-name="left arrow" hotkey-code="left" class="hotkey button one-half column"></div>
 </div>
 
 

@@ -28,3 +28,17 @@ scribe specific rules
 .scribe #video-container{
    height: 200px;
 }
+
+.hotkey.button {
+   white-space: normal;
+   height: 52px;
+}
+.hotkey.title {
+   white-space: normal;
+   height:20px;
+}
+.hotkey.shortcut {
+   color: #888888;
+   font-size:8px;
+   height:10px;
+}
