@@ -12,18 +12,15 @@ $(document).ready(function(){
       
       $(document).bind("keyup", jwerty.event(code, function(){
          that.mouseup();
-         console.log('up');
          that.data('isdown', false);
        }))
       $(document).bind("keydown", jwerty.event(code, function(){
          if(that.data('isdown')) return;
-         console.log('down');
          that.mousedown();
          that.data('isdown', true)
       }));
       //press
       jwerty.key(code, function(){
-         console.log("press");
          that.click();
       })
 

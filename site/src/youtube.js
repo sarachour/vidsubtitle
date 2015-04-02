@@ -69,10 +69,11 @@ var YoutubeVideo = function(id) {
       var that = this;
       this.media.setCurrentTime(starttime);
       this.events.listen('update', function(data){
-         var ctime = data.ev.currentTime;
+         var ctime = that.time();
+         console.log(ctime, endtime);
          if(ctime >= endtime){
-            that.stop();
-            that.events.remove('segment-end');
+            that.pause();
+            that.events.remove('update','segment-end');
          }
 
       }, "segment-end");
@@ -95,6 +96,13 @@ var YoutubeVideo = function(id) {
          return;
       }
       this.media.play();
+   }
+   this.pause = function(){
+      if(!this.is_loaded()){
+         console.log("ERROR: Not loaded.");
+         return;
+      }
+      this.media.pause();
    }
    this.get_url = function(){
       return this.media.src;

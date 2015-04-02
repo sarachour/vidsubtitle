@@ -94,13 +94,43 @@ var SegmentController = function(ctrls,player,mark,repeat){
 }
 var ctrl;
 
+
 $("document").ready(function() {
-  var that = this;
+  var data = {};
   ctrl = new SegmentController("controls","player1","break","repeat");
   ctrl.load_video("media/vid1.webm");
+
+  var play_seg = function(){
+    if(data.idx < 0) data.idx = 0;
+      if(data.idx >= data.segs.length) data.idx = data.segs.length-1;
+
+      var d = data.segs[data.idx]
+      var e = d.end;
+      var s;
+      if(data.idx == 0) s = 0;
+      else s = data.segs[data.idx-1].start;
+
+      console.log(data.idx, s,e);
+      ctrl.video.segment(s,e);
+      ctrl.video.play();
+  }
 
   $("#save",$("#dev")).click(function(){
     var str = JSON.stringify(ctrl.to_json());
     $("#output", $("#dev")).val(str);
+  })
+  $("#review",$("#dev")).click(function(){
+    data.segs = ctrl.to_json().data;
+    data.idx = 0;
+    ctrl.video.pause();
+    play_seg();
+  })
+  $("#next", $("#dev")).click(function(){
+    data.idx+=1;
+    play_seg();
+  })
+  $("#prev", $("#dev")).click(function(){
+    data.idx-=1;
+    play_seg();
   })
 });
