@@ -1,3 +1,7 @@
+.black-bg {
+   background-color: #222222;
+}
+
 .fill-parent {
 	position:relative;
 	width:100%;
@@ -17,10 +21,16 @@
 /*
 chunk specific rules
 */
-.chunk #video-container{
+.segment #video-container{
 	height: 400px;
 }
-
+.segment #dev{
+   margin-top: 50px;
+}
+.segment #segmentbar{
+   margin-top: 2px;
+   margin-bottom:15px;
+}
 /*
 scribe specific rules
 */

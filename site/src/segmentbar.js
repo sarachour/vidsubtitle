@@ -5,7 +5,7 @@ var SegmentModel  = function(){
       this.data.segments = new NumericalSortedArray('start');
       this.data.time = 0;
       this.data.hold = null;
-      this.data.duration = 0;
+      this.data.duration = 1;
       this.data.eps = 0.5;
       
       this.data.redo = {};
@@ -146,6 +146,7 @@ var SegmentBar = function(id, model){
       var x = function(v){return v*w/d.duration;}
       var y = function(v){return v*h/1;}
 
+      console.log(d);
       //fill in background
       ctx.fillStyle = "#444444"
       ctx.fillRect(x(0),y(0),x(d.duration),y(1));

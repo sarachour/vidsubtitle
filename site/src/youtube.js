@@ -8,6 +8,7 @@ var YoutubeVideo = function(id) {
 
       var args = {};    
       args.seekable = true;
+      args.enableAutosize = true;
       args.success = function(me, d){
          that.media = me;
          that.loaded = true;
@@ -43,7 +44,7 @@ var YoutubeVideo = function(id) {
       this.player = $("#"+that.id).mediaelementplayer(args);
    }
    this.dims = function(w,h){
-      this.media.se
+      this.media.seT
    }
    this.rate = function(e){
       this.media.playbackRate = e;

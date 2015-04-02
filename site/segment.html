@@ -6,7 +6,7 @@
 
 
 <script src="src/util.js"></script>
-<script src="src/domhotkey.js"></script>
+<script src="src/hotkey.js"></script>
 <script src="src/observer.js"></script>
 <script src="src/youtube.js"></script>
 <script src="src/sorted_array.js"></script>
@@ -22,7 +22,7 @@
 
 <body>
 
-<div class="container chunk">
+<div class="container segment">
 
 <div class="row" id="header">
    <div class="column one-fourth text-label">DEMO HERE</div>
@@ -37,26 +37,34 @@ INSTRUCTIONS
 <!-- content pane -->
 <div id="content">
 <!-- video -->
-<div class="row">
-   <div class="offset-by-one-fourth one-half column" id="video-container">
+<div class="row black-bg">
+   <div class="fill-parent-width offset-by-one-fourth one-half column" id="video-container">
    <!-- controls="none" --> 
-      <video class="fill-parent" id="player1" preload="none" width="400" height="400" controls="none">
+      <video class="fill-parent" id="player1" preload="none" width="100%" height="100%" controls="none">
         <source src="media/vid1.mp4" type="video/mp4" />
       </video>
    </div>
 </div>
 
 <!-- progress bar -->
-<div class="row">
+<div id="segmentbar" class="row vspace">
 <div id="controls" class="fill-parent-width text-label">PROGRESS BAR HERE</div>
 </div>
 
 <!-- break button crarr : use this http://www.amp-what.com/unicode/search/arrow to find unicode characters-->
-<div class="row">
+<div id="buttons" class="row vspace">
 <div id="break" button-title="Start" hotkey-name="enter" hotkey-code="space" class="hotkey button one-half column"></div>
 <div id="repeat" button-title="Repeat" hotkey-name="left arrow" hotkey-code="left" class="hotkey button one-half column"></div>
 </div>
 
+<div class="row vspace" id="dev">
+<span class="columns two">Dev Tools: </span>
+<input id="output" type="text" class="columns two" placeholder="JSON Structure"></input>
+<button class="columns two" id="save">Save</button>
+<button class="columns two" id="review">Review</button>
+<button class="columns two" id="next">Prev</button>
+<button class="columns two" id="next">Next</button>
+</div>
 
 <!-- end of content -->
 </div>
