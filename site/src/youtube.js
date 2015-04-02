@@ -96,6 +96,9 @@ var YoutubeVideo = function(id) {
       }
       this.media.play();
    }
+   this.get_url = function(){
+      return this.media.src;
+   }
    this.load = function(url){
       if(!this.is_loaded()){
          console.log("ERROR: Not loaded.");

@@ -27,6 +27,9 @@ var SegmentModel  = function(){
    this.get_data = function(){
       return this.data;
    }
+   this.to_json = function(){
+      return this.data.segments.get_array();
+   }
    this.add_segment = function(start,end){
       var s = {};
       var len = end-start;

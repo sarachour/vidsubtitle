@@ -43,7 +43,6 @@ var SegmentController = function(ctrls,player,mark,repeat){
     })
     this.repeat.click(function(){
         that.segs.redo();
-        console.log(that.segs.redo_start_time());
         that.video.jump(that.segs.redo_start_time());
     })
 
@@ -61,7 +60,6 @@ var SegmentController = function(ctrls,player,mark,repeat){
     }, "ctrlr-ready");
 
     this.video.listen('play', function(e){
-      console.log(e.obj.duration());
       that.segs.duration(e.obj.duration());
       e.obj.rate(0.75);
     })
@@ -73,6 +71,13 @@ var SegmentController = function(ctrls,player,mark,repeat){
     this.started = false;
     this.loaded = false;
     this.ready = false;
+  }
+  this.to_json = function(){
+    var data = {};
+    var segdata = this.segs.to_json();
+    data.data = segdata;
+    data.url = this.video.get_url();
+    return data;
   }
   this.load_video = function(url){
     var that = this;
@@ -90,6 +95,12 @@ var SegmentController = function(ctrls,player,mark,repeat){
 var ctrl;
 
 $("document").ready(function() {
+  var that = this;
   ctrl = new SegmentController("controls","player1","break","repeat");
   ctrl.load_video("media/vid1.webm");
+
+  $("#save",$("#dev")).click(function(){
+    var str = JSON.stringify(ctrl.to_json());
+    $("#output", $("#dev")).val(str);
+  })
 });

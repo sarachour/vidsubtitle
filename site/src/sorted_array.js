@@ -9,6 +9,9 @@ var NumericalSortedArray = function(key){
          return a[key] > b[key];
       })
    }
+   this.get_array = function(){
+      return this.arr;
+   }
    this.clear = function(){
       this.arr = [];
    }
