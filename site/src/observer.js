@@ -19,7 +19,15 @@ var Observer = function(){
       }
    }
    this.remove = function(eventname, nickname){
-      console.log("ERROR: Not Implemented")
+      var elst = this.events[eventname];
+      if(isValue(elst)){
+         for(var i=0; i < elst.length; i++){
+            if(elst[i].name == nickname){
+               elst.splice(i,1);
+               return;
+            }
+         }
+      }
    }
 
    this.init();

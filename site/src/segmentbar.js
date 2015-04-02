@@ -149,7 +149,6 @@ var SegmentBar = function(id, model){
       var x = function(v){return v*w/d.duration;}
       var y = function(v){return v*h/1;}
 
-      console.log(d);
       //fill in background
       ctx.fillStyle = "#444444"
       ctx.fillRect(x(0),y(0),x(d.duration),y(1));
