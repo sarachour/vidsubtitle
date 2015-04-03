@@ -59,11 +59,17 @@ INSTRUCTIONS
 
 <!-- break button crarr : use this http://www.amp-what.com/unicode/search/arrow to find unicode characters-->
 <div id="buttons" class="row vspace">
-<div id="break" button-title="Start" hotkey-name="spacebar" hotkey-code="space" class="hotkey button one-half column"></div>
-<div id="repeat" button-title="Repeat" hotkey-name="left arrow" hotkey-code="left" class="hotkey button one-half column"></div>
+<div id="break" button-title="Start" hotkey-name="spacebar" hotkey-code="space" class="hotkey button four columns"></div>
+<div id="prev" button-title="Back" hotkey-name="left arrow" hotkey-code="left" class="hotkey button four columns"></div>
+<div id="next" button-title="Next" hotkey-name="right arrow" hotkey-code="right" class="hotkey button four columns"></div>
+</div>
+<div id="buttons" class="row vspace">
+<div id="delete" button-title="Delete" hotkey-name="delete" hotkey-code="delete" class="hotkey button four columns"></div>
+<div id="delay" button-title="Later" hotkey-name="up arrow" hotkey-code="up" class="hotkey button four columns"></div>
+<div id="preempt" button-title="Earlier" hotkey-name="down arrow" hotkey-code="down" class="hotkey button four columns"></div>
 </div>
 
-<div class="row vspace" id="dev">
+<div class="row vspace dummy" id="dev">
 <span class="columns two">Dev Tools: </span>
 <input id="output" type="text" class="columns two" placeholder="JSON Structure"></input>
 <button class="columns two" id="save">Save</button>

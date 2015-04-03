@@ -29,11 +29,9 @@ var ProgramState = function(vp_name, vb_name){
 
     //if a marker changes the state
     this.obs.listen('state-change', function(e){
-      var new_state = e.state;
-      if(e.state != that.state){
-        that.state = e.state;
-        that.obs.trigger(that.state);
-      }
+      that.state = e.state;
+      console.log(that.state);
+      that.obs.trigger(that.state);
     }, "state_change_listener")
   }
   this.statemgr = function(){
@@ -44,10 +42,9 @@ var ProgramState = function(vp_name, vb_name){
   }
   this.video_player = function(){
     return this._video_player;
-    return this._video_bar;
   }
   this.video_bar = function(){
-
+    return this._video_bar;
   }
   this.init();
 }
@@ -90,10 +87,10 @@ var MarkButton = function(button_name, state){
 
     this.view.unbind('click');
     this.view.mousedown(function(){
-        if(that.playing) that.state.trigger('state-change','hold');
+        if(that.playing) that.state.statemgr().trigger('state-change',{state:'hold'});
     })
-    this.mark.mouseup(function(){
-        if(that.playing) that.state.trigger('state-change','unhold');
+    this.view.mouseup(function(){
+        if(that.playing) that.state.statemgr().trigger('state-change',{state:'unhold'});
 
     })
   }
@@ -123,21 +120,20 @@ var VideoPane = function(video_name, state){
     this.state = state;
     //initialize video
     this.video.listen('load', function(evt){
-      that.obs.trigger('state-change',{state:'load'});
+      that.state.statemgr().trigger('state-change',{state:'load'});
     }, "vp-load");
 
     this.video.listen('ready', function(e){
-      that.segs.duration(e.obj.duration());
-      that.obs.trigger('state-change',{state:'ready'});
+      that.state.statemgr().trigger('state-change',{state:'ready'});
     }, "vp-ready");
 
     this.video.listen('play', function(e){
       //e.obj.rate(0.75);
-      that.obs.trigger('state-change',{state:'playing'});
+      that.state.statemgr().trigger('state-change',{state:'playing'});
     }, 'vp-play');
     
     this.video.listen('update', function(){
-      that.obs.trigger('state-change',{state:'tick'});
+      that.state.statemgr().trigger('state-change',{state:'tick'});
     }, 'vp-update');
   }
   this.get_model = function(){
@@ -149,10 +145,12 @@ var VideoPane = function(video_name, state){
   this.pause = function(){
     this.video.pause();
   }
+  this._init();
 }
 
 var VideoBar  =function(bar_name, state){
   this._init = function(){
+    var that = this;
     this.model = new SegmentModel();
     this.view  =new SegmentBar(bar_name, this.model);
     this.state = state;
@@ -176,11 +174,11 @@ var VideoBar  =function(bar_name, state){
     })
   }
   this._update_time = function(){
-    var dur = this.state.vide_player().get_model().time();
+    var dur = this.state.video_player().get_model().time();
     this.model.time(dur);
   }
   this._update_duration = function(){
-    var dur = this.state.vide_player().get_model().duration();
+    var dur = this.state.video_player().get_model().duration();
     this.model.duration(dur);
   }
   this.hold = function(){
@@ -212,17 +210,6 @@ var SegmentController = function(video_player, video_bar, break_button, next_but
     data.data = segdata;
     data.url = this.video.get_url();
     return data;
-  }
-  this.load_video = function(url){
-    var that = this;
-    if(!this.loaded){
-      this.obs.listen('loaded', function(){
-        that.video.load(url);
-      })
-    }
-    else {
-      that.video.load(url);
-    }
   }
   this.init();
 }

@@ -18,6 +18,9 @@
 	text-align: center;
 }
 
+.dummy {
+   display: none;
+}
 /*
 chunk specific rules
 */
