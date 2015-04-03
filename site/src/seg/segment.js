@@ -110,6 +110,7 @@ $("document").ready(function() {
       if(data.idx == 0) s = 0;
       else s = data.segs[data.idx-1].end;
 
+
       console.log(data.idx, s,e);
       ctrl.video.segment(s,e);
       ctrl.video.play();

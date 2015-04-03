@@ -32,6 +32,7 @@ var Observer = function(){
    }
    this.remove_all = function(e,n){
       while(this.remove(e,n));
+
    }
 
    this.init();
