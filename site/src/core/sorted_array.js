@@ -1,12 +1,12 @@
-var NumericalSortedArray = function(key){
-   this.init = function(key){
-      this.sort_key = key;
+var SortedArray = function(cmp){
+   this.init = function(cmp){
+      this.cmp = cmp;
       this.arr = [];
    }
    this._sort = function(){
-      var key = this.sort_key;
+      var cmp = this.cmp;
       this.arr.sort(function(a,b){
-         return a[key] > b[key];
+         return cmp(a,b);
       })
    }
    this.get_array = function(){
@@ -31,7 +31,7 @@ var NumericalSortedArray = function(key){
    }
    this.push_all = function(e){
       var that = this;
-      if(e instanceof NumericalSortedArray){
+      if(e instanceof SortedArray){
          e.for_each(function(x,i){
             that.push(x);
          });
@@ -57,7 +57,8 @@ var NumericalSortedArray = function(key){
       this.arr.splice(i,1);
    }
    this.match = function(e){
-      var matches = new NumericalSortedArray("index");
+      var idx_srt = function(a,b){return a.index < b.index;}
+      var matches = new SortedArray(idx_srt);
       for(var i=0; i < this.arr.length; i++){
          if(e(this.arr[i],i)){
             matches.push({elem:this.arr[i], index:i});
@@ -75,5 +76,5 @@ var NumericalSortedArray = function(key){
       }
       return matches;
    }
-   this.init(key);
+   this.init(cmp);
 }
