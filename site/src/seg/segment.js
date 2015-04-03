@@ -258,9 +258,9 @@ var SegmentController = function(video_player, video_bar, break_button, next_but
   }
   this.to_json = function(){
     var data = {};
-    var segdata = this.segs.to_json();
+    var segdata = this.prog.video_bar().model.to_json();
     data.data = segdata;
-    data.url = this.video.get_url();
+    data.url = this.prog.video_player().get_model().get_url();
     return data;
   }
   this.init();
@@ -273,7 +273,10 @@ var ctrl;
 $("document").ready(function() {
   var data = {};
   ctrl = new SegmentController("player1","controls","break","next","prev","delay","preempt","delete");
-
+  $("#save",$("#dev")).click(function(){
+    var str = JSON.stringify(ctrl.to_json());
+    $("#output", $("#dev")).val(str);
+  })
   /*
   var play_seg = function(){
     if(data.idx < 0) data.idx = 0;
@@ -291,10 +294,7 @@ $("document").ready(function() {
       ctrl.video.play();
   }
 
-  $("#save",$("#dev")).click(function(){
-    var str = JSON.stringify(ctrl.to_json());
-    $("#output", $("#dev")).val(str);
-  })
+  
   $("#review",$("#dev")).click(function(){
     data.segs = ctrl.to_json().data;
     data.idx = 0;
