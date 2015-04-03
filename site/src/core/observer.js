@@ -24,10 +24,14 @@ var Observer = function(){
          for(var i=0; i < elst.length; i++){
             if(elst[i].name == nickname){
                elst.splice(i,1);
-               return;
+               return true;
             }
          }
       }
+      return false;
+   }
+   this.remove_all = function(e,n){
+      while(this.remove(e,n));
    }
 
    this.init();

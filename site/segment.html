@@ -5,13 +5,13 @@
 <script src="lib/mejs/mediaelementplayer.min.js"></script>
 
 
-<script src="src/util.js"></script>
-<script src="src/hotkey.js"></script>
-<script src="src/observer.js"></script>
-<script src="src/youtube.js"></script>
-<script src="src/sorted_array.js"></script>
-<script src="src/segmentbar.js"></script>
-<script src="src/segment.js"></script>
+<script src="src/core/util.js"></script>
+<script src="src/core/hotkey.js"></script>
+<script src="src/core/observer.js"></script>
+<script src="src/core/youtube.js"></script>
+<script src="src/core/sorted_array.js"></script>
+<script src="src/seg/segmentbar.js"></script>
+<script src="src/seg/segment.js"></script>
 
 <link rel="stylesheet" href="css/jquery-ui-1.11.3.css" />
 <link rel="stylesheet" href="css/skeleton.css" />
@@ -40,7 +40,7 @@ INSTRUCTIONS
 <div class="row black-bg">
    <div class="fill-parent-width offset-by-one-fourth one-half column" id="video-container">
    <!-- controls="none" --> 
-      <video class="fill-parent" id="player1" preload="none" width="100%" height="100%" controls="none">
+      <video class="fill-parent" id="player1" preload="none" width="100%" height="400px" controls="none">
         <source src="media/vid1.mp4" type="video/mp4" />
       </video>
    </div>

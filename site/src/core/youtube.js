@@ -67,6 +67,9 @@ var YoutubeVideo = function(id) {
    }
    this.segment = function(starttime, endtime){
       var that = this;
+      //remove any lingering values
+      that.events.remove_all('update','segment-end');
+      
       this.media.setCurrentTime(starttime);
       this.events.listen('update', function(data){
          var ctime = that.time();
