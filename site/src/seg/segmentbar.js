@@ -37,19 +37,8 @@ var SegmentBar = function(id, model){
       ctx.fillStyle = "#666666"
       ctx.fillRect(x(0),y(0),x(d.time),y(1));
 
-      //draw the time segment that is being redone
-      if(d.redo.mode){
-         ctx.fillStyle = "#66EE66";
-         ctx.fillRect(x(d.redo.start_time),y(0),x(d.redo.time-d.redo.start_time),y(1));
-         //draw the hold with respect of the redo time
-         if(d.hold != null){
-            if(d.redo.time-d.hold < d.eps) ctx.fillStyle = "#4444DD" 
-            else  ctx.fillStyle = "#DD4444"
-            ctx.fillRect(x(d.hold),y(0),x(d.redo.time-d.hold),y(1));
-         }
-      }
       //draw the current hold
-      else if(d.hold != null){
+      if(d.hold != null){
          if(d.time-d.hold > d.eps) ctx.fillStyle = "#4444DD" 
          else  ctx.fillStyle = "#DD4444"
          ctx.fillRect(x(d.hold),y(0),x(d.time-d.hold),y(1));
@@ -72,35 +61,11 @@ var SegmentBar = function(id, model){
             ctx.fillRect(x(s), y(0), x(e-s),y(1));
          }
       }
-
-      d.redo.ghosts.for_each(function(e){
-         seg_draw(e,"#6644444","#444466");
-      })
-      d.redo.segments.for_each(function(e){
-         seg_draw(e,"#EE4444","#4466ff");
-      })
       d.segments.for_each(function(e){
          seg_draw(e,"#EE4444","#4466ff");
       })
       
    }
-   this.pause = function(time){
-      var m = {time: time};
-      this._pauses.push(m);
-      this._draw();
-   }
-   this.silence = function(start,end){
-      var s = {start: start, end:end};
-      this._silences.push(s);
-      this._draw();
-   }
-   this.mark = function(start,end){
-      if(end-start > this.eps){
-         this.silence(start,end);
-      }
-      else{
-         this.pause(start,end);
-      }
-   }
+
    this.init(id, model);
 }

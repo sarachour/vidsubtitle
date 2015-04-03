@@ -1,76 +1,210 @@
 var video;
 var seg;
 
+/*
+Video States: 
+ready: the video is ready to play
+playing: the video is playing
+tick: the video has taken a time step
+paused: the video is paused
+
+User Action States:
+hold: the user began a marking
+unhold: the user stopped a marking
+prev: the user moved left one element
+next: the user moved right one element
+move-later: the user moved the marking later
+move-earlier: the user moved the marking earlier
+delete: the user deleted a marking
 
 
-var SegmentController = function(ctrls,player,mark,repeat){
-  this.init = function(ctrls, player,mark, repeat){
+*/
+var ProgramState = function(vp_name, vb_name){
+  this.init = function(){
     var that = this;
-    this.video = new YoutubeVideo(player);
-    this.segs = new SegmentModel();
-    this.bar  =new SegmentBar(ctrls, this.segs);
-    this.mark = $("#"+mark);
-    this.repeat = $("#"+repeat);
+    this.state = "";
     this.obs = new Observer();
+    this._video_player = new VideoPane(vp_name,this);
+    this._video_bar = new VideoBar(vb_name,this);
 
+    //if a marker changes the state
+    this.obs.listen('state-change', function(e){
+      var new_state = e.state;
+      if(e.state != that.state){
+        that.state = e.state;
+        that.obs.trigger(that.state);
+      }
+    }, "state_change_listener")
+  }
+  this.statemgr = function(){
+    return this.obs;
+  }
+  this.get_state = function(){
+    return this.state;
+  }
+  this.video_player = function(){
+    return this._video_player;
+    return this._video_bar;
+  }
+  this.video_bar = function(){
 
-    //initialize button
-    this.mark.data("button-title","Start");
-    this.mark.prop('disabled', true);
-    this.repeat.prop('disabled', true);
+  }
+  this.init();
+}
 
+// mark a pause with this button
+var MarkButton = function(button_name, state){
+  this._init = function(){
+    var that = this;
+    this.view = $("#"+button_name);
+    this.state = state;
+    this.playing = false;
+    this.init();
 
-    //initialize handlers
-    this.mark.click(function(){
-      that.mark.data("button-title","Break");
-      that.repeat.prop('disabled',false);
-      that.video.play();
-      that.mark.unbind('click');
+    this.view.prop('disabled', true);
+    this.state.statemgr().listen('ready', function(){
+      that.view.prop('disabled',false);
+    })
+    this.state.statemgr().listen('playing', function(){
+      that.playing = true;
+    })
+    this.state.statemgr().listen('paused', function(){
+      that.playing = false;
+      that.init();
+    })
 
-      that.mark.mousedown(function(){
-        $(this).data('start', that.video.time());
-        that.segs.hold();
-      })
-      that.mark.mouseup(function(){
-        var e = that.video.time();
-        var s = $(this).data('start');
-        that.segs.unhold();
-        that.segs.add_segment(s,e);
+    
+  }
+  this.init = function(){
+    var that = this;
+    this.view.data("button-title","Start");
+    that.view.unbind('click');
+    this.view.click(function(){
+      that.start();
+    })
+  }
+  this.start = function(){
+    var that = this;
+    this.view.data("button-title","Break");
+    this.state.video_player().play();
 
-      })
-
+    this.view.unbind('click');
+    this.view.mousedown(function(){
+        if(that.playing) that.state.trigger('state-change','hold');
+    })
+    this.mark.mouseup(function(){
+        if(that.playing) that.state.trigger('state-change','unhold');
 
     })
-    this.repeat.click(function(){
-        that.segs.redo();
-        that.video.jump(that.segs.redo_start_time());
-    })
+  }
+  this._init();
+}
 
+var BackButton = function(button_name, state){
+    this.view = $("#"+button_name);
+}
+
+var NextButton = function(button_name, state){
+    this.view = $("#"+button_name);
+}
+var DeleteButton = function(button_name, state){
+    this.view = $("#"+button_name);
+}
+var DelayButton = function(button_name, state){
+    this.view = $("#"+button_name);
+}
+var PreemptButton = function(button_name, state){
+    this.view = $("#"+button_name);
+}
+var VideoPane = function(video_name, state){
+  this._init = function(){
+    var that = this;
+    this.video = new YoutubeVideo(video_name);
+    this.state = state;
     //initialize video
     this.video.listen('load', function(evt){
-      that.loaded = true;
-      that.obs.trigger('loaded');
-    }, "ctrlr-load");
+      that.obs.trigger('state-change',{state:'load'});
+    }, "vp-load");
 
     this.video.listen('ready', function(e){
-      that.mark.prop('disabled',false);
-      that.ready = true;
       that.segs.duration(e.obj.duration());
-      that.obs.trigger('ready');
-    }, "ctrlr-ready");
+      that.obs.trigger('state-change',{state:'ready'});
+    }, "vp-ready");
 
     this.video.listen('play', function(e){
-      that.segs.duration(e.obj.duration());
-      e.obj.rate(0.75);
-    })
+      //e.obj.rate(0.75);
+      that.obs.trigger('state-change',{state:'playing'});
+    }, 'vp-play');
     
     this.video.listen('update', function(){
-      that.segs.time(that.video.time());
-    });
+      that.obs.trigger('state-change',{state:'tick'});
+    }, 'vp-update');
+  }
+  this.get_model = function(){
+    return this.video;
+  }
+  this.play = function(){
+    this.video.play();
+  }
+  this.pause = function(){
+    this.video.pause();
+  }
+}
 
-    this.started = false;
-    this.loaded = false;
-    this.ready = false;
+var VideoBar  =function(bar_name, state){
+  this._init = function(){
+    this.model = new SegmentModel();
+    this.view  =new SegmentBar(bar_name, this.model);
+    this.state = state;
+    this.start_time = null;
+    this.state.statemgr().listen('ready', function(){
+      that._update_duration();
+    })
+    this.state.statemgr().listen('play', function(){
+      that._update_duration();
+    })
+    this.state.statemgr().listen('tick', function(){
+      that._update_time();
+    })
+
+    //update bar for hold and unhold situations
+    this.state.statemgr().listen('hold', function(){
+      that.hold();
+    })
+    this.state.statemgr().listen('unhold', function(){
+      that.unhold();
+    })
+  }
+  this._update_time = function(){
+    var dur = this.state.vide_player().get_model().time();
+    this.model.time(dur);
+  }
+  this._update_duration = function(){
+    var dur = this.state.vide_player().get_model().duration();
+    this.model.duration(dur);
+  }
+  this.hold = function(){
+      this.start_time= this.state.video_player().get_model().time();
+  }
+  this.unhold = function(){
+      var e = this.state.video_player().get_model().time();
+      var s = this.start_time;
+      console.log(s,e);
+      this.model.add_segment(s,e);
+  }
+  this._init();
+}
+
+var SegmentController = function(video_player, video_bar, break_button, next_button, prev_button, delay_button, earlier_button, delete_button){
+  this.init = function(){
+    this.prog = new ProgramState(video_player, video_bar);
+    this.buttons = {};
+    this.buttons.mark = new MarkButton(break_button, this.prog);
+    this.buttons.next = new NextButton(next_button, this.prog);
+    this.buttons.prev = new BackButton(prev_button, this.prog);
+    this.buttons.remove = new DeleteButton(delete_button, this.prog);
+    this.buttons.delay = new DelayButton(delay_button, this.prog);
+    this.buttons.preempt = new PreemptButton(earlier_button, this.prog);
   }
   this.to_json = function(){
     var data = {};
@@ -90,16 +224,18 @@ var SegmentController = function(ctrls,player,mark,repeat){
       that.video.load(url);
     }
   }
-  this.init(ctrls,player,mark,repeat);
+  this.init();
 }
+
+
 var ctrl;
 
-
+//video_player, video_bar, break_button, next_button, prev_button, delay_button, earlier_button, delete_button
 $("document").ready(function() {
   var data = {};
-  ctrl = new SegmentController("controls","player1","break","repeat");
-  ctrl.load_video("media/vid1.webm");
+  ctrl = new SegmentController("player1","controls","break","next","prev","delay","preempt","delete");
 
+  /*
   var play_seg = function(){
     if(data.idx < 0) data.idx = 0;
       if(data.idx >= data.segs.length) data.idx = data.segs.length-1;
@@ -134,4 +270,5 @@ $("document").ready(function() {
     data.idx-=1;
     play_seg();
   })
+  */
 });
