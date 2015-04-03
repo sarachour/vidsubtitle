@@ -11,7 +11,7 @@ $(document).ready(function(){
       $(this).data('isdown', false);
       
       $(document).bind("keyup", jwerty.event(code, function(){
-         that.mouseup();
+         if(that.data('isdown')) that.mouseup();
          that.data('isdown', false);
        }))
       $(document).bind("keydown", jwerty.event(code, function(){

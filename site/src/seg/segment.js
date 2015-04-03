@@ -11,10 +11,8 @@ paused: the video is paused
 User Action States:
 hold: the user began a marking
 unhold: the user stopped a marking
-prev: the user moved left one element
-next: the user moved right one element
-move-later: the user moved the marking later
-move-earlier: the user moved the marking earlier
+select: the user selected something
+modify: the user modified something
 delete: the user deleted a marking
 
 
@@ -30,9 +28,19 @@ var ProgramState = function(vp_name, vb_name){
     //if a marker changes the state
     this.obs.listen('state-change', function(e){
       that.state = e.state;
-      console.log(that.state);
       that.obs.trigger(that.state);
     }, "state_change_listener")
+  }
+  this.select = function(i){
+    if(isValue(i)){ //update selection
+      this._select.index = i;
+      this._select.data = this.video_bar().model.select(i);
+      this.obs.trigger('select');
+    }
+    return this._select;
+  }
+  this.selections = function(){
+    return this.video_bar().model.get_selections();
   }
   this.statemgr = function(){
     return this.obs;
@@ -84,13 +92,14 @@ var MarkButton = function(button_name, state){
     var that = this;
     this.view.data("button-title","Break");
     this.state.video_player().play();
-
+    this.is_down = false;
     this.view.unbind('click');
     this.view.mousedown(function(){
         if(that.playing) that.state.statemgr().trigger('state-change',{state:'hold'});
+        that.is_down = true;
     })
     this.view.mouseup(function(){
-        if(that.playing) that.state.statemgr().trigger('state-change',{state:'unhold'});
+        if(that.playing && that.is_down) that.state.statemgr().trigger('state-change',{state:'unhold'});
 
     })
   }
@@ -98,20 +107,63 @@ var MarkButton = function(button_name, state){
 }
 
 var BackButton = function(button_name, state){
+  this.init = function(){
+    var that = this;
     this.view = $("#"+button_name);
+    this.state = state;
+
+    this.view.click(function(){
+      console.log('prev', that.state.selections());
+    })
+  }
+  
+  this.init();
 }
 
 var NextButton = function(button_name, state){
+  this.init = function(){
+    var that = this;
     this.view = $("#"+button_name);
+    this.state = state;
+
+    this.view.click(function(){
+      console.log('next', that.state.selections());
+    })
+  }
+
+  this.init();
 }
 var DeleteButton = function(button_name, state){
+  this.init = function(){
     this.view = $("#"+button_name);
+    this.state = state;
+    this.view.click(function(){
+      console.log("delete");
+    })
+  }
+
+  this.init();
 }
 var DelayButton = function(button_name, state){
+  this.init =function(){
     this.view = $("#"+button_name);
+    this.state = state;
+    this.view.click(function(){
+      console.log("delay");
+    })
+  }
+
+  this.init();
 }
 var PreemptButton = function(button_name, state){
-    this.view = $("#"+button_name);
+    this.init = function(){
+      this.view = $("#"+button_name);
+      this.state = state;
+      this.view.click = function(){
+        console.log("preempt");
+      }
+    }
+    this.init();
 }
 var VideoPane = function(video_name, state){
   this._init = function(){
