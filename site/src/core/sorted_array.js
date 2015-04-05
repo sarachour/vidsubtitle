@@ -5,9 +5,7 @@ var SortedArray = function(cmp){
    }
    this._sort = function(){
       var cmp = this.cmp;
-      this.arr.sort(function(a,b){
-         return cmp(a,b);
-      })
+      this.arr.sort(cmp)
    }
    this.get_array = function(){
       return this.arr;
@@ -48,6 +46,7 @@ var SortedArray = function(cmp){
             that.push(x);
          });
       }
+      this._sort();
    }
    this.for_each = function(e){
       for(var i=0; i < this.arr.length; i++){
@@ -81,6 +80,7 @@ var SortedArray = function(cmp){
          var idx = matches[i].index;
          this.remove_at(idx);
       }
+      this._sort();
       return matches;
    }
    this.init(cmp);
