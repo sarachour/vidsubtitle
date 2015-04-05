@@ -106,11 +106,53 @@ var MarkButton = function(button_name, state){
   this._init();
 }
 
+var SelectionPlayer = function(state){
+  this.init = function(){
+    this.state = state;
+  }
+  this.play = function(){
+    var sels = this.state.selections();
+    var sel = this.state.select();
+    var type = sel.data.type;
+    var idx = sel.index;
+    if(type == 'segment'){
+      var s = sel.data.start;
+      var e = sel.data.end;
+      console.log(s,e)
+      this.state.video_player().segment(s,e);
+      this.state.video_player().play();
+    }
+    else {
+      var that = this;
+      var s = sels.get(idx-1).start;
+      var e = sels.get(idx+1).end;
+      var c = sel.data.start;
+      var eps = 3; // 3 seconds
+      if(Math.abs(c-s) > eps){
+        s = c-eps;
+      }
+      if(Math.abs(e-c) > eps){
+        e = c+eps;
+      }
+      this.state.video_player().segment(s,c, function(){
+        console.log("CLICK");
+        that.state.video_player().segment(c,e);
+        that.state.video_player().play();
+      });
+      this.state.video_player().play();
+    }
+    console.log("playing selection");
+
+  }
+  this.init();
+}
+
 var BackButton = function(button_name, state){
   this.init = function(){
     var that = this;
     this.view = $("#"+button_name);
     this.state = state;
+    this.player = new SelectionPlayer(state);
 
     this.view.click(function(){
       var sels = that.state.selections();
@@ -122,7 +164,7 @@ var BackButton = function(button_name, state){
         sel.index-=1;
       
       sel = that.state.select(sel.index);
-
+      that.player.play();
       console.log('prev', sel);
     })
   }
@@ -135,6 +177,7 @@ var NextButton = function(button_name, state){
     var that = this;
     this.view = $("#"+button_name);
     this.state = state;
+    this.player = new SelectionPlayer(state);
 
     this.view.click(function(){
       var sels = that.state.selections();
@@ -146,6 +189,7 @@ var NextButton = function(button_name, state){
         sel.index+=1;
 
       sel = that.state.select(sel.index);
+      that.player.play();
 
       console.log('next', sel);
     })
@@ -213,6 +257,9 @@ var VideoPane = function(video_name, state){
   }
   this.play = function(){
     this.video.play();
+  }
+  this.segment = function(s,e,c){
+    this.video.segment(s,e,c);
   }
   this.pause = function(){
     this.video.pause();

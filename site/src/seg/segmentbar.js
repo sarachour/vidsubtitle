@@ -29,7 +29,6 @@ var SegmentBar = function(id, model){
       var x = function(v){return v*w/d.duration;}
       var y = function(v){return v*h/1;}
 
-      console.log(d.selection);
       //fill in background
       ctx.fillStyle = "#444444"
       ctx.fillRect(x(0),y(0),x(d.duration),y(1));
@@ -44,12 +43,12 @@ var SegmentBar = function(id, model){
          else  ctx.fillStyle = "#DD4444"
          ctx.fillRect(x(d.hold),y(0),x(d.time-d.hold),y(1));
       }
-      
+
       var seg_draw = function(o,segcolor,silcolor){
          var s = o.start;
          var e = o.end;
          var type = o.type;
-         if(type == "break"){
+         if(type == "break" || type == "silence-start" || type == "silence-end"){
             ctx.beginPath();
             ctx.moveTo(x(s), y(0));
             ctx.lineTo(x(s), y(1));
@@ -57,7 +56,7 @@ var SegmentBar = function(id, model){
             ctx.lineWidth = 2;
             ctx.stroke();
          }
-         else if(type == "silence"){
+         else if(type == "silence" || type == "segment" || type == "continue"){
             ctx.fillStyle = silcolor;
             ctx.fillRect(x(s), y(0), x(e-s),y(1));
          }
@@ -65,7 +64,9 @@ var SegmentBar = function(id, model){
       d.segments.for_each(function(e){
          seg_draw(e,"#EE4444","#4466ff");
       })
-      
+      if(d.selection != null){
+         seg_draw(d.selection, "rgba(200,200,100,0.5)", "rgba(200,200,100,0.5)");
+      }
    }
 
    this.init(id, model);

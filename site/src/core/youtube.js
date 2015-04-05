@@ -65,18 +65,19 @@ var YoutubeVideo = function(id) {
    this.jump = function(startTime){
       this.media.setCurrentTime(startTime);
    }
-   this.segment = function(starttime, endtime){
+   this.segment = function(starttime, endtime, onend){
       var that = this;
+      if(!isValue(onend)) onend = function(){};
       //remove any lingering values
       that.events.remove_all('update','segment-end');
       
       this.media.setCurrentTime(starttime);
       this.events.listen('update', function(data){
          var ctime = that.time();
-         console.log(ctime, endtime);
          if(ctime >= endtime){
             that.pause();
             that.events.remove('update','segment-end');
+            onend();
          }
 
       }, "segment-end");
