@@ -24,7 +24,7 @@ var ProgramState = function(vp_name, vb_name){
     this.obs = new Observer();
     this._video_player = new VideoPane(vp_name,this);
     this._video_bar = new VideoBar(vb_name,this);
-
+    this._select = {index:null, data:null};
     //if a marker changes the state
     this.obs.listen('state-change', function(e){
       that.state = e.state;
@@ -113,7 +113,17 @@ var BackButton = function(button_name, state){
     this.state = state;
 
     this.view.click(function(){
-      console.log('prev', that.state.selections());
+      var sels = that.state.selections();
+      var sel = that.state.select();
+
+      if(sel.index  == null)
+        sel.index = sels.length()-1;
+      else if(sel.index > 0)
+        sel.index-=1;
+      
+      sel = that.state.select(sel.index);
+
+      console.log('prev', sel);
     })
   }
   
@@ -127,7 +137,17 @@ var NextButton = function(button_name, state){
     this.state = state;
 
     this.view.click(function(){
-      console.log('next', that.state.selections());
+      var sels = that.state.selections();
+      var sel = that.state.select();
+      
+      if(sel.index  == null)
+        sel.index = sels.length()-1;
+      else if(sel.index < sels.length() - 1)
+        sel.index+=1;
+
+      sel = that.state.select(sel.index);
+
+      console.log('next', sel);
     })
   }
 
@@ -291,6 +311,10 @@ $("document").ready(function() {
     var data = $("#output", $("#dev")).val();
     ctrl.from_json(JSON.parse(data));
   })
+
+  $("#output", $("#dev")).val(
+    '{"data":[{"start":38.379466,"end":38.51878,"length":0.13931399999999883,"id":12,"type":"break"},{"start":45.600575,"end":45.71667,"length":0.11609500000000139,"id":14,"type":"break"},{"start":34.896616,"end":35.03593,"length":0.13931399999999883,"id":10,"type":"break"},{"start":20.64015,"end":22.892393,"length":2.252243,"id":7,"type":"silence"},{"start":35.569967,"end":36.289756,"length":0.7197889999999987,"id":11,"type":"silence"},{"start":31.460204,"end":31.576299,"length":0.11609499999999784,"id":9,"type":"break"},{"start":26.073396,"end":28.093449,"length":2.0200530000000008,"id":8,"type":"silence"},{"start":42.23382,"end":42.373134,"length":0.13931399999999883,"id":13,"type":"break"},{"start":16.274978,"end":16.391073,"length":0.11609499999999784,"id":6,"type":"break"},{"start":14.208487,"end":14.324582,"length":0.11609499999999962,"id":5,"type":"break"},{"start":11.259674,"end":11.375769,"length":0.11609499999999962,"id":4,"type":"break"},{"start":9.425373,"end":9.541468,"length":0.11609499999999962,"id":3,"type":"break"},{"start":7.63751,"end":7.776824,"length":0.1393140000000006,"id":2,"type":"break"},{"start":5.338829,"end":5.431705,"length":0.0928760000000004,"id":1,"type":"break"},{"start":4.990544,"end":5.129858,"length":0.13931399999999972,"id":0,"type":"break"}],"url":"http://127.0.0.1:8080/media/vid1.mp4"}')
+  $("#load",$("#dev")).click();
   /*
   var play_seg = function(){
     if(data.idx < 0) data.idx = 0;
