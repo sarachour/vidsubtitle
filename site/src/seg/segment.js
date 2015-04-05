@@ -197,6 +197,9 @@ var VideoPane = function(video_name, state){
   this.pause = function(){
     this.video.pause();
   }
+  this.load = function(url){
+    this.video.load(url);
+  }
   this._init();
 }
 
@@ -263,6 +266,12 @@ var SegmentController = function(video_player, video_bar, break_button, next_but
     data.url = this.prog.video_player().get_model().get_url();
     return data;
   }
+  this.from_json = function(d){
+    var url = d.url;
+    var segdata = d.data;
+    this.prog.video_player().load(url);
+    this.prog.video_bar().model.from_json(segdata);
+  }
   this.init();
 }
 
@@ -276,6 +285,10 @@ $("document").ready(function() {
   $("#save",$("#dev")).click(function(){
     var str = JSON.stringify(ctrl.to_json());
     $("#output", $("#dev")).val(str);
+  })
+  $("#load", $("#dev")).click(function(){
+    var data = $("#output", $("#dev")).val();
+    ctrl.from_json(JSON.parse(data));
   })
   /*
   var play_seg = function(){

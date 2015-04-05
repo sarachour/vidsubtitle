@@ -12,6 +12,13 @@ var SortedArray = function(cmp){
    this.get_array = function(){
       return this.arr;
    }
+   this.filter = function(c){
+      var res = [];
+      this.for_each(function(e){
+         if(c(e)) res.push(e);
+      });
+      return res;
+   }
    this.clear = function(){
       this.arr = [];
    }
