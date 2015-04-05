@@ -238,12 +238,13 @@ var VideoBar  =function(bar_name, state){
   }
   this.hold = function(){
       this.start_time= this.state.video_player().get_model().time();
+      this.model.hold();
   }
   this.unhold = function(){
       var e = this.state.video_player().get_model().time();
       var s = this.start_time;
-      console.log(s,e);
       this.model.add_segment(s,e);
+      this.model.unhold();
   }
   this._init();
 }
