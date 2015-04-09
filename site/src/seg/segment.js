@@ -147,7 +147,7 @@ var SelectionPlayer = function(state){
   this.init();
 }
 
-var BackButton = function(button_name, state){
+var NavigateButton = function(button_name, state, is_fwd){
   this.init = function(){
     var that = this;
     this.view = $("#"+button_name);
@@ -156,47 +156,45 @@ var BackButton = function(button_name, state){
 
     this.view.click(function(){
       var sels = that.state.selections();
-      var sel = that.state.select();
+      var tmp = that.state.select();
 
+      var idx = 0;
+      if(tmp.index  == null)
+        idx = sels.length()-1;
+      else
+      {
+        var tmpd = tmp.data;
+        var act=sels.match(function(e){
+          return (e.id == tmpd.id)&&(e.sid == tmpd.sid)&&(e.eid == tmpd.eid);
+        })
+        console.log(tmpd,act,sels);
+        if(act.length() == 0) return;
+        idx = act.get(0).index;
+        if(is_fwd){
+          if(idx < sels.length()-1) idx+=1;
+        }
+        else{
+          if(idx > 0) idx-=1;
+        }
+      }
+      
+     
+      /*
       if(sel.index  == null)
         sel.index = sels.length()-1;
       else if(sel.index > 0)
         sel.index-=1;
       
-      sel = that.state.select(sel.index);
+      sel = 
+      */
+      that.state.select(idx);
       that.player.play();
-      console.log('prev', sel);
     })
   }
   
   this.init();
 }
 
-var NextButton = function(button_name, state){
-  this.init = function(){
-    var that = this;
-    this.view = $("#"+button_name);
-    this.state = state;
-    this.player = new SelectionPlayer(state);
-
-    this.view.click(function(){
-      var sels = that.state.selections();
-      var sel = that.state.select();
-      
-      if(sel.index  == null)
-        sel.index = sels.length()-1;
-      else if(sel.index < sels.length() - 1)
-        sel.index+=1;
-
-      sel = that.state.select(sel.index);
-      that.player.play();
-
-      console.log('next', sel);
-    })
-  }
-
-  this.init();
-}
 var ReplayButton = function(button_name, state){
   this.init = function(){
     var that = this;
@@ -350,8 +348,8 @@ var SegmentController = function(){
     this.buttons = {};
     this.buttons.mark = new MarkButton("break", this.prog);
     this.buttons.replay = new ReplayButton("replay", this.prog);
-    this.buttons.next = new NextButton("next", this.prog);
-    this.buttons.prev = new BackButton("prev", this.prog);
+    this.buttons.next = new NavigateButton("next", this.prog,true);
+    this.buttons.prev = new NavigateButton("prev", this.prog,false);
     this.buttons.remove = new DeleteButton("delete", this.prog);
     var amt = 0.25;
     this.buttons.stsl = new ShiftButton("st_sl", this.prog, true, true,amt);

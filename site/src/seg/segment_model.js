@@ -86,7 +86,7 @@ var SegmentModel  = function(){
       var last = 0;
       var last_id = 0;
       this.data.segments.for_each(function(e){
-         selections.push({start:last, end:e.start, type:'segment',sid:last_id,eid:e.id});
+         selections.push({start:last, end:e.start, type:'segment',sid:last_id,eid:e.id, subtype:"normal"});
          last = e.end;
          last_id = e.id;
 
@@ -95,7 +95,7 @@ var SegmentModel  = function(){
          }
 
       });
-      selections.push({start:last, end:this.data.duration,type:'segment', id:last_id});
+      selections.push({start:last, end:this.data.duration,type:'segment', sid:last_id, eid:-1, subtype:"continue"});
       return selections;
    }
    this.add_segment = function(start,end){
@@ -114,6 +114,12 @@ var SegmentModel  = function(){
          s.type = "silence"
       }
       this.data.segments.push(s);
+      var sel = this.data.selection;
+      //update 
+      if( sel != null && sel.subtype == "continue"){
+         if(sel.start < end) sel.start = end;
+         sel.sid = this.data.segments.length()-1;
+      }
 
       this._evt.trigger('update',{obj:this});
    }

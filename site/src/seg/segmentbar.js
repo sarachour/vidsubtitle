@@ -48,7 +48,8 @@ var SegmentBar = function(id, model){
          var s = o.start;
          var e = o.end;
          var type = o.type;
-         if(type == "break" || type == "silence-start" || type == "silence-end"){
+         var subtype = o.subtype;
+         if(type == "break"){
             ctx.beginPath();
             ctx.moveTo(x(s), y(0));
             ctx.lineTo(x(s), y(1));
@@ -56,7 +57,7 @@ var SegmentBar = function(id, model){
             ctx.lineWidth = 2;
             ctx.stroke();
          }
-         else if(type == "silence" || type == "segment" || type == "continue"){
+         else if(type == "silence" || type == "segment"){
             ctx.fillStyle = silcolor;
             ctx.fillRect(x(s), y(0), x(e-s),y(1));
          }
