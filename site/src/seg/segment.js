@@ -39,6 +39,12 @@ var ProgramState = function(vp_name, vb_name){
     }
     return this._select;
   }
+  this.shift = function(lamt,ramt){
+    this.video_bar().shift(lamt,ramt);
+  }
+  this.remove = function(){
+    this.video_bar().remove();
+  }
   this.selections = function(){
     return this.video_bar().model.get_selections();
   }
@@ -109,36 +115,30 @@ var MarkButton = function(button_name, state){
 var SelectionPlayer = function(state){
   this.init = function(){
     this.state = state;
+    this.sfx = new AudioFile('media/click.mp3');
+    this.timer = null;
+    this.side = "both";
+  }
+  this.set_side = function(s){
+    this.side = s;
   }
   this.play = function(){
     var sels = this.state.selections();
     var sel = this.state.select();
+    if(sel == null || sel.data == null) return;
     var type = sel.data.type;
     var idx = sel.index;
-    if(type == 'segment'){
+    if(type == 'segment' || type == "silence"){
       var s = sel.data.start;
       var e = sel.data.end;
-      console.log(s,e)
+      console.log(s,e);
+      if(this.side == "left"){
+        e = s+Math.min(e-s,2);
+      }
+      else if(this.side == "right"){
+        s = e-Math.min(e-s,2);
+      }
       this.state.video_player().segment(s,e);
-      this.state.video_player().play();
-    }
-    else {
-      var that = this;
-      var s = sels.get(idx-1).start;
-      var e = sels.get(idx+1).end;
-      var c = sel.data.start;
-      var eps = 3; // 3 seconds
-      if(Math.abs(c-s) > eps){
-        s = c-eps;
-      }
-      if(Math.abs(e-c) > eps){
-        e = c+eps;
-      }
-      this.state.video_player().segment(s,c, function(){
-        console.log("CLICK");
-        that.state.video_player().segment(c,e);
-        that.state.video_player().play();
-      });
       this.state.video_player().play();
     }
     console.log("playing selection");
@@ -197,38 +197,60 @@ var NextButton = function(button_name, state){
 
   this.init();
 }
+var ReplayButton = function(button_name, state){
+  this.init = function(){
+    var that = this;
+    this.view = $("#"+button_name);
+    this.state = state;
+    this.player = new SelectionPlayer(state);
+
+    this.view.click(function(){
+      that.player.play();
+
+      console.log('replay');
+    })
+  }
+
+  this.init();
+}
 var DeleteButton = function(button_name, state){
   this.init = function(){
     this.view = $("#"+button_name);
     this.state = state;
+    this.player = new SelectionPlayer(state);
+
     this.view.click(function(){
       console.log("delete");
+      that.state.remove();
+      that.player.play();
     })
   }
 
   this.init();
 }
-var DelayButton = function(button_name, state){
+var ShiftButton = function(button_name, state, is_start, is_left, amt){
   this.init =function(){
+    var that = this;
     this.view = $("#"+button_name);
     this.state = state;
+    this.player = new SelectionPlayer(state);
+    if(is_start) this.player.set_side('left');
+    else this.player.set_side('right');
+    this.amount = amt;
+
     this.view.click(function(){
-      console.log("delay");
+      var amt = that.amount;
+      if(is_left) amt *= -1;
+      if(is_start) that.state.shift(amt,0);
+      else  that.state.shift(0,amt);
+      that.player.play();
     })
   }
 
   this.init();
 }
-var PreemptButton = function(button_name, state){
-    this.init = function(){
-      this.view = $("#"+button_name);
-      this.state = state;
-      this.view.click = function(){
-        console.log("preempt");
-      }
-    }
-    this.init();
-}
+
+
 var VideoPane = function(video_name, state){
   this._init = function(){
     var that = this;
@@ -303,6 +325,12 @@ var VideoBar  =function(bar_name, state){
     var dur = this.state.video_player().get_model().duration();
     this.model.duration(dur);
   }
+  this.shift = function(l,r){
+    this.model.shift(l,r);
+  }
+  this.remove = function(){
+    this.model.remove();
+  }
   this.hold = function(){
       this.start_time= this.state.video_player().get_model().time();
       this.model.hold();
@@ -316,16 +344,20 @@ var VideoBar  =function(bar_name, state){
   this._init();
 }
 
-var SegmentController = function(video_player, video_bar, break_button, next_button, prev_button, delay_button, earlier_button, delete_button){
+var SegmentController = function(){
   this.init = function(){
-    this.prog = new ProgramState(video_player, video_bar);
+    this.prog = new ProgramState("player1", "controls");
     this.buttons = {};
-    this.buttons.mark = new MarkButton(break_button, this.prog);
-    this.buttons.next = new NextButton(next_button, this.prog);
-    this.buttons.prev = new BackButton(prev_button, this.prog);
-    this.buttons.remove = new DeleteButton(delete_button, this.prog);
-    this.buttons.delay = new DelayButton(delay_button, this.prog);
-    this.buttons.preempt = new PreemptButton(earlier_button, this.prog);
+    this.buttons.mark = new MarkButton("break", this.prog);
+    this.buttons.replay = new ReplayButton("replay", this.prog);
+    this.buttons.next = new NextButton("next", this.prog);
+    this.buttons.prev = new BackButton("prev", this.prog);
+    this.buttons.remove = new DeleteButton("delete", this.prog);
+    var amt = 0.25;
+    this.buttons.stsl = new ShiftButton("st_sl", this.prog, true, true,amt);
+    this.buttons.stsr = new ShiftButton("st_sr", this.prog, true, false,amt);
+    this.buttons.ensl = new ShiftButton("en_sl", this.prog, false, true,amt);
+    this.buttons.ensr = new ShiftButton("en_sr", this.prog, false,false,amt);
   }
   this.to_json = function(){
     var data = {};
@@ -349,7 +381,7 @@ var ctrl;
 //video_player, video_bar, break_button, next_button, prev_button, delay_button, earlier_button, delete_button
 $("document").ready(function() {
   var data = {};
-  ctrl = new SegmentController("player1","controls","break","next","prev","delay","preempt","delete");
+  ctrl = new SegmentController();
   $("#save",$("#dev")).click(function(){
     var str = JSON.stringify(ctrl.to_json());
     $("#output", $("#dev")).val(str);

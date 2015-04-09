@@ -40,6 +40,47 @@ var SegmentModel  = function(){
       this._evt.trigger('update',{obj:this});
       return this.data.selection;
    }
+   this.shift = function(left_amt,right_amt){
+      var retrv = function(id){
+         var matches = that.data.segments.match(function(e){return e.id==id});
+         return matches.get(0).elem;
+      }
+      var shift_elem = function(e, left_amt, right_amt, is_left){
+         if(e.type == "silence"){
+            if(is_left) e.end += left_amt;
+            else e.start += right_amt;
+         }
+         else if(e.type == "break") {
+            var vamt = right_amt;
+            if(is_left) vamt = left_amt;
+            e.start += vamt;
+            e.end += vamt;
+         }
+      }
+      var sel = this.data.selection;
+      var that = this;
+      if(sel == null) return;
+
+      console.log(sel,left_amt,right_amt);
+      if(sel.type == "silence"){
+         var e= retrv(sel.id);
+         shift_elem(e, left_amt,right_amt,true);
+         shift_elem(e, left_amt,right_amt,false);
+      }
+      else if(sel.type == "segment"){
+         var es = retrv(sel.sid);
+         var ee= retrv(sel.eid);
+         shift_elem(es, left_amt,right_amt,true);
+         shift_elem(ee, left_amt,right_amt,false);
+      }
+      sel.start += left_amt; 
+      sel.end += right_amt;
+      this._evt.trigger('update',{obj:this});
+      console.log(this.data.selection);
+   }
+   this.remove = function(amt){
+      console.log(this.data.selection);
+   }
    this.get_selections = function(){
       var selections = new SortedArray(function(a,b){return a.start - b.start});
       var last = 0;
@@ -50,12 +91,7 @@ var SegmentModel  = function(){
          last_id = e.id;
 
          if(e.type == "silence"){
-            selections.push({start:e.start, end:e.start, type:'silence-start',id:e.id});
             selections.push({start:e.start, end:e.end, type:'silence',id:e.id});
-            selections.push({start:e.end, end:e.end, type:'silence-end',id:e.id});
-         }
-         else if(e.type == "break"){
-            selections.push({start:e.start, end:e.end, type:'break', id:e.id});
          }
 
       });

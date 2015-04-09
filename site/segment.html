@@ -14,6 +14,7 @@
 <script src="src/core/observer.js"></script>
 <script src="src/core/youtube.js"></script>
 <script src="src/core/sorted_array.js"></script>
+<script src="src/core/audio.js"></script>
 
 <script src="src/seg/segment_model.js"></script>
 <script src="src/seg/segmentbar.js"></script>
@@ -44,6 +45,7 @@ INSTRUCTIONS
 <div id="content">
 <!-- video -->
 <div class="row black-bg">
+
    <div class="fill-parent-width offset-by-one-fourth one-half column" id="video-container">
    <!-- controls="none" --> 
       <video class="fill-parent" id="player1" preload="none" width="100%" height="400px" controls="none">
@@ -59,15 +61,15 @@ INSTRUCTIONS
 
 <!-- break button crarr : use this http://www.amp-what.com/unicode/search/arrow to find unicode characters-->
 <div id="buttons" class="row vspace">
-<div id="break" button-title="Start" hotkey-name="spacebar" hotkey-code="space" class="hotkey button four columns"></div>
-<div id="prev" button-title="Back" hotkey-name="left arrow" hotkey-code="left" class="hotkey button four columns"></div>
-<div id="next" button-title="Next" hotkey-name="right arrow" hotkey-code="right" class="hotkey button four columns"></div>
+<div id="break" button-title="Start" hotkey-name="spacebar" hotkey-code="space" class="hotkey button three columns"></div>
+<div id="prev" button-title="Back" hotkey-name="left arrow" hotkey-code="left" class="hotkey button three columns"></div>
+<div id="next" button-title="Next" hotkey-name="right arrow" hotkey-code="right" class="hotkey button three columns"></div>
+<div id="replay" button-title="Replay" hotkey-name="up arrow" hotkey-code="up/down" class="hotkey button three columns"></div>
 </div>
 
 <div id="buttons" class="row vspace">
-<div id="delete" button-title="Delete" hotkey-name="delete" hotkey-code="x" class="hotkey button four columns"></div>
-<div id="delay" button-title="Later" hotkey-name="up arrow" hotkey-code="up" class="hotkey button four columns"></div>
-<div id="preempt" button-title="Earlier" hotkey-name="down arrow" hotkey-code="down" class="hotkey button four columns"></div>
+<div id="en_sl" button-title="e<<" hotkey-name="c button" hotkey-code="c" class="hotkey button two columns"></div>
+<div id="en_sr" button-title="e>>" hotkey-name="v button" hotkey-code="v" class="hotkey button two columns"></div>
 </div>
 
 <div class="row vspace" id="dev">
