@@ -36,16 +36,38 @@ var SegmentModel  = function(){
       }
    }
    this.select = function(idx){
-      this.data.selection = this.get_selections().get(idx);
-      this._evt.trigger('update',{obj:this});
+      if(idx != undefined){
+         this.data.selection = this.get_selections().get(idx);
+         this._evt.trigger('update',{obj:this});
+      }
+      if(this.data.selection != null){
+         var sel = this.data.selection;
+         this.data.selection = this.get_by_enclosing((sel.end + sel.start)/2);
+      }
       return this.data.selection;
    }
-   this.shift = function(left_amt,right_amt){
-      var retrv = function(id){
-         var matches = that.data.segments.match(function(e){return e.id==id});
-         return matches.get(0).elem;
+   this.get_by_enclosing = function(time){
+      var enc = this.get_selections().match(function(e){
+         return (time <= e.end && time >= e.start);
+      });
+      if(enc.length() == 0) return null;
+      else {
+         var e = enc.get(0).elem;
+         e.index = enc.get(0).index;
+         return e;
       }
+   }
+   this.get_by_id = function(id){
+      var matches = this.data.segments.match(function(e){return e.id==id});
+      if(matches.length() == 0) return null;
+      var e = matches.get(0).elem;
+      e.index = matches.get(0).index
+      return e;
+   }
+   this.shift = function(left_amt,right_amt){
+      
       var shift_elem = function(e, left_amt, right_amt, is_left){
+         if(e == null) return;
          if(e.type == "silence"){
             if(is_left) e.end += left_amt;
             else e.start += right_amt;
@@ -61,15 +83,14 @@ var SegmentModel  = function(){
       var that = this;
       if(sel == null) return;
 
-      console.log(sel,left_amt,right_amt);
       if(sel.type == "silence"){
-         var e= retrv(sel.id);
+         var e= this.get_by_id(sel.id);
          shift_elem(e, left_amt,right_amt,true);
          shift_elem(e, left_amt,right_amt,false);
       }
       else if(sel.type == "segment"){
-         var es = retrv(sel.sid);
-         var ee= retrv(sel.eid);
+         var es = this.get_by_id(sel.sid);
+         var ee= this.get_by_id(sel.eid);
          shift_elem(es, left_amt,right_amt,true);
          shift_elem(ee, left_amt,right_amt,false);
       }
@@ -79,7 +100,22 @@ var SegmentModel  = function(){
       console.log(this.data.selection);
    }
    this.remove = function(amt){
-      console.log(this.data.selection);
+      var sel = this.data.selection;
+      var that = this;
+      if(sel == null) return;
+      if(sel.type == 'segment'){
+         if(sel.eid < 0) return;
+         var ee = this.get_by_id(sel.eid); //get break
+         this.data.segments.remove_at(ee.index);
+         console.log(ee);
+      }
+      else if(sel.type == "silence"){
+         var ee = this.get_by_id(sel.id); //get break
+         this.data.segments.remove_at(ee.index);
+      }
+      var enc = this.get_by_enclosing(sel.end);
+      this.data.selection = enc;
+      this._evt.trigger('update',{obj:this});
    }
    this.get_selections = function(){
       var selections = new SortedArray(function(a,b){return a.start - b.start});

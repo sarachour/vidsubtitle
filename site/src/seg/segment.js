@@ -41,9 +41,15 @@ var ProgramState = function(vp_name, vb_name){
   }
   this.shift = function(lamt,ramt){
     this.video_bar().shift(lamt,ramt);
+    this._select.data = this.video_bar().model.select();
+    this._select.index = this._select.data.index;
+    this.obs.trigger('select');
   }
   this.remove = function(){
     this.video_bar().remove();
+    this._select.data = this.video_bar().model.select();
+    this._select.index = this._select.data.index;
+    this.obs.trigger('select');
   }
   this.selections = function(){
     return this.video_bar().model.get_selections();
@@ -213,6 +219,7 @@ var ReplayButton = function(button_name, state){
 }
 var DeleteButton = function(button_name, state){
   this.init = function(){
+    var that = this;
     this.view = $("#"+button_name);
     this.state = state;
     this.player = new SelectionPlayer(state);
