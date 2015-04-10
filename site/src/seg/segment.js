@@ -24,24 +24,26 @@ var ProgramState = function(vp_name, vb_name){
     this.obs = new Observer();
     this._video_player = new VideoPane(vp_name,this);
     this._video_bar = new VideoBar(vb_name,this);
-    this._select = {index:null, data:null};
     this._history = new History();
     this._history.listen('undo', function(e){
+      console.log(e);
       if(e.type == "shift"){
         that.select(e.selection);
-        that.shift(-e.left, -e.right);
+        that.video_bar().shift(-e.left, -e.right);
       }
-      else if(e.type == "delete"){
-        console.log("unimplemented");
+      else if(e.type == "remove"){
+        that.video_bar().model.add_segment(e.start,e.end);
+        that.select(e.selection);
       }
     });
     this._history.listen('redo', function(e){
       if(e.type == "shift"){
         that.select(e.selection);
-        that.shift(e.left, e.right);
+        that.video_bar().shift(e.left, e.right);
       }
-      else if(e.type == "delete"){
-        console.log("unimplemented");
+      else if(e.type == "remove"){
+        that.select(e.selection);
+        that.video_bar().model.remove();
       }
     });
 
@@ -57,26 +59,37 @@ var ProgramState = function(vp_name, vb_name){
   this.redo = function(){
     this._history.redo();
   }
-  this.select = function(i){
-    if(isValue(i)){ //update selection
-      this._select.index = i;
-      this._select.data = this.video_bar().model.select(i);
+  this.select = function(time, direction){
+    if(isValue(time)){ //update selection
+      if(direction != undefined){
+        var filter = time;
+        this.video_bar().model.select_nearby(filter,direction);
+      }
+      else{
+        if(time < 0) this.video_bar().model.select_nearby(function(){return true;},true);
+        else this.video_bar().model.select(time);
+      }
       this.obs.trigger('select');
     }
-    return this._select;
+    return this.video_bar().model.select();;
   }
   this.shift = function(lamt,ramt){
     this.video_bar().shift(lamt,ramt);
-    this._select.data = this.video_bar().model.select();
-    this._select.index = this._select.data.index;
-    this._history.add({type:"shift",left:lamt,right:ramt,selection:this._select.index});
-    this.obs.trigger('select');
+    var d=this.select();
+    this._history.add({type:"shift",left:lamt,right:ramt,selection:(d.start+d.end)/2});
+    this.obs.trigger('shift');
   }
   this.remove = function(){
-    this.video_bar().remove();
-    this._select.data = this.video_bar().model.select();
-    this._select.index = this._select.data.index;
-    this.obs.trigger('select');
+    var e=this.video_bar().remove();
+
+    if(e.type == "silence"){
+      this._history.add({type:"remove",start:e.start,end:e.end,selection:(e.start+e.end)/2});
+    }
+    else{
+      this._history.add({type:"remove",start:e.end,end:e.end,selection:(e.start+e.end)/2});
+    }
+    this.select();
+    this.obs.trigger('remove');
   }
   this.selections = function(){
     return this.video_bar().model.get_selections();
@@ -156,14 +169,12 @@ var SelectionPlayer = function(state){
     this.side = s;
   }
   this.play = function(){
-    var sels = this.state.selections();
     var sel = this.state.select();
-    if(sel == null || sel.data == null) return;
-    var type = sel.data.type;
-    var idx = sel.index;
+    if(sel == null) return;
+    var type = sel.type;
     if(type == 'segment' || type == "silence"){
-      var s = sel.data.start;
-      var e = sel.data.end;
+      var s = sel.start;
+      var e = sel.end;
       if(this.side == "left"){
         e = s+Math.min(e-s,2);
       }
@@ -194,7 +205,7 @@ var HistoryButton = function(button_name, world, is_undo){
   }
   this.init();
 }
-var NavigateButton = function(button_name, state, is_fwd){
+var NavigateButton = function(button_name, state, is_rev){
   this.init = function(){
     var that = this;
     this.view = $("#"+button_name);
@@ -203,27 +214,9 @@ var NavigateButton = function(button_name, state, is_fwd){
 
     this.view.click(function(){
       var sels = that.state.selections();
-      var tmp = that.state.select();
-
-      var idx = 0;
-      if(tmp.index  == null)
-        idx = sels.length()-1;
-      else
-      {
-        var tmpd = tmp.data;
-        var act=sels.match(function(e){
-          return (e.id == tmpd.id)&&(e.sid == tmpd.sid)&&(e.eid == tmpd.eid);
-        })
-        if(act.length() == 0) return;
-        idx = act.get(0).index;
-        if(is_fwd){
-          if(idx < sels.length()-1) idx+=1;
-        }
-        else{
-          if(idx > 0) idx-=1;
-        }
-      }
-      that.state.select(idx);
+      var tmp = that.state.select(function(e){
+        return e.type == "silence" || e.type == "segment";
+      }, is_rev);
       that.player.play();
     })
   }
@@ -363,7 +356,7 @@ var VideoBar  =function(bar_name, state){
     this.model.shift(l,r);
   }
   this.remove = function(){
-    this.model.remove();
+    return this.model.remove();
   }
   this.hold = function(){
       this.start_time= this.state.video_player().get_model().time();
@@ -384,8 +377,8 @@ var SegmentController = function(){
     this.buttons = {};
     this.buttons.mark = new MarkButton("break", this.prog);
     this.buttons.replay = new ReplayButton("replay", this.prog);
-    this.buttons.next = new NavigateButton("next", this.prog,true);
-    this.buttons.prev = new NavigateButton("prev", this.prog,false);
+    this.buttons.next = new NavigateButton("next", this.prog,false);
+    this.buttons.prev = new NavigateButton("prev", this.prog,true);
     this.buttons.remove = new DeleteButton("delete", this.prog);
     var amt = 0.25;
     this.buttons.ensl = new ShiftButton("en_sl", this.prog, false, true,amt);

@@ -38,33 +38,55 @@ var SegmentModel  = function(){
          that.add_segment(seg.start, seg.end);
       }
    }
-   this.select = function(idx){
-      if(idx != undefined){
-         this.data.selection = this.get_selections().get(idx);
-         this._evt.trigger('update',{obj:this});
+   this.select_nearby = function(filter, reverse){
+      var s = this.select();
+      var found = false;
+      var matches = this.get_selections().match(function(e){
+         if(e.id == s.id && e.sid == s.sid && e.eid == s.eid){
+            found = true; 
+            return false;
+         }
+         if(((reverse && found == false) || (!reverse && found == true)) 
+            && filter(e)) return true;
+         return false;
+      });
+      if(matches.length() == 0) return;
+      if(reverse){
+         var e = matches.get(matches.length() - 1).elem;
       }
-      if(this.data.selection != null){
+      else{
+         var e = matches.get(0).elem;
+      }
+      this.select((e.end+e.start)/2);
+   }
+   this.select = function(time){
+      if(time != undefined){
+         this.data.selection = this.get_enclosing_selection(time);
+      }
+      else {
          var sel = this.data.selection;
-         this.data.selection = this.get_by_enclosing((sel.end + sel.start)/2);
+         if(sel != null)
+            this.data.selection = this.get_enclosing_selection((sel.end + sel.start)/2);
+         else
+            this.data.selection = this.get_enclosing_selection(0);
       }
+      this._evt.trigger('update',{obj:this});
       return this.data.selection;
    }
-   this.get_by_enclosing = function(time){
+   this.get_enclosing_selection = function(time){
       var enc = this.get_selections().match(function(e){
          return (time <= e.end && time >= e.start);
       });
       if(enc.length() == 0) return null;
       else {
          var e = enc.get(0).elem;
-         e.index = enc.get(0).index;
          return e;
       }
    }
-   this.get_by_id = function(id){
+   this._get_by_id = function(id){
       var matches = this.data.segments.match(function(e){return e.id==id});
       if(matches.length() == 0) return null;
       var e = matches.get(0).elem;
-      e.index = matches.get(0).index
       return e;
    }
    this.shift = function(left_amt,right_amt){
@@ -87,13 +109,13 @@ var SegmentModel  = function(){
       if(sel == null) return;
 
       if(sel.type == "silence"){
-         var e= this.get_by_id(sel.id);
+         var e= this._get_by_id(sel.id);
          shift_elem(e, left_amt,right_amt,true);
          shift_elem(e, left_amt,right_amt,false);
       }
       else if(sel.type == "segment"){
-         var es = this.get_by_id(sel.sid);
-         var ee= this.get_by_id(sel.eid);
+         var es = this._get_by_id(sel.sid);
+         var ee= this._get_by_id(sel.eid);
          shift_elem(es, left_amt,right_amt,true);
          shift_elem(ee, left_amt,right_amt,false);
       }
@@ -107,16 +129,18 @@ var SegmentModel  = function(){
       if(sel == null) return;
       if(sel.type == 'segment'){
          if(sel.eid < 0) return;
-         var ee = this.get_by_id(sel.eid); //get break
-         this.data.segments.remove_at(ee.index);
+         var e=this.data.segments.remove_all(function(e){return e.id == sel.eid});
       }
       else if(sel.type == "silence"){
-         var ee = this.get_by_id(sel.id); //get break
-         this.data.segments.remove_at(ee.index);
+         var e=this.data.segments.remove_all(function(e){return e.id == sel.id});
       }
-      var enc = this.get_by_enclosing(sel.end);
+      var enc = this.get_enclosing_selection(sel.end);
       this.data.selection = enc;
       this._evt.trigger('update',{obj:this});
+      if(e.length() > 0)
+         return e.get(0).elem;
+      else
+         return 0;
    }
    this.get_selections = function(){
       var selections = new SortedArray(function(a,b){return a.start - b.start});

@@ -63,7 +63,7 @@ var SortedArray = function(cmp){
       this.arr.splice(i,1);
    }
    this.match = function(e){
-      var idx_srt = function(a,b){return a.index < b.index;}
+      var idx_srt = function(a,b){return a.index - b.index;}
       var matches = new SortedArray(idx_srt);
       for(var i=0; i < this.arr.length; i++){
          if(e(this.arr[i],i)){
@@ -76,8 +76,8 @@ var SortedArray = function(cmp){
    this.remove_all = function(e){
       var matches = this.match(e); //sorted by index
       //remove backwards
-      for(var i=matches.length-1; i >= 0; i--){
-         var idx = matches[i].index;
+      for(var i=matches.length()-1; i >= 0; i--){
+         var idx = matches.get(i).index;
          this.remove_at(idx);
       }
       this._sort();
