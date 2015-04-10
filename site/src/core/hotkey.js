@@ -46,7 +46,5 @@ $(document).ready(function(){
       that.html("")
       that.append(title_div);
       that.append(hotkey_div);
-
-      console.log(name,"|"+code+"|");
    });
 })

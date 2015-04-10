@@ -25,11 +25,37 @@ var ProgramState = function(vp_name, vb_name){
     this._video_player = new VideoPane(vp_name,this);
     this._video_bar = new VideoBar(vb_name,this);
     this._select = {index:null, data:null};
+    this._history = new History();
+    this._history.listen('undo', function(e){
+      if(e.type == "shift"){
+        that.select(e.selection);
+        that.shift(-e.left, -e.right);
+      }
+      else if(e.type == "delete"){
+        console.log("unimplemented");
+      }
+    });
+    this._history.listen('redo', function(e){
+      if(e.type == "shift"){
+        that.select(e.selection);
+        that.shift(e.left, e.right);
+      }
+      else if(e.type == "delete"){
+        console.log("unimplemented");
+      }
+    });
+
     //if a marker changes the state
     this.obs.listen('state-change', function(e){
       that.state = e.state;
       that.obs.trigger(that.state);
     }, "state_change_listener")
+  }
+  this.undo = function(){
+    this._history.undo();
+  }
+  this.redo = function(){
+    this._history.redo();
   }
   this.select = function(i){
     if(isValue(i)){ //update selection
@@ -43,6 +69,7 @@ var ProgramState = function(vp_name, vb_name){
     this.video_bar().shift(lamt,ramt);
     this._select.data = this.video_bar().model.select();
     this._select.index = this._select.data.index;
+    this._history.add({type:"shift",left:lamt,right:ramt,selection:this._select.index});
     this.obs.trigger('select');
   }
   this.remove = function(){
@@ -137,7 +164,6 @@ var SelectionPlayer = function(state){
     if(type == 'segment' || type == "silence"){
       var s = sel.data.start;
       var e = sel.data.end;
-      console.log(s,e);
       if(this.side == "left"){
         e = s+Math.min(e-s,2);
       }
@@ -147,12 +173,27 @@ var SelectionPlayer = function(state){
       this.state.video_player().segment(s,e);
       this.state.video_player().play();
     }
-    console.log("playing selection");
 
   }
   this.init();
 }
 
+var HistoryButton = function(button_name, world, is_undo){
+  this.init = function(){
+    this.view = $("#"+button_name);
+    this.state = world;
+    var that = this;
+    this.view.click(function(){
+      if(is_undo){
+        that.state.undo();
+      }
+      else{
+        that.state.redo();
+      }
+    })
+  }
+  this.init();
+}
 var NavigateButton = function(button_name, state, is_fwd){
   this.init = function(){
     var that = this;
@@ -173,7 +214,6 @@ var NavigateButton = function(button_name, state, is_fwd){
         var act=sels.match(function(e){
           return (e.id == tmpd.id)&&(e.sid == tmpd.sid)&&(e.eid == tmpd.eid);
         })
-        console.log(tmpd,act,sels);
         if(act.length() == 0) return;
         idx = act.get(0).index;
         if(is_fwd){
@@ -183,16 +223,6 @@ var NavigateButton = function(button_name, state, is_fwd){
           if(idx > 0) idx-=1;
         }
       }
-      
-     
-      /*
-      if(sel.index  == null)
-        sel.index = sels.length()-1;
-      else if(sel.index > 0)
-        sel.index-=1;
-      
-      sel = 
-      */
       that.state.select(idx);
       that.player.play();
     })
@@ -225,7 +255,6 @@ var DeleteButton = function(button_name, state){
     this.player = new SelectionPlayer(state);
 
     this.view.click(function(){
-      console.log("delete");
       that.state.remove();
       that.player.play();
     })
@@ -359,10 +388,10 @@ var SegmentController = function(){
     this.buttons.prev = new NavigateButton("prev", this.prog,false);
     this.buttons.remove = new DeleteButton("delete", this.prog);
     var amt = 0.25;
-    this.buttons.stsl = new ShiftButton("st_sl", this.prog, true, true,amt);
-    this.buttons.stsr = new ShiftButton("st_sr", this.prog, true, false,amt);
     this.buttons.ensl = new ShiftButton("en_sl", this.prog, false, true,amt);
     this.buttons.ensr = new ShiftButton("en_sr", this.prog, false,false,amt);
+    this.buttons.undo = new HistoryButton("undo",this.prog, true);
+    this.buttons.redo = new HistoryButton("redo",this.prog, false);
   }
   this.to_json = function(){
     var data = {};

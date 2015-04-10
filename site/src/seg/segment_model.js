@@ -1,4 +1,7 @@
+/*
+selections are identified by (location, not id)
 
+*/
 var SegmentModel  = function(){
    this.init = function(){
       var seg_cmp = function(a,b){
@@ -97,7 +100,6 @@ var SegmentModel  = function(){
       sel.start += left_amt; 
       sel.end += right_amt;
       this._evt.trigger('update',{obj:this});
-      console.log(this.data.selection);
    }
    this.remove = function(amt){
       var sel = this.data.selection;
@@ -107,7 +109,6 @@ var SegmentModel  = function(){
          if(sel.eid < 0) return;
          var ee = this.get_by_id(sel.eid); //get break
          this.data.segments.remove_at(ee.index);
-         console.log(ee);
       }
       else if(sel.type == "silence"){
          var ee = this.get_by_id(sel.id); //get break

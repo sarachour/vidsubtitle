@@ -12,6 +12,8 @@
 <script src="src/core/util.js"></script>
 <script src="src/core/hotkey.js"></script>
 <script src="src/core/observer.js"></script>
+<script src="src/core/stack.js"></script>
+<script src="src/core/undo.js"></script>
 <script src="src/core/youtube.js"></script>
 <script src="src/core/sorted_array.js"></script>
 <script src="src/core/audio.js"></script>
@@ -68,9 +70,11 @@ INSTRUCTIONS
 </div>
 
 <div id="buttons" class="row vspace">
-<div id="en_sl" button-title="e<<" hotkey-name="c button" hotkey-code="c" class="hotkey button two columns"></div>
-<div id="en_sr" button-title="e>>" hotkey-name="v button" hotkey-code="v" class="hotkey button two columns"></div>
+<div id="en_sl" button-title="earlier" hotkey-name="c button" hotkey-code="c" class="hotkey button two columns"></div>
+<div id="en_sr" button-title="later" hotkey-name="v button" hotkey-code="v" class="hotkey button two columns"></div>
 <div id="delete" button-title="del" hotkey-name="shift+spacebar" hotkey-code="shift+space" class="hotkey button two columns"></div>
+<div id="undo" button-title="undo" hotkey-name="ctrl+z" hotkey-code="ctrl+z" class="hotkey button two columns"></div>
+<div id="redo" button-title="redo" hotkey-name="ctrl+y" hotkey-code="ctrl+y" class="hotkey button two columns"></div>
 </div>
 
 <div class="row vspace" id="dev">
