@@ -10,8 +10,8 @@ function __sn_deactivate (edit_text) {
     html += '</div>';
     $('#' + this.id).html(html);
 
-    $('#' + this.id).removeClass("active_box");
-    $('#' + this.id).addClass("inactive_box");
+    $('#' + this.id).removeClass('active_box');
+    $('#' + this.id).addClass('inactive_box');
 
     this.active = false;
 }
@@ -27,8 +27,10 @@ function __sn_activate () {
     html += '</div>';
     $('#' + this.id).html(html);
 
-    $('#' + this.id).removeClass("inactive_box");
-    $('#' + this.id).addClass("active_box");
+    $('#' + this.id).removeClass('inactive_box');
+    $('#' + this.id).addClass('active_box');
+
+    $('#active_text').focus();
 
     this.active = true;
 }
