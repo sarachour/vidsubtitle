@@ -25,6 +25,8 @@ var ProgramState = function(vp_name, vb_name){
     this._video_player = new VideoPane(vp_name,this);
     this._video_bar = new VideoBar(vb_name,this);
     this._history = new History();
+    this._player = new SelectionPlayer(this);
+
     this._history.listen('undo', function(e){
       console.log(e);
       if(e.type == "shift"){
@@ -46,7 +48,9 @@ var ProgramState = function(vp_name, vb_name){
         that.video_bar().model.remove();
       }
     });
-
+    this.video_bar().model.listen('select', function(e){
+      that._player.play(e.time);
+    })
     //if a marker changes the state
     this.obs.listen('state-change', function(e){
       that.state = e.state;
@@ -81,7 +85,7 @@ var ProgramState = function(vp_name, vb_name){
   }
   this.remove = function(){
     var e=this.video_bar().remove();
-
+    if(e == null) return;
     if(e.type == "silence"){
       this._history.add({type:"remove",start:e.start,end:e.end,selection:(e.start+e.end)/2});
     }
@@ -168,13 +172,14 @@ var SelectionPlayer = function(state){
   this.set_side = function(s){
     this.side = s;
   }
-  this.play = function(){
+  this.play = function(time){
     var sel = this.state.select();
     if(sel == null) return;
     var type = sel.type;
     if(type == 'segment' || type == "silence"){
-      var s = sel.start;
+      var s = time;
       var e = sel.end;
+      if(time == undefined) s = sel.start;
       if(this.side == "left"){
         e = s+Math.min(e-s,2);
       }
@@ -210,14 +215,12 @@ var NavigateButton = function(button_name, state, is_rev){
     var that = this;
     this.view = $("#"+button_name);
     this.state = state;
-    this.player = new SelectionPlayer(state);
 
     this.view.click(function(){
       var sels = that.state.selections();
       var tmp = that.state.select(function(e){
         return e.type == "silence" || e.type == "segment";
       }, is_rev);
-      that.player.play();
     })
   }
   
@@ -385,6 +388,10 @@ var SegmentController = function(){
     this.buttons.ensr = new ShiftButton("en_sr", this.prog, false,false,amt);
     this.buttons.undo = new HistoryButton("undo",this.prog, true);
     this.buttons.redo = new HistoryButton("redo",this.prog, false);
+
+    $("#instructions").html("Break up the following");
+
+    this.status = new Status("progress","status",1);
   }
   this.to_json = function(){
     var data = {};

@@ -14,6 +14,7 @@
 <script src="src/core/observer.js"></script>
 <script src="src/core/stack.js"></script>
 <script src="src/core/undo.js"></script>
+<script src="src/core/status.js"></script>
 <script src="src/core/youtube.js"></script>
 <script src="src/core/sorted_array.js"></script>
 <script src="src/core/audio.js"></script>
@@ -35,11 +36,11 @@
 
 <div class="row" id="header">
    <div class="column one-fourth text-label">DEMO HERE</div>
-   <div class="column one-half text-label">PROGRESS HERE</div>
-   <div class="column one-fourth text-label">STATS HERE</div>
+   <div id="progress" class="column one-half text-label">PROGRESS HERE</div>
+   <div id="status" class="column one-fourth text-label">STATS HERE</div>
 </div>
 <div class="row">
-<h5 class="text-label">
+<h5 id="instructions" class="text-label">
 INSTRUCTIONS
 <h5>
 </div>
@@ -72,7 +73,7 @@ INSTRUCTIONS
 <div id="buttons" class="row vspace">
 <div id="en_sl" button-title="earlier" hotkey-name="x button" hotkey-code="x" class="hotkey button two columns"></div>
 <div id="en_sr" button-title="later" hotkey-name="c button" hotkey-code="c" class="hotkey button two columns"></div>
-<div id="delete" button-title="del" hotkey-name="z button" hotkey-code="z" class="hotkey button two columns"></div>
+<div id="delete" button-title="delete" hotkey-name="z button" hotkey-code="z" class="hotkey button two columns"></div>
 <div id="undo" button-title="undo" hotkey-name="ctrl+z" hotkey-code="ctrl+z" class="hotkey button two columns"></div>
 <div id="redo" button-title="redo" hotkey-name="ctrl+y" hotkey-code="ctrl+y" class="hotkey button two columns"></div>
 </div>

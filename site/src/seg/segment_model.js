@@ -57,11 +57,15 @@ var SegmentModel  = function(){
       else{
          var e = matches.get(0).elem;
       }
-      this.select((e.end+e.start)/2);
+      this.select((e.end+e.start)/2,false);
    }
-   this.select = function(time){
+   this.select = function(time,start_at){
       if(time != undefined){
          this.data.selection = this.get_enclosing_selection(time);
+         if(start_at == undefined || start_at == true)
+            this._evt.trigger('select',{obj:this, time:time});
+         else
+            this._evt.trigger('select',{obj:this});
       }
       else {
          var sel = this.data.selection;
@@ -89,13 +93,21 @@ var SegmentModel  = function(){
       var e = matches.get(0).elem;
       return e;
    }
-   this.shift = function(left_amt,right_amt){
-      
+   this.shift = function(id, left_amt,right_amt){
+      if(right_amt == undefined){
+         right_amt = left_amt;
+         left_amt = id;
+         id = null;
+         var sel = this.data.selection;
+      }
+      else{
+         var sel = this._get_by_id(id);
+      }
       var shift_elem = function(e, left_amt, right_amt, is_left){
          if(e == null) return;
          if(e.type == "silence"){
-            if(is_left) e.end += left_amt;
-            else e.start += right_amt;
+            if(is_left) e.start += left_amt;
+            else e.end += right_amt;
          }
          else if(e.type == "break") {
             var vamt = right_amt;
@@ -104,7 +116,6 @@ var SegmentModel  = function(){
             e.end += vamt;
          }
       }
-      var sel = this.data.selection;
       var that = this;
       if(sel == null) return;
 
@@ -119,12 +130,24 @@ var SegmentModel  = function(){
          shift_elem(es, left_amt,right_amt,true);
          shift_elem(ee, left_amt,right_amt,false);
       }
-      sel.start += left_amt; 
-      sel.end += right_amt;
+      else if(sel.type == "break"){
+         var e = this._get_by_id(sel.id);
+         shift_elem(e, left_amt,right_amt,true);
+      }
+      if(id == null){
+         sel.start += left_amt; 
+         sel.end += right_amt;
+      }
       this._evt.trigger('update',{obj:this});
    }
-   this.remove = function(amt){
-      var sel = this.data.selection;
+   this.remove = function(id,amt){
+      if(amt == undefined){
+         amt = id;
+         var sel = this.data.selection;
+      }
+      else{
+         var sel = this._get_by_id(id);
+      }
       var that = this;
       if(sel == null) return;
       if(sel.type == 'segment'){
@@ -147,14 +170,16 @@ var SegmentModel  = function(){
       var last = 0;
       var last_id = 0;
       this.data.segments.for_each(function(e){
-         selections.push({start:last, end:e.start, type:'segment',sid:last_id,eid:e.id, subtype:"normal"});
+         var tmp = last;
          last = e.end;
          last_id = e.id;
-
          if(e.type == "silence"){
+            selections.push({start:tmp, end:e.start, type:'segment',sid:last_id,eid:e.id, subtype:"normal"});
             selections.push({start:e.start, end:e.end, type:'silence',id:e.id});
          }
-
+         else{
+            selections.push({start:tmp, end:e.end, type:'segment',sid:last_id,eid:e.id, subtype:"normal"});
+         }
       });
       selections.push({start:last, end:this.data.duration,type:'segment', sid:last_id, eid:-1, subtype:"continue"});
       return selections;
@@ -181,7 +206,7 @@ var SegmentModel  = function(){
          if(sel.start < end) sel.start = end;
          sel.sid = this.data.segments.length()-1;
       }
-
+      this.select(this.data.time+this.data.eps);
       this._evt.trigger('update',{obj:this});
    }
    this.time = function(t){
