@@ -10,6 +10,18 @@ var test_segments = [{start: 2, end: 17, text: "[fone ringing]"},
 
 var edit_segments = test_segments;
 
+// SegmentNode contains info about itself in relation to other nodes, and
+// has info about the edit.
+function SegmentNode (segment, prev) {
+    this.start = segment.start;
+    this.end = segment.end;
+    this.preedit = segment.text;
+    this.postedit = segment.text;
+    this.prev = prev;
+    this.next = null;
+    if (prev) { prev.next = this; }
+}
+
 var video;
 $("document").ready(function() {
     video = new YoutubeVideo("player1");
@@ -28,13 +40,22 @@ $("document").ready(function() {
     }, "load-video");
 
     // Add each segment to the container region.
-    edit_segments.forEach(function (raw_segment) {
+    var prev = null;
+    for (var i = 0; i < edit_segments.length; ++i) {
+        var seg = new SegmentNode(edit_segments[i], prev);
+
+        // Make the box for this segment.
         var segment_box = '<div '
             + 'class="segment_box" '
             + '>';
-        segment_box += raw_segment.text;
-        segment_box += '</div>';
+        segment_box += '<div class="preedit_box">'
+        segment_box += seg.preedit;
+        segment_box += '</div><div class="postedit_box">'
+        segment_box += seg.postedit;
+        segment_box += '</div></div>';
 
         $('#edit_content').append(segment_box);
-    });
+
+        prev = seg;
+    }
 });
