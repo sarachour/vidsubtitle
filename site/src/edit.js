@@ -8,19 +8,7 @@ var test_segments = [{start: 2, end: 17, text: "[fone ringing]"},
                      {start: 40, end: 43, text: "Listen to the sounds of the machine."}
                     ];
 
-var edit_segments = test_segments;
-
-// SegmentNode contains info about itself in relation to other nodes, and
-// has info about the edit.
-function SegmentNode (segment, prev) {
-    this.start = segment.start;
-    this.end = segment.end;
-    this.preedit = segment.text;
-    this.postedit = segment.text;
-    this.prev = prev;
-    this.next = null;
-    if (prev) { prev.next = this; }
-}
+var input_segments = test_segments;
 
 var video;
 $("document").ready(function() {
@@ -41,21 +29,20 @@ $("document").ready(function() {
 
     // Add each segment to the container region.
     var prev = null;
-    for (var i = 0; i < edit_segments.length; ++i) {
-        var seg = new SegmentNode(edit_segments[i], prev);
+    for (var i = 0; i < input_segments.length; ++i) {
+        var seg = new SegmentNode(i, input_segments[i], prev);
 
         // Make the box for this segment.
         var segment_box = '<div '
+            + 'id="segment_id_' + i + '" '
             + 'class="segment_box" '
             + '>';
-        segment_box += '<div class="preedit_box">'
-        segment_box += seg.preedit;
-        segment_box += '</div><div class="postedit_box">'
-        segment_box += seg.postedit;
-        segment_box += '</div></div>';
+        segment_box += '</div>';
 
         $('#edit_content').append(segment_box);
 
+        // Start all boxes as inactive.
+        seg.deactivate();
         prev = seg;
     }
 });
