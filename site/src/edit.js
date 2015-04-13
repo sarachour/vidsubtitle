@@ -9,6 +9,21 @@ var test_segments = [{start: 2, end: 17, text: "[fone ringing]"},
                     ];
 
 var input_segments = test_segments;
+var active_segment = null;
+
+function click_edit_segment (seg) {
+    return function (event) {
+        if (seg.active) {
+            // Already active -- do nothing.
+            return;
+        }
+        if (active_segment != null) {
+            active_segment.deactivate();
+        }
+        active_segment = seg;
+        seg.activate();
+    }
+}
 
 var video;
 $("document").ready(function() {
@@ -40,9 +55,12 @@ $("document").ready(function() {
         segment_box += '</div>';
 
         $('#edit_content').append(segment_box);
-
         // Start all boxes as inactive.
         seg.deactivate();
+
+        // Set a function on this box that associates it with its node.
+        $('#segment_id_' + i).click(click_edit_segment(seg));
+
         prev = seg;
     }
 });

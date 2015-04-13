@@ -1,3 +1,5 @@
+
+// Generate an "inactive" version of the box.
 function __sn_deactivate () {
     var html = '<div class="preedit_box">'
     html += this.preedit;
@@ -7,6 +9,20 @@ function __sn_deactivate () {
     $('#' + this.id).html(html);
 
     this.active = false;
+}
+
+// Generate an "active" version of the box that can take edits.
+function __sn_activate () {
+    var html = '<div class="preedit_box">'
+    html += this.preedit;
+    html += '</div><div class="postedit_box">'
+    html += '<textarea>'
+    html += this.postedit;
+    html += '</textarea>';
+    html += '</div>';
+    $('#' + this.id).html(html);
+
+    this.active = true;
 }
 
 // SegmentNode contains info about itself in relation to other nodes, and
@@ -26,4 +42,5 @@ function SegmentNode (id, segment, prev) {
 
     // Methods.
     this.deactivate = __sn_deactivate;
+    this.activate = __sn_activate;
 }
