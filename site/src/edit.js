@@ -18,7 +18,7 @@ function click_edit_segment (seg) {
             return;
         }
         if (active_segment != null) {
-            active_segment.deactivate();
+            active_segment.deactivate($('#active_text').val());
         }
         active_segment = seg;
         seg.activate();
@@ -56,7 +56,7 @@ $("document").ready(function() {
 
         $('#edit_content').append(segment_box);
         // Start all boxes as inactive.
-        seg.deactivate();
+        seg.deactivate(null);
 
         // Set a function on this box that associates it with its node.
         $('#segment_id_' + i).click(click_edit_segment(seg));

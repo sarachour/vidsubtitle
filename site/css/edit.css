@@ -16,3 +16,7 @@
     margin: 10px;
     padding: 0px;
 }
+
+textarea {
+    width: 100%;
+}

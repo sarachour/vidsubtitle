@@ -1,6 +1,8 @@
 
 // Generate an "inactive" version of the box.
-function __sn_deactivate () {
+function __sn_deactivate (edit_text) {
+    if (edit_text) this.postedit = edit_text;
+
     var html = '<div class="preedit_box">'
     html += this.preedit;
     html += '</div><div class="postedit_box">'
@@ -16,7 +18,7 @@ function __sn_activate () {
     var html = '<div class="preedit_box">'
     html += this.preedit;
     html += '</div><div class="postedit_box">'
-    html += '<textarea>'
+    html += '<textarea id="active_text">'
     html += this.postedit;
     html += '</textarea>';
     html += '</div>';
