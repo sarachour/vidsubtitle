@@ -1,3 +1,15 @@
+
+// Sample segments.
+var test_segments = [{start: 2, end: 17, text: "[fone ringing]"},
+                     {start: 18, end: 20, text: "Yo not paying attension"},
+                     {start: 20, end: 23, text: "I just want to anser the fone!"},
+                     {start: 23, end: 31, text: "Emo, look.  I mean listen.  Yo hav to learn too listen."},
+                     {start: 31, end: 38, text: "Thi sis not some game.  You i mean we could die out her.  Listen"},
+                     {start: 40, end: 43, text: "Listen to the sounds of the machine."}
+                    ];
+
+var edit_segments = test_segments;
+
 var video;
 $("document").ready(function() {
     video = new YoutubeVideo("player1");
@@ -14,4 +26,15 @@ $("document").ready(function() {
       },'autoplay');
       */
     }, "load-video");
+
+    // Add each segment to the container region.
+    edit_segments.forEach(function (raw_segment) {
+        var segment_box = '<div '
+            + 'class="segment_box" '
+            + '>';
+        segment_box += raw_segment.text;
+        segment_box += '</div>';
+
+        $('#edit_content').append(segment_box);
+    });
 });

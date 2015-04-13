@@ -6,15 +6,16 @@
 <script src="lib/jquery-2.1.3.js"></script>
 <script src="lib/jquery-ui-1.11.3.js"></script>
 <script src="lib/mejs/mediaelementplayer.min.js"></script>
-<script src="src/util.js"></script>
-<script src="src/observer.js"></script>
-<script src="src/youtube.js"></script>
+<script src="src/core/util.js"></script>
+<script src="src/core/observer.js"></script>
+<script src="src/core/youtube.js"></script>
 <script src="src/edit.js"></script>
 
 <link rel="stylesheet" href="css/jquery-ui-1.11.3.css" />
 <link rel="stylesheet" href="css/skeleton.css" />
 <link rel="stylesheet" href="lib/mejs/mediaelementplayer.min.css" />
 <link rel="stylesheet" href="css/base.css" />
+<link rel="stylesheet" href="css/edit.css" />
 
 </head>
 
@@ -50,8 +51,7 @@ INSTRUCTIONS
       <button id="next" class="button-primary fill-parent-width">Next</button>
       <button id="prev" class="button-primary fill-parent-width">Previous</button>
    </div>
-   <div class="column two-thirds text-label">
-   HISTORY HERE
+   <div id="edit_content" class="column two-thirds text-label">
    </div> 
 </div>
 
