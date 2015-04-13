@@ -1,9 +1,18 @@
 .segment_box {
-    border: 1px solid #000;
     text-align: left;
     width: 100%;
     margin: 0px 0px 10px 0px;
     padding: 0px;
+}
+
+.active_box {
+    border: 1px solid #000;
+    background-color: #FFFFCC;
+}
+
+.inactive_box {
+    border: 1px dotted #444;
+    background-color: #FFFFFF;
 }
 
 .preedit_box {
@@ -20,3 +29,4 @@
 textarea {
     width: 100%;
 }
+

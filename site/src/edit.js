@@ -50,7 +50,7 @@ $("document").ready(function() {
         // Make the box for this segment.
         var segment_box = '<div '
             + 'id="segment_id_' + i + '" '
-            + 'class="segment_box" '
+            + 'class="segment_box active_box" '
             + '>';
         segment_box += '</div>';
 
