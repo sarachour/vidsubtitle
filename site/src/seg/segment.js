@@ -22,12 +22,11 @@ var ProgramState = function(vp_name, vb_name, hnt_name){
     var that = this;
     this.state = "";
     this.obs = new Observer();
-    this._hinter = $("#"+hnt_name);
     this._video_player = new VideoPane(vp_name,this);
     this._video_bar = new VideoBar(vb_name,this);
     this._history = new History();
     this._player = new SelectionPlayer(this);
-
+    this._hint = new HintManager(hnt_name, this);
     this._history.listen('undo', function(e){
       console.log(e);
       if(e.type == "shift"){
@@ -60,8 +59,7 @@ var ProgramState = function(vp_name, vb_name, hnt_name){
   }
   this.set_hint = function(title,desc){
     console.log("set hint",title, desc)
-    $("#title",this._hinter).html(title);
-    $("#description",this._hinter).html(desc);
+    this._hint.set(title,desc);
   }
   this.undo = function(){
     this._history.undo();
@@ -110,6 +108,9 @@ var ProgramState = function(vp_name, vb_name, hnt_name){
   this.get_state = function(){
     return this.state;
   }
+  this.get_hint_mgr = function(){
+    return this._hint;
+  }
   this.video_player = function(){
     return this._video_player;
   }
@@ -119,6 +120,25 @@ var ProgramState = function(vp_name, vb_name, hnt_name){
   this.init();
 }
 
+var HintManager = function(id){
+  this.init = function(){
+    this._hinter = $("#"+id);
+  }
+  this.set = function(title,description){
+    $("#title",this._hinter).html(title);
+    $("#description",this._hinter).html(description);
+  }
+  this.image = function(name){
+    return "<img src=res/"+name+".png class='hint icon'></img>";
+  }
+  this.button = function(b){
+    return '<div class="hint but">'+b+"</div>";
+  }
+  this.key = function(k){
+    return '<div class="hint key">' + k + "</div>"
+  }
+  this.init();
+}
 
 var SelectionPlayer = function(state){
   this.init = function(){
@@ -179,9 +199,10 @@ var MarkButton = function(button_name, state){
   }
   this.init = function(){
     var that = this;
+    this.hmgr = this.state.get_hint_mgr();
     this.view.data("button-title","Start");
-    this.title = "Start Button";
-    this.description = "Click 'Start' or hit <Spacebar> to start breaking up the video into chunks.";
+    this.title = "Start Video Segmentation";
+    this.description = "Press "+this.hmgr.button("Start")+" or "+this.hmgr.key("spacebar")+" to start breaking up the video into chunks.";
     that.view.unbind('click');
     this.view.click(function(){
       that.start();
@@ -191,7 +212,8 @@ var MarkButton = function(button_name, state){
     var that = this;
     this.view.data("button-title","Break").trigger('changeData');
     this.title = "Break Button";
-    this.description = "Tap 'Break' or hit <Spacebar> to mark a pause in the video. Hold while the speaker is silent to mark a silence."
+    this.description = "Press "+this.hmgr.button("Break")+"or"+this.hmgr.key("spacebar")+
+          "to mark a pause in the video. Hold while the speaker is silent to mark a silence."
     this.state.video_player().play();
     this.is_down = false;
     this.view.unbind('click');
@@ -210,14 +232,17 @@ var HistoryButton = function(button_name, world, is_undo){
   this.init = function(){
     this.view = $("#"+button_name);
     this.state = world;
+    this.hmgr = this.state.get_hint_mgr();
     var that = this;
     if(is_undo){
       this.title = "Undo Action"
-      this.description = "Tap the 'Undo' button or Ctrl+Z to undo the last modification or deletion to a silence or break."
+      this.description = "Tap "+this.hmgr.image('undo-white')+" or "+
+      this.hmgr.key("Ctrl")+"+"+this.hmgr.key("Z")+" to undo the last modification or deletion to a silence or break."
     }
     else{
       this.title = "Redo Action"
-      this.description = "Tap the 'Redo' button or Ctrl+Y to redo the last modification or deletion to a silence or break."
+      this.description =  "Tap "+this.hmgr.image('redo-white')+" or "+
+      this.hmgr.key("Ctrl")+"+"+this.hmgr.key("Y")+" to redo the last modification or deletion to a silence or break."
     }
     this.view.click(function(){
       if(is_undo){
@@ -237,13 +262,14 @@ var NavigateButton = function(button_name, state, is_rev){
     var that = this;
     this.view = $("#"+button_name);
     this.state = state;
+    this.hmgr = this.state.get_hint_mgr();
     if(is_rev){
       this.title = "Previous Segment"
-      this.description = "Tap the Back icon or press the Left key to move to the previous segment."
+      this.description = "Tap "+this.hmgr.image('prev-white')+" or "+this.hmgr.key('&#9654;')+" to move to the previous segment."
     }
     else{
-      this.title = "Redo Action"
-      this.description = "Tap the Next icon or press the Right key to move to the next segment."
+      this.title = "Next Segment"
+      this.description = "Tap "+this.hmgr.image('next-white')+" or "+this.hmgr.key('&#9664;')+" to move to the next segment."
     }
     this.view.click(function(){
       var sels = that.state.selections();
@@ -263,9 +289,11 @@ var ReplayButton = function(button_name, state){
     var that = this;
     this.view = $("#"+button_name);
     this.state = state;
+    this.hmgr = this.state.get_hint_mgr();
     this.player = new SelectionPlayer(state);
     this.title = "Replay Segment";
-    this.description = "Tap the replay icon or press the Up or Down keys to replay the selected segment."
+    this.description = "Tap "+this.hmgr.image('replay-white')+" or "
+      +this.hmgr.key("&#9650;")+"or "+this.hmgr.key("&#9660;")+" to replay the selected segment."
     this.view.click(function(){
       that.player.play();
     })
@@ -280,10 +308,12 @@ var DeleteButton = function(button_name, state){
     var that = this;
     this.view = $("#"+button_name);
     this.state = state;
+    this.hmgr = this.state.get_hint_mgr();
     this.player = new SelectionPlayer(state);
 
     this.title = "Delete Segment";
-    this.description = "Tap the Delete button or press Z to replay the selected segment."
+    this.description = "Tap "+this.hmgr.image('delete-white')+" or press "+
+      this.hmgr.key("z")+" to delete the selected silence or ending break on the selected segment.";
     this.view.click(function(){
       that.state.remove();
       that.player.play();
@@ -299,17 +329,18 @@ var ShiftButton = function(button_name, state, is_start, is_left, amt){
     var that = this;
     this.view = $("#"+button_name);
     this.state = state;
+    this.hmgr = this.state.get_hint_mgr();
     this.player = new SelectionPlayer(state);
     if(is_start) this.player.set_side('left');
     else this.player.set_side('right');
     this.amount = amt;
     if(!is_left){  
       this.title = "Make Segment Longer";
-      this.description = "Tap the 'Later' button or press the C key to extend the end of the segment or silence."
+      this.description = "Tap "+this.hmgr.image('rshift-white')+" or "+this.hmgr.key('c')+" to extend the end of the segment or silence.";
     }
     else{
       this.title = "Make Segment Shorter";
-      this.description = "Tap the 'Earlier' button or press the X key to reduce the end of the segment or silence."
+      this.description = "Tap "+this.hmgr.image('lshift-white')+" or "+this.hmgr.key('x')+" to shorten the end of the segment or silence.";
     }
     this.view.click(function(){
       var amt = that.amount;

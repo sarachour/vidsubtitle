@@ -37,8 +37,23 @@ chunk specific rules
    display:none;
 }
 
+.left {
+   float:left;
+   margin:4px;
+}
+
+.right {
+   float:right;
+   margin:4px;
+}
+.divider{
+   width: 8px;
+   height: 16px;
+}
 #hint {
    margin-bottom:4px;
+   height: 35px;
+   padding:4px;
 }
 #compact-controls{
    background-color:#444444;
@@ -51,8 +66,58 @@ chunk specific rules
 
 #nav-controls{
    margin-right: 5px;
-   margin-left: 20px;
+   margin-left: 5px;
 }
 #edit-controls{
 
+}
+
+.hint.icon{
+   width:16px;
+   height:16px;
+   margin-left:5px;
+   margin-right:5px;
+}
+.hint.title{
+   font-size:12pt;
+   font-weight:bold;
+   color:#ecf0f1;
+}
+.hint.text{
+   font-size:12pt;
+   color:#bdc3c7;
+}
+.hint.but{
+   display:inline-block;
+   background-color:#3498db;
+   border-color:#2980b9;
+   border-style:solid;
+   border-width:2px;
+   color:#ecf0f1;
+   padding:2px;
+   padding-left:4px;
+   padding-right:4px;
+   margin-left:5px;
+   margin-right:5px;
+   font-size: 11pt;
+   font-style:‘Lucida Sans Unicode’, ‘Lucida Grande’, sans-serif;
+   font-variant: small-caps;
+   border-radius:10px;
+}
+.hint.key{
+   display:inline-block;
+   background-color:#ecf0f1;
+   border-color:#7f8c8d;
+   border-style:solid;
+   border-width:2px;
+   color:#2c3e50;
+   padding:2px;
+   margin-left:5px;
+   margin-right:5px;
+   padding-left:4px;
+   padding-right:4px;
+   font-size: 11pt;
+   font-style:‘Lucida Sans Unicode’, ‘Lucida Grande’, sans-serif;
+   font-variant: small-caps;
+   border-radius:2px;
 }
