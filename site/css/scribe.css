@@ -1,0 +1,23 @@
+/*
+scribe specific rules
+*/
+
+.scribe #video-container{
+   height: 200px;
+}
+
+.scribe .hotkey.button {
+   white-space: normal;
+   height: 100px;
+}
+.scribe .hotkey.title {
+   white-space: normal;
+   height:50px;
+   font-size:45px;
+   padding-top:10px;
+}
+.scribe .hotkey.shortcut {
+   color: #888888;
+   font-size:25px;
+   height:25px;
+}
