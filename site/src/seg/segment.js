@@ -17,11 +17,12 @@ delete: the user deleted a marking
 
 
 */
-var ProgramState = function(vp_name, vb_name){
+var ProgramState = function(vp_name, vb_name, hnt_name){
   this.init = function(){
     var that = this;
     this.state = "";
     this.obs = new Observer();
+    this._hinter = $("#"+hnt_name);
     this._video_player = new VideoPane(vp_name,this);
     this._video_bar = new VideoBar(vb_name,this);
     this._history = new History();
@@ -56,6 +57,11 @@ var ProgramState = function(vp_name, vb_name){
       that.state = e.state;
       that.obs.trigger(that.state);
     }, "state_change_listener")
+  }
+  this.set_hint = function(title,desc){
+    console.log("set hint",title, desc)
+    $("#title",this._hinter).html(title);
+    $("#description",this._hinter).html(desc);
   }
   this.undo = function(){
     this._history.undo();
@@ -113,54 +119,6 @@ var ProgramState = function(vp_name, vb_name){
   this.init();
 }
 
-// mark a pause with this button
-var MarkButton = function(button_name, state){
-  this._init = function(){
-    var that = this;
-    this.view = $("#"+button_name);
-    this.state = state;
-    this.playing = false;
-    this.init();
-
-    this.view.prop('disabled', true);
-    this.state.statemgr().listen('ready', function(){
-      that.view.prop('disabled',false);
-    })
-    this.state.statemgr().listen('playing', function(){
-      that.playing = true;
-    })
-    this.state.statemgr().listen('paused', function(){
-      that.playing = false;
-      that.init();
-    })
-
-    
-  }
-  this.init = function(){
-    var that = this;
-    this.view.data("button-title","Start");
-    that.view.unbind('click');
-    this.view.click(function(){
-      that.start();
-    })
-  }
-  this.start = function(){
-    var that = this;
-    this.view.data("button-title","Break");
-    this.state.video_player().play();
-    this.is_down = false;
-    this.view.unbind('click');
-    this.view.mousedown(function(){
-        if(that.playing) that.state.statemgr().trigger('state-change',{state:'hold'});
-        that.is_down = true;
-    })
-    this.view.mouseup(function(){
-        if(that.playing && that.is_down) that.state.statemgr().trigger('state-change',{state:'unhold'});
-
-    })
-  }
-  this._init();
-}
 
 var SelectionPlayer = function(state){
   this.init = function(){
@@ -194,11 +152,73 @@ var SelectionPlayer = function(state){
   this.init();
 }
 
+// mark a pause with this button
+var MarkButton = function(button_name, state){
+  this._init = function(){
+    var that = this;
+    this.view = $("#"+button_name)
+      .mouseleave(function(){that.state.set_hint("","")})
+      .mouseenter(function(){that.state.set_hint(that.title, that.description)});
+    this.state = state;
+    this.playing = false;
+    this.init();
+
+    this.view.prop('disabled', true);
+    this.state.statemgr().listen('ready', function(){
+      that.view.prop('disabled',false);
+    })
+    this.state.statemgr().listen('playing', function(){
+      that.playing = true;
+    })
+    this.state.statemgr().listen('paused', function(){
+      that.playing = false;
+      that.init();
+    })
+
+    
+  }
+  this.init = function(){
+    var that = this;
+    this.view.data("button-title","Start");
+    this.title = "Start Button";
+    this.description = "Click 'Start' or hit <Spacebar> to start breaking up the video into chunks.";
+    that.view.unbind('click');
+    this.view.click(function(){
+      that.start();
+    })
+  }
+  this.start = function(){
+    var that = this;
+    this.view.data("button-title","Break").trigger('changeData');
+    this.title = "Break Button";
+    this.description = "Tap 'Break' or hit <Spacebar> to mark a pause in the video. Hold while the speaker is silent to mark a silence."
+    this.state.video_player().play();
+    this.is_down = false;
+    this.view.unbind('click');
+    this.view.mousedown(function(){
+        if(that.playing) that.state.statemgr().trigger('state-change',{state:'hold'});
+        that.is_down = true;
+    })
+    this.view.mouseup(function(){
+        if(that.playing && that.is_down) that.state.statemgr().trigger('state-change',{state:'unhold'});
+
+    })
+  }
+  this._init();
+}
 var HistoryButton = function(button_name, world, is_undo){
   this.init = function(){
     this.view = $("#"+button_name);
     this.state = world;
     var that = this;
+    if(is_undo){
+      this.title = "Undo Action"
+      this.description = "Tap the 'Undo' button or Ctrl+Z to undo the last modification or deletion to a silence or break."
+    }
+    else{
+      this.title = "Redo Action"
+      this.description = "Tap the 'Redo' button or Ctrl+Y to redo the last modification or deletion to a silence or break."
+    }
     this.view.click(function(){
       if(is_undo){
         that.state.undo();
@@ -207,6 +227,8 @@ var HistoryButton = function(button_name, world, is_undo){
         that.state.redo();
       }
     })
+    .mouseleave(function(){that.state.set_hint("","")})
+    .mouseenter(function(){that.state.set_hint(that.title, that.description)})
   }
   this.init();
 }
@@ -215,13 +237,22 @@ var NavigateButton = function(button_name, state, is_rev){
     var that = this;
     this.view = $("#"+button_name);
     this.state = state;
-
+    if(is_rev){
+      this.title = "Previous Segment"
+      this.description = "Tap the Back icon or press the Left key to move to the previous segment."
+    }
+    else{
+      this.title = "Redo Action"
+      this.description = "Tap the Next icon or press the Right key to move to the next segment."
+    }
     this.view.click(function(){
       var sels = that.state.selections();
       var tmp = that.state.select(function(e){
         return e.type == "silence" || e.type == "segment";
       }, is_rev);
     })
+    .mouseleave(function(){that.state.set_hint("","")})
+    .mouseenter(function(){that.state.set_hint(that.title, that.description)})
   }
   
   this.init();
@@ -233,12 +264,13 @@ var ReplayButton = function(button_name, state){
     this.view = $("#"+button_name);
     this.state = state;
     this.player = new SelectionPlayer(state);
-
+    this.title = "Replay Segment";
+    this.description = "Tap the replay icon or press the Up or Down keys to replay the selected segment."
     this.view.click(function(){
       that.player.play();
-
-      console.log('replay');
     })
+    .mouseleave(function(){that.state.set_hint("","")})
+    .mouseenter(function(){that.state.set_hint(that.title, that.description)})
   }
 
   this.init();
@@ -250,10 +282,14 @@ var DeleteButton = function(button_name, state){
     this.state = state;
     this.player = new SelectionPlayer(state);
 
+    this.title = "Delete Segment";
+    this.description = "Tap the Delete button or press Z to replay the selected segment."
     this.view.click(function(){
       that.state.remove();
       that.player.play();
     })
+    .mouseleave(function(){that.state.set_hint("","")})
+    .mouseenter(function(){that.state.set_hint(that.title, that.description)})
   }
 
   this.init();
@@ -267,7 +303,14 @@ var ShiftButton = function(button_name, state, is_start, is_left, amt){
     if(is_start) this.player.set_side('left');
     else this.player.set_side('right');
     this.amount = amt;
-
+    if(!is_left){  
+      this.title = "Make Segment Longer";
+      this.description = "Tap the 'Later' button or press the C key to extend the end of the segment or silence."
+    }
+    else{
+      this.title = "Make Segment Shorter";
+      this.description = "Tap the 'Earlier' button or press the X key to reduce the end of the segment or silence."
+    }
     this.view.click(function(){
       var amt = that.amount;
       if(is_left) amt *= -1;
@@ -275,6 +318,8 @@ var ShiftButton = function(button_name, state, is_start, is_left, amt){
       else  that.state.shift(0,amt);
       that.player.play();
     })
+    .mouseleave(function(){that.state.set_hint("","")})
+    .mouseenter(function(){that.state.set_hint(that.title, that.description)})
   }
 
   this.init();
@@ -376,7 +421,7 @@ var VideoBar  =function(bar_name, state){
 
 var SegmentController = function(){
   this.init = function(){
-    this.prog = new ProgramState("player1", "controls");
+    this.prog = new ProgramState("player1", "controls", "hint");
     this.buttons = {};
     this.buttons.mark = new MarkButton("break", this.prog);
     this.buttons.replay = new ReplayButton("replay", this.prog);
@@ -425,40 +470,4 @@ $("document").ready(function() {
     ctrl.from_json(JSON.parse(data));
   })
 
-  $("#output", $("#dev")).val(
-    '{"data":[{"start":38.379466,"end":38.51878,"length":0.13931399999999883,"id":12,"type":"break"},{"start":45.600575,"end":45.71667,"length":0.11609500000000139,"id":14,"type":"break"},{"start":34.896616,"end":35.03593,"length":0.13931399999999883,"id":10,"type":"break"},{"start":20.64015,"end":22.892393,"length":2.252243,"id":7,"type":"silence"},{"start":35.569967,"end":36.289756,"length":0.7197889999999987,"id":11,"type":"silence"},{"start":31.460204,"end":31.576299,"length":0.11609499999999784,"id":9,"type":"break"},{"start":26.073396,"end":28.093449,"length":2.0200530000000008,"id":8,"type":"silence"},{"start":42.23382,"end":42.373134,"length":0.13931399999999883,"id":13,"type":"break"},{"start":16.274978,"end":16.391073,"length":0.11609499999999784,"id":6,"type":"break"},{"start":14.208487,"end":14.324582,"length":0.11609499999999962,"id":5,"type":"break"},{"start":11.259674,"end":11.375769,"length":0.11609499999999962,"id":4,"type":"break"},{"start":9.425373,"end":9.541468,"length":0.11609499999999962,"id":3,"type":"break"},{"start":7.63751,"end":7.776824,"length":0.1393140000000006,"id":2,"type":"break"},{"start":5.338829,"end":5.431705,"length":0.0928760000000004,"id":1,"type":"break"},{"start":4.990544,"end":5.129858,"length":0.13931399999999972,"id":0,"type":"break"}],"url":"http://127.0.0.1:8080/media/vid1.mp4"}')
-  $("#load",$("#dev")).click();
-  /*
-  var play_seg = function(){
-    if(data.idx < 0) data.idx = 0;
-      if(data.idx >= data.segs.length) data.idx = data.segs.length-1;
-
-      var d = data.segs[data.idx]
-      var e = d.start;
-      var s;
-      if(data.idx == 0) s = 0;
-      else s = data.segs[data.idx-1].end;
-
-
-      console.log(data.idx, s,e);
-      ctrl.video.segment(s,e);
-      ctrl.video.play();
-  }
-
-  
-  $("#review",$("#dev")).click(function(){
-    data.segs = ctrl.to_json().data;
-    data.idx = 0;
-    ctrl.video.pause();
-    play_seg();
-  })
-  $("#next", $("#dev")).click(function(){
-    data.idx+=1;
-    play_seg();
-  })
-  $("#prev", $("#dev")).click(function(){
-    data.idx-=1;
-    play_seg();
-  })
-  */
 });

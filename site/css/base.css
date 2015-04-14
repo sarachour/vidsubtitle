@@ -2,6 +2,9 @@
    background-color: #222222;
 }
 
+.white-text {
+   color: #eeeeee;
+}
 .fill-parent {
 	position:relative;
 	width:100%;
@@ -21,6 +24,9 @@
 .dummy {
    display: none;
 }
+.compact{
+   display:inline-block;
+}
 
 .hotkey.button {
    white-space: normal;
@@ -34,6 +40,15 @@
 }
 .hotkey.shortcut {
    color: #888888;
-   font-size:16px;
-   height:18px;
+   font-size:12px;
+   height:15px;
 }
+.icon.small {
+   width: 16px;
+   height:16px;
+}
+.icon.med {
+   width: 32px;
+   height:32px;
+}
+
