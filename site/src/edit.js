@@ -47,6 +47,7 @@ $("document").ready(function() {
 
     // Add each segment to the container region.
     var prev = null;
+    var first_seg;
     for (var i = 0; i < input_segments.length; ++i) {
         var seg = new SegmentNode(i, input_segments[i], prev);
 
@@ -63,7 +64,26 @@ $("document").ready(function() {
 
         // Set a function on this box that associates it with its node.
         $('#segment_id_' + i).click(click_edit_segment(seg));
-
+        if (first_seg == null) first_seg = seg;
         prev = seg;
     }
+
+    // Register key presses.
+    $(document).keypress(function (event) {
+        if (event.keyCode == 9) { // TAB key.
+            if (event.shiftKey) { // Shift-tab.
+                if (active_segment != null && active_segment.prev != null) {
+                    $('#' + active_segment.prev.id).click()
+                }
+            } else {              // Regular tab.
+                var next_segment = active_segment == null ?
+                    first_seg : active_segment.next;
+
+                if (next_segment != null) {
+                    $('#' + next_segment.id).click();
+                }
+            }
+            return false;
+        }
+    });
 });
