@@ -11,3 +11,13 @@ chunk specific rules
    margin-top: 2px;
    margin-bottom:15px;
 }
+
+.segment .hotkey.title {
+   height:20px;
+   font-size:18px;
+   padding-top:3px;
+}
+.segment .hotkey.shortcut {
+   font-size:12px;
+   height:14px;
+}

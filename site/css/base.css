@@ -21,39 +21,19 @@
 .dummy {
    display: none;
 }
-/*
-chunk specific rules
-*/
-.segment #video-container{
-	height: 400px;
-}
-.segment #dev{
-   margin-top: 50px;
-}
-.segment #segmentbar{
-   margin-top: 2px;
-   margin-bottom:15px;
-}
-/*
-scribe specific rules
-*/
-
-.scribe #video-container{
-   height: 200px;
-}
 
 .hotkey.button {
    white-space: normal;
-   height: 100px;
+   height: 70px;
 }
 .hotkey.title {
    white-space: normal;
-   height:50px;
-   font-size:45px;
-   padding-top:10px;
+   height:28px;
+   font-size:24px;
+   padding-top:5px;
 }
 .hotkey.shortcut {
    color: #888888;
-   font-size:25px;
-   height:25px;
+   font-size:16px;
+   height:18px;
 }
