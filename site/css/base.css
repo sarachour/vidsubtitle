@@ -24,16 +24,30 @@
 
 .hotkey.button {
    white-space: normal;
+<<<<<<< Updated upstream
    height: 70px;
 }
 .hotkey.title {
    white-space: normal;
    height:28px;
    font-size:24px;
+=======
+   height: 80px;
+}
+.hotkey.title {
+   white-space: normal;
+   height:24px;
+   font-size:20px;
+>>>>>>> Stashed changes
    padding-top:5px;
 }
 .hotkey.shortcut {
    color: #888888;
+<<<<<<< Updated upstream
    font-size:16px;
    height:18px;
+=======
+   font-size:12px;
+   height:15px;
+>>>>>>> Stashed changes
 }
