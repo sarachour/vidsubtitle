@@ -9,6 +9,7 @@ scribe specific rules
 .scribe.hotkey.button {
    white-space: normal;
    height: 125px;
+   margin-bottom: 23px;
 }
 .scribe .hotkey.title {
    color: #333333;
@@ -34,20 +35,33 @@ scribe specific rules
    background-color: #D4C66A;
 }
 
-.scribe.label {
+.scribe.entry {
+   border-radius:12px;
+   height:190px;
+   margin-bottom:27px;
+   padding-left:15px;
+}
+
+.scribe.entry.label {
    font-size:24px;
-   line-height:28px;
-   text-align: left;
-   height:200px;
-   outline:2px solid #0000FF;
-   padding-bottom: 5px;
+   margin-left:20px;
+   text-align:left;
+   border: 2px solid #777777;
+   
 }
 
-.textDisplay {
-   height:200px;
-   text-align: center;
-}
-
-.textEntry {
+.scribe.entry#entry {
    resize:none;
+   outline:none;
+   border-style:none;
+   border-color:transparent;
+   overflow:auto;
+   height:188px;
+}
+
+.scribe.entry.text {
+   font-size:24px;
+   margin-left:30px;
+   text-align:left;
+   border: 2px solid #777777;
 }

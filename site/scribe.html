@@ -1,3 +1,8 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+
 <script src="lib/jquery-2.1.3.js"></script>
 <script src="lib/jquery-ui-1.11.3.js"></script>
 <script src="lib/jwerty.js"></script>
@@ -39,7 +44,7 @@ $(document).ready(function() {
       if (textIndex == (enteredText.length - 1)) {
          enteredText.push($('#entry').val());
       } else {
-         enteredText[textIndex] = $('entry').val();
+         enteredText[textIndex] = $('#entry').val();
       }
       textIndex--;
       updateText();
@@ -47,20 +52,26 @@ $(document).ready(function() {
 
    document.getElementById("buttonNext").onclick = function(e) {
       if (textIndex == enteredText.length) {
+         enteredText.push($('#entry').val());
       } else {
-         enteredText[textIndex] = $('#entry').value();
+         enteredText[textIndex] = $('#entry').val();
       }
       textIndex++;
       updateText();
    }
 
    var updateText = function() {
-      console.log(textIndex);
-      console.log(textIndex[0]);
-
-      $("#prevDisplay").text(enteredText[textIndex - 1]);
+      if (textIndex > 0) {
+         $("#prevText").text(enteredText[textIndex - 1]);
+         $("#buttonPrev").disabled = false;
+      } else {
+         $("#prevText").text('');
+         $("#buttonPrev").disabled = true;
+      }
       $("#entry").val(enteredText[textIndex]);
-      $("#nextDisplay").text(enteredText[textIndex + 1]);
+      $("#nextText").text(enteredText[textIndex + 1]);
+
+      highlightTextArea();
    }
 
 });
@@ -106,7 +117,7 @@ INSTRUCTIONS
 
          <div id="controlButtons" class="row vspace">
    <!-- break button crarr : use this http://www.amp-what.com/unicode/search/arrow to find unicode characters-->
-            <div id="buttonPrev" button-title="Back" hotkey-name="left arrow" hotkey-code="left" class="fill-parent-width scribe prev hotkey button"></div>
+            <div id="buttonPrev" disabled button-title="Back" hotkey-name="left arrow" hotkey-code="left" class="fill-parent-width scribe prev hotkey button"></div>
             <div id="buttonReplay" button-title="Replay" hotkey-name="up arrow" hotkey-code="up/down" class="fill-parent-width scribe replay hotkey button"></div>
             <div id="buttonNext" button-title="Next" hotkey-name="right arrow" hotkey-code="right" class="fill-parent-width scribe next hotkey button"></div>
          </div>
@@ -116,18 +127,18 @@ INSTRUCTIONS
 <div class="column two-thirds">
    <div class="column one-fourth text-label">
       <div id="textDisplay" class = "row vspace">
-         <div id="prevDisplay" class="fill-parent-width scribe label"><h5>Previous Segment<h5></div>
-         <div id="curDisplay" class="fill-parent-width scribe label"><h5>Current Segment<h5></div>
-         <div id="nextDisplay" class="fill-parent-width scribe label"><h5>Next Segment<h5></div>
+         <div id="prevDisplay" class="fill-parent-width scribe entry label"><h5>Previous Segment<h5></div>
+         <div id="curDisplay" class="fill-parent-width scribe entry label"><h5>Current Segment<h5></div>
+         <div id="nextDisplay" class="fill-parent-width scribe entry label"><h5>Next Segment<h5></div>
       </div>
    </div>
    <div class="column three-fourths text-label">
       <div id="textDisplay" class = "row vspace">
-         <div id="prevDisplay" class="fill-parent-width textDisplay">Prev</div>
-         <div id="curDisplay" class="fill-parent-width textDisplay">
-            <textarea autofocus rows="12" id="entry" class="fill-parent-width textEntry"></textarea>
+         <div id="prevText" class="fill-parent-width scribe entry text">Prev</div>
+         <div id="curText" class="fill-parent-width scribe entry text">
+            <textarea autofocus rows="12" id="entry" class="fill-parent-width scribe entry"></textarea>
          </div>
-         <div id="nextDisplay" class="fill-parent-width textDisplay">Next</div>
+         <div id="nextText" class="fill-parent-width scribe entry text">Next</div>
       </div>
    </div>
 </div>
