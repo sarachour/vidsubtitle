@@ -73,12 +73,7 @@ var SegmentBar = function(id, model){
       ctx.fillStyle = colors['progress'];
       ctx.fillRect(x(0),y(0),x(d.time),y(1));
 
-      //draw the current hold
-      if(d.hold != null){
-         if(d.time-d.hold > d.eps) ctx.fillStyle = colors['silence'];
-         else  ctx.fillStyle = colors['pause'];
-         ctx.fillRect(x(d.hold),y(0),x(d.time-d.hold),y(1));
-      }
+      
       var line_draw = function(s,c){
          ctx.beginPath();
          ctx.moveTo(x(s), y(0));
@@ -119,7 +114,12 @@ var SegmentBar = function(id, model){
             ctx.fillRect(x(d.selection.start),y(0),x(d.time-d.selection.start),y(1));
          }
       }
-      
+      //draw the current hold
+      if(d.hold != null){
+         if(d.time-d.hold > d.eps) ctx.fillStyle = colors['silence'];
+         else  ctx.fillStyle = colors['pause'];
+         ctx.fillRect(x(d.hold),y(0),x(d.time-d.hold),y(1));
+      }
       if(this._state.x != null){
          line_draw(this._state.x, colors['cursor']);
       }

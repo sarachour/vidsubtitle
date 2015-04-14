@@ -9,15 +9,50 @@ chunk specific rules
 }
 .segment #segmentbar{
    margin-top: 2px;
-   margin-bottom:15px;
+   margin-bottom:0px;
 }
 
-.segment .hotkey.title {
+.segment.hotkey.button {
+   white-space: normal;
+   height: 50px;
+}
+.segment.hotkey.title {
    height:20px;
    font-size:18px;
    padding-top:3px;
 }
-.segment .hotkey.shortcut {
+.segment.hotkey.shortcut {
    font-size:12px;
    height:14px;
+}
+
+.segment.compact.hotkey.button {
+   white-space: normal;
+   height: 32px;
+}
+.segment.compact.hotkey.title {
+   display:none;
+}
+.segment.compact.hotkey.shortcut {
+   display:none;
+}
+
+#hint {
+   margin-bottom:4px;
+}
+#compact-controls{
+   background-color:#444444;
+   margin-bottom:25px;
+   padding: 2px;
+}
+.dark-bg {
+   background-color: #666666;
+}
+
+#nav-controls{
+   margin-right: 5px;
+   margin-left: 20px;
+}
+#edit-controls{
+
 }

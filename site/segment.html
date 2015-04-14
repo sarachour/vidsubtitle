@@ -1,5 +1,3 @@
-<!DOCTYPE html>
-<html>
 <head>
 <title>Video Segmenting Interface</title>
 
@@ -47,6 +45,14 @@ INSTRUCTIONS
 </div>
 <!-- content pane -->
 <div id="content">
+
+<!-- Hint -->
+<div class="row">
+<div id="hint" class="black-bg white-text">
+<span id="title">Title Here</span>:
+<span id="description">Description Here</span>
+</div>
+</div>
 <!-- video -->
 <div class="row black-bg">
 
@@ -63,21 +69,46 @@ INSTRUCTIONS
 <div id="controls" class="fill-parent-width text-label">PROGRESS BAR HERE</div>
 </div>
 
-<!-- break button crarr : use this http://www.amp-what.com/unicode/search/arrow to find unicode characters-->
-<div id="buttons" class="row vspace">
-<div id="break" button-title="Start" hotkey-name="spacebar" hotkey-code="space" class="hotkey button three columns"></div>
-<div id="prev" button-title="Back" hotkey-name="left arrow" hotkey-code="left" class="hotkey button three columns"></div>
-<div id="next" button-title="Next" hotkey-name="right arrow" hotkey-code="right" class="hotkey button three columns"></div>
-<div id="replay" button-title="Replay" hotkey-name="up arrow" hotkey-code="up/down" class="hotkey button three columns"></div>
+<div class="row">
+<div id="compact-controls" class="fill-parent-width black-bg white-text">
+   <div id="nav-controls" class="compact">
+   <div id="prev" title="previous segment (left key)" hotkey-code="left" class="node hotkey small icon compact">
+      <img src="res/prev-white.png" class="fill-parent"></img>
+   </div>
+   <div id="replay" hotkey-name="up/down" hotkey-code="up/down" class="node hotkey small icon compact">
+      <img src="res/replay-white.png" class="fill-parent"></img>
+   </div>
+   <div id="next" title="next segment (right key)" hotkey-code="right" class="node hotkey small icon compact">
+      <img src="res/next-white.png" class="fill-parent"></img>
+   </div>
+   </div>
+
+   <div id="edit-controls" class="compact">
+   <div id="en_sl" hotkey-name="x" hotkey-code="x" class="hotkey node small icon compact ">
+      <img src="res/lshift-white.png" class="fill-parent"></img>
+   </div>
+   <div id="en_sr" hotkey-name="c" hotkey-code="c" class="hotkey node small icon compact ">
+      <img src="res/rshift-white.png" class="fill-parent"></img>
+   </div>
+   <div id="delete" hotkey-name="z" hotkey-code="z" class="hotkey node small icon compact ">
+      <img src="res/delete-white.png" class="fill-parent"></img>
+   </div>
+   <div id="undo" hotkey-name="ctrl+z" hotkey-code="ctrl+z" class="hotkey node small icon compact ">
+      <img src="res/undo-white.png" class="fill-parent"></img>
+   </div>
+   <div id="redo" hotkey-name="ctrl+y" hotkey-code="ctrl+y" class="hotkey node small icon compact ">
+      <img src="res/redo-white.png" class="fill-parent"></img>
+   </div>
+   </div>
+</div>
 </div>
 
+<!-- break button crarr : use this http://www.amp-what.com/unicode/search/arrow to find unicode characters-->
 <div id="buttons" class="row vspace">
-<div id="en_sl" button-title="earlier" hotkey-name="x button" hotkey-code="x" class="hotkey button two columns"></div>
-<div id="en_sr" button-title="later" hotkey-name="c button" hotkey-code="c" class="hotkey button two columns"></div>
-<div id="delete" button-title="delete" hotkey-name="z button" hotkey-code="z" class="hotkey button two columns"></div>
-<div id="undo" button-title="undo" hotkey-name="ctrl+z" hotkey-code="ctrl+z" class="hotkey button two columns"></div>
-<div id="redo" button-title="redo" hotkey-name="ctrl+y" hotkey-code="ctrl+y" class="hotkey button two columns"></div>
+<div id="break" button-title="Start" hotkey-name="(spacebar)" hotkey-code="space" class="hotkey button fill-parent-width"></div>
+
 </div>
+
 
 <div class="row vspace" id="dev">
 <span class="columns two">Dev Tools: </span>
@@ -94,4 +125,3 @@ INSTRUCTIONS
 <!-- end of window -->
 </div>
 </body>
-</html>
