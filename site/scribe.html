@@ -13,14 +13,41 @@
 <script src="src/core/sorted_array.js"></script>
 <script src="src/core/audio.js"></script>
 
+<script src="src/scribe/scribe.js"></script>
 <script src="src/seg/segment_model.js"></script>
 <script src="src/seg/segmentbar.js"></script>
-<script src="src/seg/segment.js"></script>
+<script src="src/scribe/text_model.js"></script>
 
 <link rel="stylesheet" href="css/jquery-ui-1.11.3.css" />
 <link rel="stylesheet" href="css/skeleton.css" />
 <link rel="stylesheet" href="lib/mejs/mediaelementplayer.min.css" />
 <link rel="stylesheet" href="css/base.css" />
+
+<script type="text/javascript">
+
+var enteredText = [];
+var textIndex = 0;
+
+$(document).ready(function() {
+
+   $(document).getElementById("prev").onclick = function(e) {
+      textIndex--;
+   }
+
+   $(document).getElementById("next").onclick = function(e) {
+      textIndex++;
+   }
+
+   var updateText = function() {
+      $("#prevDisplay").text(enteredText[textIndex - 1]);
+      $("#textEntry").value(enteredText[textIndex]);
+      $("#nextDisplay").text(enteredText[textIndex + 1]);
+   }
+
+});
+
+</script>
+
 
 </head>
 
@@ -46,8 +73,8 @@ INSTRUCTIONS
 
    <div class="fill-parent-width" id="video-container">
    <!-- controls="none" --> 
-      <video class="fill-parent" id="player1" preload="none" width="100%" height="400px" controls="none">
-        <source src="media/vid1.mp4" type="video/mp4" />
+      <video class="fill-parent" id="player1" preload="none" width="100%" height="300px" controls="none">
+        <source src="media/vid1.mp4" type="video/mp4"/>
       </video>
    </div>
 
@@ -65,9 +92,22 @@ INSTRUCTIONS
 </div>
 
 <div class="column one-half">
-<div id="textDisplay" class = "row vspace">
-   <div id="prevDisplay" class="fill-parent-width text-label">Prev</div>
-   <div id="nextDisplay" class="fill-parent-width text-label">Next</div>
+   <div class="column one-fourth text-label">
+      <div id="textDisplay" class = "row vspace">
+         <div id="prevDisplay" class="fill-parent-width scribeLabel">Previous Segment</div>
+         <div id="curDisplay" class="fill-parent-width scribeLabel">Current Segment</div>
+         <div id="nextDisplay" class="fill-parent-width scribeLabel">Next Segment</div>
+      </div>
+   </div>
+   <div class="column three-fourths text-label">
+      <div id="textDisplay" class = "row vspace">
+         <div id="prevDisplay" class="fill-parent-width textDisplay">Prev</div>
+         <div id="curDisplay" class="fill-parent-width textDisplay">
+            <textarea autofocus select rows="12" id="textEntry" class="fill-parent-width textEntry">Enter text here</textarea>
+         </div>
+         <div id="nextDisplay" class="fill-parent-width textDisplay">Next</div>
+      </div>
+   </div>
 </div>
 
 </div>
