@@ -42,6 +42,9 @@ $("document").ready(function() {
       */
     }, "load-video");
 
+    // Get the correct width for the floating segment.
+    $('#floating_panel').width($('#left_pane').width());
+
     // Add each segment to the container region.
     var prev = null;
     for (var i = 0; i < input_segments.length; ++i) {
