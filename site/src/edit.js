@@ -11,6 +11,7 @@ var test_segments = [{start: 2, end: 17, text: "[fone ringing]"},
 var input_segments = test_segments;
 var active_segment = null;
 var first_seg = null;
+var last_seg = null;
 
 function click_edit_segment (seg) {
     return function (event) {
@@ -23,6 +24,9 @@ function click_edit_segment (seg) {
         }
         active_segment = seg;
         seg.activate();
+
+        $('#prev_button')[0].disabled = active_segment == first_seg;
+        $('#next_button')[0].disabled = active_segment == last_seg;
     }
 }
 
@@ -33,14 +37,6 @@ function go_next_segment () {
 
     if (next_segment != null) {
         $('#' + next_segment.id).click();
-
-        // Enabling/disabling of buttons.
-        if (next_segment.next == null) {
-            $('#next_button')[0].disabled = true;
-        }
-        if (next_segment.prev != null) {
-            $('#prev_button')[0].disabled = false;
-        }
     }
 }
 
@@ -48,12 +44,6 @@ function go_next_segment () {
 function go_prev_segment () {
     if (active_segment != null && active_segment.prev != null) {
         $('#' + active_segment.prev.id).click()
-
-        // Enabling/disabling of buttons.
-        if (active_segment.prev == null) {
-            $('#prev_button')[0].disabled = true;
-        }
-        $('#next_button')[0].disabled = false;
     }
 }
 
@@ -98,6 +88,7 @@ $("document").ready(function() {
         if (first_seg == null) first_seg = seg;
         prev = seg;
     }
+    last_seg = prev;
 
     // Register key presses.
     $(document).keypress(function (event) {
