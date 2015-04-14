@@ -31,23 +31,45 @@
 
 <script type="text/javascript">
 
-var enteredText = [];
-var textIndex = 0;
-
 var highlightTextArea = function (){
     document.getElementById('entry').select();
 }
 
 $(document).ready(function() {
 
+   var enteredText = [];
+   var textIndex = 0;
+
+   var updateText = function() {
+      if (textIndex > 0) {
+         $("#buttonPrev").css("background-color", "#D4876A");
+         $("#prevText").text(enteredText[textIndex - 1]);
+      } else {
+         $("#buttonPrev").css("background-color", "#EEEEEE");
+         $("#prevText").text('');
+         $("#buttonPrev").prop("disabled", "");
+      }
+      $("#entry").val(enteredText[textIndex]);
+      if (textIndex == (enteredText.length - 1)) {
+         $("nextText").text('');
+      } else {
+         $("#nextText").text(enteredText[textIndex + 1]);
+      }
+   }
+
+   highlightTextArea();
+   updateText();
+
    document.getElementById("buttonPrev").onclick = function(e) {
       if (textIndex == (enteredText.length - 1)) {
          enteredText.push($('#entry').val());
-      } else {
+         textIndex--;
+         updateText();
+      } else if (textIndex > 0) {
          enteredText[textIndex] = $('#entry').val();
+         textIndex--;
+         updateText();
       }
-      textIndex--;
-      updateText();
    }
 
    document.getElementById("buttonNext").onclick = function(e) {
@@ -58,20 +80,6 @@ $(document).ready(function() {
       }
       textIndex++;
       updateText();
-   }
-
-   var updateText = function() {
-      if (textIndex > 0) {
-         $("#prevText").text(enteredText[textIndex - 1]);
-         $("#buttonPrev").disabled = false;
-      } else {
-         $("#prevText").text('');
-         $("#buttonPrev").disabled = true;
-      }
-      $("#entry").val(enteredText[textIndex]);
-      $("#nextText").text(enteredText[textIndex + 1]);
-
-      highlightTextArea();
    }
 
 });
@@ -117,7 +125,7 @@ INSTRUCTIONS
 
          <div id="controlButtons" class="row vspace">
    <!-- break button crarr : use this http://www.amp-what.com/unicode/search/arrow to find unicode characters-->
-            <div id="buttonPrev" disabled button-title="Back" hotkey-name="left arrow" hotkey-code="left" class="fill-parent-width scribe prev hotkey button"></div>
+            <div id="buttonPrev" button-title="Back" hotkey-name="left arrow" hotkey-code="left" class="fill-parent-width scribe prev hotkey button"></div>
             <div id="buttonReplay" button-title="Replay" hotkey-name="up arrow" hotkey-code="up/down" class="fill-parent-width scribe replay hotkey button"></div>
             <div id="buttonNext" button-title="Next" hotkey-name="right arrow" hotkey-code="right" class="fill-parent-width scribe next hotkey button"></div>
          </div>
@@ -127,18 +135,18 @@ INSTRUCTIONS
 <div class="column two-thirds">
    <div class="column one-fourth text-label">
       <div id="textDisplay" class = "row vspace">
-         <div id="prevDisplay" class="fill-parent-width scribe entry label"><h5>Previous Segment<h5></div>
-         <div id="curDisplay" class="fill-parent-width scribe entry label"><h5>Current Segment<h5></div>
-         <div id="nextDisplay" class="fill-parent-width scribe entry label"><h5>Next Segment<h5></div>
+         <div id="prevDisplay" class="fill-parent-width scribe entry prev label"><div class="container"><h5>Previous Segment<h5></div></div>
+         <div id="curDisplay" class="fill-parent-width scribe entry replay label"><div class="container"><h5>Current Segment<h5></div></div>
+         <div id="nextDisplay" class="fill-parent-width scribe entry next label"><div class="container"><h5>Next Segment<h5></div></div>
       </div>
    </div>
    <div class="column three-fourths text-label">
       <div id="textDisplay" class = "row vspace">
-         <div id="prevText" class="fill-parent-width scribe entry text">Prev</div>
+         <div id="prevText" class="fill-parent-width scribe entry text"></div>
          <div id="curText" class="fill-parent-width scribe entry text">
-            <textarea autofocus rows="12" id="entry" class="fill-parent-width scribe entry"></textarea>
+            <textarea autofocus rows="12" id="entry" class="fill-parent-width scribe entry" placeholder="type stuff here"></textarea>
          </div>
-         <div id="nextText" class="fill-parent-width scribe entry text">Next</div>
+         <div id="nextText" class="fill-parent-width scribe entry text"></div>
       </div>
    </div>
 </div>

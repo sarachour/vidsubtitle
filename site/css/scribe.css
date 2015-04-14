@@ -9,7 +9,10 @@ scribe specific rules
 .scribe.hotkey.button {
    white-space: normal;
    height: 125px;
-   margin-bottom: 23px;
+   margin-bottom:23px;
+   border-width:5px;
+   border-style:solid;
+   border-radius:7px;
 }
 .scribe .hotkey.title {
    color: #333333;
@@ -19,26 +22,29 @@ scribe specific rules
 }
 .scribe .hotkey.shortcut {
    color: #666666;
-   font-size:30px;
+   font-size:28px;
    padding-top: 22px;
 }
 
 .scribe.prev {
    background-color: #D4876A;
+   border-color: #803215;
 }
 
 .scribe.next {
    background-color: #64B058;
+   border-color: #1E6912;
 }
 
 .scribe.replay {
    background-color: #D4C66A;
+   border-color: #807115;
 }
 
 .scribe.entry {
    border-radius:12px;
    height:190px;
-   margin-bottom:27px;
+   margin-bottom:31px;
    padding-left:15px;
 }
 
@@ -46,8 +52,8 @@ scribe specific rules
    font-size:24px;
    margin-left:20px;
    text-align:left;
-   border: 2px solid #777777;
-   
+   border-width:2px;
+   border-style:solid;
 }
 
 .scribe.entry#entry {
@@ -64,4 +70,8 @@ scribe specific rules
    margin-left:30px;
    text-align:left;
    border: 2px solid #777777;
+}
+
+.scribe.entry.label .container {
+   padding-top: 50px;
 }
