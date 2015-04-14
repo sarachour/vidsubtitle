@@ -1,2 +1,2 @@
-var enteredText
+var enteredText;
 

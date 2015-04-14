@@ -1,0 +1,82 @@
+<<<<<<< Updated upstream
+=======
+.black-bg {
+   background-color: #222222;
+}
+
+.fill-parent {
+	position:relative;
+	width:100%;
+	height:100%;
+
+}
+.fill-parent-width {
+	position:relative;
+	width:100%;
+
+}
+
+.text-label {
+	text-align: center;
+}
+
+.dummy {
+   display: none;
+}
+
+>>>>>>> Stashed changes
+/*
+scribe specific rules
+*/
+
+<<<<<<< Updated upstream
+.scribe #video-container{
+   height: 200px;
+}
+
+.scribe .hotkey.button {
+   white-space: normal;
+   height: 100px;
+}
+.scribe .hotkey.title {
+=======
+.scribeLabel {
+   height: 200px;
+}
+
+.textDisplay {
+   height: 200px;
+}
+
+.textEntry {
+   resize: none;
+}
+
+.scribe #video-container{
+   height: 267px;
+}
+
+.hotkey.button {
+   white-space: normal;
+   height: 100px;
+}
+.hotkey.title {
+>>>>>>> Stashed changes
+   white-space: normal;
+   height:50px;
+   font-size:45px;
+   padding-top:10px;
+}
+<<<<<<< Updated upstream
+.scribe .hotkey.shortcut {
+   color: #888888;
+   font-size:25px;
+   height:25px;
+}
+=======
+.hotkey.shortcut {
+   color: #888888;
+   font-size:25px;
+   height:25px;
+}
+>>>>>>> Stashed changes
