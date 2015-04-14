@@ -1,0 +1,13 @@
+/*
+chunk specific rules
+*/
+.segment #video-container{
+   height: 400px;
+}
+.segment #dev{
+   margin-top: 50px;
+}
+.segment #segmentbar{
+   margin-top: 2px;
+   margin-bottom:15px;
+}
