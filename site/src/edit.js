@@ -10,6 +10,7 @@ var test_segments = [{start: 2, end: 17, text: "[fone ringing]"},
 
 var input_segments = test_segments;
 var active_segment = null;
+var first_seg = null;
 
 function click_edit_segment (seg) {
     return function (event) {
@@ -22,6 +23,37 @@ function click_edit_segment (seg) {
         }
         active_segment = seg;
         seg.activate();
+    }
+}
+
+// Move activity to the next segment in the list, if there is one.
+function go_next_segment () {
+    var next_segment = active_segment == null ?
+        first_seg : active_segment.next;
+
+    if (next_segment != null) {
+        $('#' + next_segment.id).click();
+
+        // Enabling/disabling of buttons.
+        if (next_segment.next == null) {
+            $('#next_button')[0].disabled = true;
+        }
+        if (next_segment.prev != null) {
+            $('#prev_button')[0].disabled = false;
+        }
+    }
+}
+
+// Move activity to the previous segment in the list, if there is one.
+function go_prev_segment () {
+    if (active_segment != null && active_segment.prev != null) {
+        $('#' + active_segment.prev.id).click()
+
+        // Enabling/disabling of buttons.
+        if (active_segment.prev == null) {
+            $('#prev_button')[0].disabled = true;
+        }
+        $('#next_button')[0].disabled = false;
     }
 }
 
@@ -47,7 +79,6 @@ $("document").ready(function() {
 
     // Add each segment to the container region.
     var prev = null;
-    var first_seg;
     for (var i = 0; i < input_segments.length; ++i) {
         var seg = new SegmentNode(i, input_segments[i], prev);
 
@@ -72,18 +103,17 @@ $("document").ready(function() {
     $(document).keypress(function (event) {
         if (event.keyCode == 9) { // TAB key.
             if (event.shiftKey) { // Shift-tab.
-                if (active_segment != null && active_segment.prev != null) {
-                    $('#' + active_segment.prev.id).click()
-                }
+                go_prev_segment();
             } else {              // Regular tab.
-                var next_segment = active_segment == null ?
-                    first_seg : active_segment.next;
-
-                if (next_segment != null) {
-                    $('#' + next_segment.id).click();
-                }
+                go_next_segment();
             }
             return false;
         }
     });
+
+    // Register button clicks.
+    $('#next_button').click(go_next_segment);
+    $('#prev_button').click(go_prev_segment);
+
+    $('#prev_button')[0].disabled = true;
 });
