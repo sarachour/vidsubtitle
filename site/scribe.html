@@ -22,6 +22,7 @@
 <link rel="stylesheet" href="css/skeleton.css" />
 <link rel="stylesheet" href="lib/mejs/mediaelementplayer.min.css" />
 <link rel="stylesheet" href="css/scribe.css" />
+<link rel="stylesheet" href="css/base.css" />
 
 <script type="text/javascript">
 
@@ -34,7 +35,7 @@ var highlightTextArea = function (){
 
 $(document).ready(function() {
 
-   document.getElementById("prev").onclick = function(e) {
+   document.getElementById("buttonPrev").onclick = function(e) {
       if (textIndex == (enteredText.length - 1)) {
          enteredText.push($('#entry').val());
       } else {
@@ -44,7 +45,7 @@ $(document).ready(function() {
       updateText();
    }
 
-   document.getElementById("next").onclick = function(e) {
+   document.getElementById("buttonNext").onclick = function(e) {
       if (textIndex == enteredText.length) {
       } else {
          enteredText[textIndex] = $('#entry').value();
@@ -85,36 +86,39 @@ INSTRUCTIONS
 </div>
 <!-- content pane -->
 <div id="content">
-<!-- video -->
+<!-- video and controls -->
+<div class="row">
 
-<div class="column one-third">
+   <div id="left_pane" class="column one-third">
 
-   <div class="fill-parent-width" id="video-container">
+      <div id="floating_panel" class="floating_pane">
    <!-- controls="none" --> 
-      <video class="fill-parent" id="player1" preload="none" width="100%" height="266px" controls="none">
-        <source src="media/vid1.mp4" type="video/mp4"/>
-      </video>
-   </div>
+         <div class="row" id="video-container">
+            <video class="fill-parent" id="player1" preload="metadata" controls="none" width="100%" height="100%">
+               <source src="media/vid1.webm" />
+            </video>
+         </div>
 
    <!-- progress bar -->
-   <div id="segmentbar" class="row vspace">
-      <div id="controls" class="fill-parent-width text-label">PROGRESS BAR HERE</div>
-   </div>
+         <div id="segmentbar" class="row vspace">
+            <div id="controls" class="fill-parent-width text-label">PROGRESS BAR HERE</div>
+         </div>
 
-   <div id="controlButtons" class="row vspace">
+         <div id="controlButtons" class="row vspace">
    <!-- break button crarr : use this http://www.amp-what.com/unicode/search/arrow to find unicode characters-->
-      <div id="prev" button-title="Back" hotkey-name="left arrow" hotkey-code="left" class="fill-parent-width hotkey button"></div>
-      <div id="replay" button-title="Replay" hotkey-name="up arrow" hotkey-code="up/down" class="fill-parent-width hotkey button"></div>
-      <div id="next" button-title="Next" hotkey-name="right arrow" hotkey-code="right" class="fill-parent-width hotkey button"></div>
+            <div id="buttonPrev" button-title="Back" hotkey-name="left arrow" hotkey-code="left" class="fill-parent-width scribe prev hotkey button"></div>
+            <div id="buttonReplay" button-title="Replay" hotkey-name="up arrow" hotkey-code="up/down" class="fill-parent-width scribe replay hotkey button"></div>
+            <div id="buttonNext" button-title="Next" hotkey-name="right arrow" hotkey-code="right" class="fill-parent-width scribe next hotkey button"></div>
+         </div>
+      </div>
    </div>
-</div>
 
 <div class="column two-thirds">
    <div class="column one-fourth text-label">
       <div id="textDisplay" class = "row vspace">
-         <div id="prevDisplay" class="fill-parent-width scribeLabel">Previous Segment</div>
-         <div id="curDisplay" class="fill-parent-width scribeLabel">Current Segment</div>
-         <div id="nextDisplay" class="fill-parent-width scribeLabel">Next Segment</div>
+         <div id="prevDisplay" class="fill-parent-width scribe label"><h5>Previous Segment<h5></div>
+         <div id="curDisplay" class="fill-parent-width scribe label"><h5>Current Segment<h5></div>
+         <div id="nextDisplay" class="fill-parent-width scribe label"><h5>Next Segment<h5></div>
       </div>
    </div>
    <div class="column three-fourths text-label">

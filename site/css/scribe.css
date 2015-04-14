@@ -2,22 +2,52 @@
 scribe specific rules
 */
 
-.scribe #video-container{
+.scribe#video-container{
    height: 200px;
 }
 
-.scribe .hotkey.button {
+.scribe.hotkey.button {
    white-space: normal;
-   height: 100px;
+   height: 125px;
 }
 .scribe .hotkey.title {
-   white-space: normal;
-   height:50px;
-   font-size:45px;
+   color: #333333;
    padding-top:10px;
+   font-size:50px;
+   padding-bottom:15px;
 }
 .scribe .hotkey.shortcut {
-   color: #888888;
-   font-size:25px;
-   height:25px;
+   color: #666666;
+   font-size:30px;
+   padding-top: 22px;
+}
+
+.scribe.prev {
+   background-color: #D4876A;
+}
+
+.scribe.next {
+   background-color: #64B058;
+}
+
+.scribe.replay {
+   background-color: #D4C66A;
+}
+
+.scribe.label {
+   font-size:24px;
+   line-height:28px;
+   text-align: left;
+   height:200px;
+   outline:2px solid #0000FF;
+   padding-bottom: 5px;
+}
+
+.textDisplay {
+   height:200px;
+   text-align: center;
+}
+
+.textEntry {
+   resize:none;
 }
