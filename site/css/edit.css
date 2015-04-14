@@ -5,6 +5,11 @@
     padding: 0px;
 }
 
+.floating_pane {
+    position: fixed;
+    width: 20%;
+}
+
 .active_box {
     border: 1px solid #000;
     background-color: #FFFFCC;
