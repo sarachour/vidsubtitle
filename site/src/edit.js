@@ -1,12 +1,10 @@
 
 // Sample segments.
-var test_segments = [{start: 2, end: 17, text: "[fone ringing]"},
-                     {start: 17, end: 20, text: "Yo not paying attension"},
-                     {start: 20, end: 23, text: "I just want to anser the fone!"},
-                     {start: 23, end: 31, text: "Emo, look.  I mean listen.  Yo hav to learn too listen."},
-                     {start: 31, end: 40, text: "Thi sis not some game.  You i mean we could die out her.  Listen"},
-                     {start: 40, end: 44, text: "Listen to the sounds of the machine."}
-                    ];
+var input_json = '{"data":[{"start": 2, "end": 17, "text": "[fone ringing]"},{"start": 17, "end": 20, "text": "Yo not paying attension"},{"start": 20, "end": 23, "text": "I just want to anser the fone!"},{"start": 23, "end": 31, "text": "Emo, look.  I mean listen.  Yo hav to learn too listen."},{"start": 31, "end": 40, "text": "Thi sis not some game.  You i mean we could die out her.  Listen"},{"start": 40, "end": 44, "text": "Listen to the sounds of the machine."}],"url": "media/vid1.webm"}';
+
+var input_obj = JSON.parse(input_json);
+
+var test_segments = input_obj.data;
 
 var input_segments = test_segments;
 var active_segment = null;
