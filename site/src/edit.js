@@ -14,6 +14,17 @@ var first_seg = null;
 var last_seg = null;
 var video;
 
+function setup_segment (seg) {
+    // Set the video segment to play.  When the segment completes, it will
+    // come back around to the beginning of the segment.
+    function looper (self) {
+        video.segment(seg.start, seg.end, self);
+    }
+    video.segment(seg.start, seg.end, function () {
+        looper(looper);
+    });
+}
+
 function click_edit_segment (seg) {
     return function (event) {
         if (seg.active) {
@@ -29,14 +40,9 @@ function click_edit_segment (seg) {
         // Enable/disable navigation buttons.
         $('#prev_button')[0].disabled = active_segment == first_seg;
         $('#next_button')[0].disabled = active_segment == last_seg;
+        $('#replay_button')[0].disabled = false;
 
-        // Set the video segment to play.  Then play it.
-        function looper (self) {
-            video.segment(seg.start, seg.end, self);
-        }
-        video.segment(seg.start, seg.end, function () {
-            looper(looper);
-        });
+        setup_segment(seg);
         video.play();
     }
 }
@@ -55,6 +61,14 @@ function go_next_segment () {
 function go_prev_segment () {
     if (active_segment != null && active_segment.prev != null) {
         $('#' + active_segment.prev.id).click()
+    }
+}
+
+// Return to the beginning of the current segment and start playing it.
+function replay_segment () {
+    if (active_segment) {
+        setup_segment(active_segment);
+        video.play();
     }
 }
 
@@ -111,12 +125,19 @@ $("document").ready(function() {
                 go_next_segment();
             }
             return false;
+        } else if (event.keyCode == 0) {
+            if (event.ctrlKey) {  // Ctrl-space
+                replay_segment();
+                return false;
+            }
         }
     });
 
     // Register button clicks.
     $('#next_button').click(go_next_segment);
     $('#prev_button').click(go_prev_segment);
+    $('#replay_button').click(replay_segment);
 
+    $('#replay_button')[0].disabled = true;
     $('#prev_button')[0].disabled = true;
 });
