@@ -8,7 +8,7 @@ scribe specific rules
 
 .scribe.hotkey.button {
    white-space: normal;
-   height: 125px;
+   height: 100px;
    margin-bottom:23px;
    border-width:5px;
    border-style:solid;
@@ -17,13 +17,12 @@ scribe specific rules
 .scribe .hotkey.title {
    color: #333333;
    padding-top:10px;
-   font-size:50px;
-   padding-bottom:15px;
+   font-size:45px;
 }
 .scribe .hotkey.shortcut {
    color: #666666;
    font-size:28px;
-   padding-top: 22px;
+   padding-top: 17px;
 }
 
 .scribe.prev {

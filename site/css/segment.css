@@ -4,12 +4,21 @@ chunk specific rules
 .segment #video-container{
    height: 400px;
 }
+
+.scribe #video-container{
+   height: 200px;
+}
 .segment #dev{
    margin-top: 50px;
 }
 .segment #segmentbar{
    margin-top: 2px;
-   margin-bottom:0px;
+   margin-bottom:px;
+}
+
+.scribe #segmentbar{
+   margin-top: 2px;
+   margin-bottom: 55px;
 }
 
 .segment.hotkey.button {

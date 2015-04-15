@@ -14,20 +14,21 @@
 <script src="src/core/observer.js"></script>
 <script src="src/core/stack.js"></script>
 <script src="src/core/undo.js"></script>
+<script src="src/core/status.js"></script>
 <script src="src/core/youtube.js"></script>
 <script src="src/core/sorted_array.js"></script>
 <script src="src/core/audio.js"></script>
 
-<script src="src/scribe.js"></script>
+<script src="src/scribe/scribe.js"></script>
 <script src="src/seg/segment_model.js"></script>
 <script src="src/seg/segmentbar.js"></script>
-<script src="src/scribe/text_model.js"></script>
 
 <link rel="stylesheet" href="css/jquery-ui-1.11.3.css" />
 <link rel="stylesheet" href="css/skeleton.css" />
 <link rel="stylesheet" href="lib/mejs/mediaelementplayer.min.css" />
 <link rel="stylesheet" href="css/scribe.css" />
 <link rel="stylesheet" href="css/base.css" />
+<link rel="stylesheet" href="css/segment.css" />
 
 <script type="text/javascript">
 
@@ -42,10 +43,12 @@ $(document).ready(function() {
 
    var updateText = function() {
       if (textIndex > 0) {
-         $("#buttonPrev").css("background-color", "#D4876A");
+         $(".scribe.prev").css("background-color", "#D4876A");
+         $("#prevText").css("background-color", "white");
          $("#prevText").text(enteredText[textIndex - 1]);
       } else {
-         $("#buttonPrev").css("background-color", "#EEEEEE");
+         $(".scribe.prev").css("background-color", "#EEEEEE");
+         $('#prevText').css("background-color", "#EEEEEE");
          $("#prevText").text('');
          $("#buttonPrev").prop("disabled", "");
       }
@@ -104,31 +107,29 @@ INSTRUCTIONS
 <h5>
 </div>
 <!-- content pane -->
-<div id="content">
+<div class="scribe" id="content">
 <!-- video and controls -->
-<div class="row">
 
    <div id="left_pane" class="column one-third">
 
-      <div id="floating_panel" class="floating_pane">
-   <!-- controls="none" --> 
-         <div class="row" id="video-container">
-            <video class="fill-parent" id="player1" preload="metadata" controls="none" width="100%" height="100%">
-               <source src="media/vid1.webm" />
+      <div class="row black-bg">
+         <div class="fill-parent-width" id="video-container">
+            <video class="fill-parent" id="player1" preload="none" width="100%" height="200px" controls="none">
+               <source src="media/vid1.mp4" type="video/mp4" />
             </video>
          </div>
+      </div>
 
-   <!-- progress bar -->
-         <div id="segmentbar" class="row vspace">
-            <div id="controls" class="fill-parent-width text-label">PROGRESS BAR HERE</div>
-         </div>
+<!-- progress bar -->
+      <div id="segmentbar" class="row vspace">
+         <div id="controls" class="fill-parent-width text-label">PROGRESS BAR HERE</div>
+      </div>
 
-         <div id="controlButtons" class="row vspace">
+      <div id="controlButtons" class="row vspace">
    <!-- break button crarr : use this http://www.amp-what.com/unicode/search/arrow to find unicode characters-->
-            <div id="buttonPrev" button-title="Back" hotkey-name="left arrow" hotkey-code="left" class="fill-parent-width scribe prev hotkey button"></div>
-            <div id="buttonReplay" button-title="Replay" hotkey-name="up arrow" hotkey-code="up/down" class="fill-parent-width scribe replay hotkey button"></div>
-            <div id="buttonNext" button-title="Next" hotkey-name="right arrow" hotkey-code="right" class="fill-parent-width scribe next hotkey button"></div>
-         </div>
+          <div id="buttonPrev" button-title="Back" hotkey-name="left arrow" hotkey-code="left" class="fill-parent-width scribe prev hotkey button"></div>
+         <div id="buttonReplay" button-title="Replay" hotkey-name="up arrow" hotkey-code="up/down" class="fill-parent-width scribe replay hotkey button"></div>
+         <div id="buttonNext" button-title="Next" hotkey-name="right arrow" hotkey-code="right" class="fill-parent-width scribe next hotkey button"></div>
       </div>
    </div>
 
