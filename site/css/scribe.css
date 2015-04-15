@@ -45,6 +45,7 @@ scribe specific rules
    height:190px;
    margin-bottom:31px;
    padding-left:15px;
+   visibility: hidden;
 }
 
 .scribe.entry.label {
@@ -69,6 +70,14 @@ scribe specific rules
    margin-left:30px;
    text-align:left;
    border: 2px solid #777777;
+}
+
+#prev {
+   visibility: hidden;
+}
+
+#replay {
+   visibility: hidden;
 }
 
 .scribe.entry.label .container {

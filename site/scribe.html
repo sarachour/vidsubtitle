@@ -15,13 +15,13 @@
 <script src="src/core/stack.js"></script>
 <script src="src/core/undo.js"></script>
 <script src="src/core/status.js"></script>
-<script src="src/core/youtube.js"></script>
+<script src="src/core/youtube_static.js"></script>
 <script src="src/core/sorted_array.js"></script>
 <script src="src/core/audio.js"></script>
 
 <script src="src/scribe/scribe.js"></script>
-<script src="src/seg/segment_model.js"></script>
-<script src="src/seg/segmentbar.js"></script>
+<script src="src/scribe/segment_model.js"></script>
+<script src="src/scribe/segmentbar.js"></script>
 
 <link rel="stylesheet" href="css/jquery-ui-1.11.3.css" />
 <link rel="stylesheet" href="css/skeleton.css" />
@@ -30,67 +30,8 @@
 <link rel="stylesheet" href="css/base.css" />
 <link rel="stylesheet" href="css/segment.css" />
 
-<script type="text/javascript">
-
-var highlightTextArea = function (){
-    document.getElementById('entry').select();
-}
-
-$(document).ready(function() {
-
-   var enteredText = [];
-   var textIndex = 0;
-
-   var updateText = function() {
-      if (textIndex > 0) {
-         $(".scribe.prev").css("background-color", "#D4876A");
-         $("#prevText").css("background-color", "white");
-         $("#prevText").text(enteredText[textIndex - 1]);
-      } else {
-         $(".scribe.prev").css("background-color", "#EEEEEE");
-         $('#prevText').css("background-color", "#EEEEEE");
-         $("#prevText").text('');
-         $("#buttonPrev").prop("disabled", "");
-      }
-      $("#entry").val(enteredText[textIndex]);
-      if (textIndex == (enteredText.length - 1)) {
-         $("nextText").text('');
-      } else {
-         $("#nextText").text(enteredText[textIndex + 1]);
-      }
-   }
-
-   highlightTextArea();
-   updateText();
-
-   document.getElementById("buttonPrev").onclick = function(e) {
-      if (textIndex == (enteredText.length - 1)) {
-         enteredText.push($('#entry').val());
-         textIndex--;
-         updateText();
-      } else if (textIndex > 0) {
-         enteredText[textIndex] = $('#entry').val();
-         textIndex--;
-         updateText();
-      }
-   }
-
-   document.getElementById("buttonNext").onclick = function(e) {
-      if (textIndex == enteredText.length) {
-         enteredText.push($('#entry').val());
-      } else {
-         enteredText[textIndex] = $('#entry').val();
-      }
-      textIndex++;
-      updateText();
-   }
-
-});
-
-</script>
-
-
 </head>
+
 
 <body onload='highlightTextArea()'>
 
@@ -115,7 +56,7 @@ INSTRUCTIONS
       <div class="row black-bg">
          <div class="fill-parent-width" id="video-container">
             <video class="fill-parent" id="player1" preload="none" width="100%" height="200px" controls="none">
-               <source src="media/vid1.mp4" type="video/mp4" />
+               <source src="media/movie1.mp4" type="video/mp4">
             </video>
          </div>
       </div>
@@ -127,9 +68,9 @@ INSTRUCTIONS
 
       <div id="controlButtons" class="row vspace">
    <!-- break button crarr : use this http://www.amp-what.com/unicode/search/arrow to find unicode characters-->
-          <div id="buttonPrev" button-title="Back" hotkey-name="left arrow" hotkey-code="left" class="fill-parent-width scribe prev hotkey button"></div>
-         <div id="buttonReplay" button-title="Replay" hotkey-name="up arrow" hotkey-code="up/down" class="fill-parent-width scribe replay hotkey button"></div>
-         <div id="buttonNext" button-title="Next" hotkey-name="right arrow" hotkey-code="right" class="fill-parent-width scribe next hotkey button"></div>
+          <div id="prev" visibility="hidden" button-title="Back" hotkey-name="left arrow" hotkey-code="left" class="fill-parent-width scribe prev hotkey button"></div>
+         <div id="replay" button-title="Replay" hotkey-name="up arrow" hotkey-code="up/down" class="fill-parent-width scribe replay hotkey button"></div>
+         <div id="next" button-title="Start" hotkey-name="right arrow" hotkey-code="right" class="fill-parent-width scribe next hotkey button"></div>
       </div>
    </div>
 
@@ -154,15 +95,13 @@ INSTRUCTIONS
 
 </div>
 
-
-<!-- <div class="row vspace" id="dev">
+<div class="row vspace" id="dev">
 <span class="columns two">Dev Tools: </span>
 <input id="output" type="text" class="columns six" placeholder="JSON Structure">
    
 </input>
-<button class="columns two" id="save">Save</button>
 <button class="columns two" id="load">Load</button>
-</div> -->
+</div>
 
 <!-- end of content -->
 </div>
