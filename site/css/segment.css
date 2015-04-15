@@ -60,8 +60,9 @@ chunk specific rules
    height: 16px;
 }
 #hint {
+   margin-top:4px;
    margin-bottom:4px;
-   height: 35px;
+   height: 28px;
    padding:4px;
 }
 #compact-controls{

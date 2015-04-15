@@ -208,7 +208,6 @@ var SegmentModel  = function(){
          if(sel.start < end) sel.start = end;
          sel.sid = this.data.segments.length()-1;
       }
-      this.select(this.data.time+this.data.eps);
       this._evt.trigger('update',{obj:this});
    }
    this.time = function(t){

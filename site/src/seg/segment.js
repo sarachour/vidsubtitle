@@ -17,6 +17,13 @@ delete: the user deleted a marking
 
 
 */
+var keys = {
+  left: '&#9654;',
+  right: '&#9664;',
+  up: '&#9650;',
+  down: '&#9660'
+}
+
 var ProgramState = function(vp_name, vb_name, hnt_name){
   this.init = function(){
     var that = this;
@@ -203,7 +210,7 @@ var MarkButton = function(button_name, state){
     this.hmgr = this.state.get_hint_mgr();
     this.view.data("button-title","Start");
     this.title = "Start Video Segmentation";
-    this.description = "Press "+this.hmgr.button("Start")+" or "+this.hmgr.key("spacebar")+" to start breaking up the video into chunks.";
+    this.description = "Press "+this.hmgr.button("Start")+" or "+this.hmgr.key("spacebar")+" to start marking the speech.";
     that.view.unbind('click');
     this.view.click(function(){
       that.start();
@@ -241,12 +248,12 @@ var HistoryButton = function(button_name, world, is_undo){
     if(is_undo){
       this.title = "Undo Action"
       this.description = "Tap "+this.hmgr.image('undo-white')+" or "+
-      this.hmgr.key("Ctrl")+"+"+this.hmgr.key("Z")+" to undo the last modification or deletion to a silence or break."
+      this.hmgr.key("Ctrl")+"+"+this.hmgr.key("Z")+" to undo the last modification or deletion of a marker."
     }
     else{
       this.title = "Redo Action"
       this.description =  "Tap "+this.hmgr.image('redo-white')+" or "+
-      this.hmgr.key("Ctrl")+"+"+this.hmgr.key("Y")+" to redo the last modification or deletion to a silence or break."
+      this.hmgr.key("Ctrl")+"+"+this.hmgr.key("Y")+" to redo the last modification or deletion of a marker."
     }
     this.view.click(function(){
       if(is_undo){
@@ -261,6 +268,7 @@ var HistoryButton = function(button_name, world, is_undo){
   }
   this.init();
 }
+
 var NavigateButton = function(button_name, state, is_rev){
   this.init = function(){
     var that = this;
@@ -269,11 +277,11 @@ var NavigateButton = function(button_name, state, is_rev){
     this.hmgr = this.state.get_hint_mgr();
     if(is_rev){
       this.title = "Previous Segment"
-      this.description = "Tap "+this.hmgr.image('prev-white')+" or "+this.hmgr.key('&#9654;')+" to move to the previous segment."
+      this.description = "Tap "+this.hmgr.image('prev-white')+" or "+this.hmgr.key(keys.left)+" to move to the previous segment."
     }
     else{
       this.title = "Next Segment"
-      this.description = "Tap "+this.hmgr.image('next-white')+" or "+this.hmgr.key('&#9664;')+" to move to the next segment."
+      this.description = "Tap "+this.hmgr.image('next-white')+" or "+this.hmgr.key(keys.right)+" to move to the next segment."
     }
     this.view.click(function(){
       var sels = that.state.selections();
@@ -297,7 +305,7 @@ var ReplayButton = function(button_name, state){
     this.player = new SelectionPlayer(state);
     this.title = "Replay Segment";
     this.description = "Tap "+this.hmgr.image('replay-white')+" or "
-      +this.hmgr.key("&#9650;")+"or "+this.hmgr.key("&#9660;")+" to replay the selected segment."
+      +this.hmgr.key(keys.up)+"or "+this.hmgr.key(keys.down)+" to replay the selected segment."
     this.view.click(function(){
       that.player.play();
     })
@@ -317,7 +325,7 @@ var DeleteButton = function(button_name, state){
 
     this.title = "Delete Segment";
     this.description = "Tap "+this.hmgr.image('delete-white')+" or press "+
-      this.hmgr.key("z")+" to delete the selected silence or ending break on the selected segment.";
+      this.hmgr.key("z")+" to merge two adjacent segments by removing the marker at the end of the current segment.";
     this.view.click(function(){
       that.state.remove();
       that.player.play();
@@ -340,11 +348,11 @@ var ShiftButton = function(button_name, state, is_start, is_left, amt){
     this.amount = amt;
     if(!is_left){  
       this.title = "Make Segment Longer";
-      this.description = "Tap "+this.hmgr.image('rshift-white')+" or "+this.hmgr.key('c')+" to extend the end of the segment or silence.";
+      this.description = "Tap "+this.hmgr.image('rshift-white')+" or "+this.hmgr.key('c')+" to extend the end of the segment.";
     }
     else{
       this.title = "Make Segment Shorter";
-      this.description = "Tap "+this.hmgr.image('lshift-white')+" or "+this.hmgr.key('x')+" to shorten the end of the segment or silence.";
+      this.description = "Tap "+this.hmgr.image('lshift-white')+" or "+this.hmgr.key('x')+" to shorten the end of the segment.";
     }
     this.view.click(function(){
       var amt = that.amount;
@@ -448,8 +456,13 @@ var VideoBar  =function(bar_name, state){
   this.unhold = function(){
       var e = this.state.video_player().get_model().time();
       var s = this.start_time;
+      var j = e;
+      if(j < 0) j = 0;
       this.model.add_segment(s,e);
       this.model.unhold();
+      console.log(e-1, this.model.duration());
+      this.state.video_player().segment(j,this.model.duration(), function(){console.log("done")});
+      this.state.video_player().play();
   }
   this._init();
 }
@@ -473,38 +486,35 @@ var SegmentController = function(){
     
     this.demo = new Demo("demo");
     this.demo.set_splash("Welcome! In the following task, you will be breaking up videos "+
-      "into small, easy-to-caption chunks by marking pauses and silences in the video."+
+      "into small, easy-to-caption chunks by marking when speakers start and stop speaking in the video."+
       "In the following practice round, we will walk you through the process. Thank you!")
 
     this.demo.add_step("Start Segmentation Process",
       "Press "+this.hmgr.button('Start')+" or tap the "+this.hmgr.key('spacebar')+" key to begin.",
       [$("#break")]);
-    this.demo.add_step("Mark a Break in the Video",
-      "Mark a pause by tapping the "+this.hmgr.key('spacebar') +" key or pressing the " +this.hmgr.button('Break')+" button.",
+
+    this.demo.add_step("Mark in the Video",
+      "Mark when a speaker starts or stops speaking by tapping the "+this.hmgr.key('spacebar') +" key or pressing the " +this.hmgr.button('Break')+" button.",
       [$("#break")]);
 
-    this.demo.add_step("Mark a Silence in the Video",
-      "Mark a silence by holding the "+this.hmgr.key('spacebar') +" key or pressing the " +this.hmgr.button('Break')+" button"+
-      "when the silence starts and releasing when the silence ends",
-      [$("#break")])
-
-    this.demo.add_step("Review segments created from Breaks/Silences",
+    this.demo.add_step("Review Video Segments created from Marking Speech Start/End",
       "Review previously made segments using the "+this.hmgr.image('prev')+" and "+ this.hmgr.image('next')+" buttons."+
-      "you may also use the left and right arrow keys or click on segments in the segment bar.",
+      "you may also use the "+this.hmgr.key(keys.left)+" and "+this.hmgr.key(keys.right)+" keys or click on segments in the segment bar.",
       [$("#prev"),$("#next")]);
 
-    this.demo.add_step("Replay a segment from the beginning",
-      "Replay a segment or silence by pressing "+this.hmgr.image('replay')+" or pressing the up and down arrow keys.",
+    this.demo.add_step("Replay a Segment from the Beginning",
+      "Replay a segment by pressing "+this.hmgr.image('replay')+" or pressing the "
+        +this.hmgr.key(keys.up)+" and "+this.hmgr.key(keys.down)+" keys.",
       [$("#replay")])
 
 
-    this.demo.add_step("Adjust the length of the selected segment",
-      "Shift the end of each segment or silence with "+this.hmgr.image('lshift')+" and "+this.hmgr.image('rshift')+
-      " or use the "+this.hmgr.key('x')+" and "+this.hmgr.key('c')+ " arrow keys",
+    this.demo.add_step("Adjust the length of the Selected Segment",
+      "Shift the marker at the end of each segment to fix cut off words with "+this.hmgr.image('lshift')+" and "+this.hmgr.image('rshift')+
+      " or use the "+this.hmgr.key('x')+" and "+this.hmgr.key('c')+ " keys",
       [$("#lshift"), $("#rshift")])
 
-    this.demo.add_step("Delete a break or a silence",
-      "Delete the break or silence to the right of the selected segment using the "+this.hmgr.image('delete')+
+    this.demo.add_step("Merge Two Adjacent Segments by Deleting Speech Marker",
+      "Delete the marker to the right of the selected segment using the "+this.hmgr.image('delete')+
       "button or "+this.hmgr.key('z')+" key.",
       [$("#delete")])
 
