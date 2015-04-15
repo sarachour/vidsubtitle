@@ -30,7 +30,13 @@ function click_edit_segment (seg) {
         $('#prev_button')[0].disabled = active_segment == first_seg;
         $('#next_button')[0].disabled = active_segment == last_seg;
 
-        video.segment(seg.start, seg.end, function () { });
+        // Set the video segment to play.  Then play it.
+        function looper (self) {
+            video.segment(seg.start, seg.end, self);
+        }
+        video.segment(seg.start, seg.end, function () {
+            looper(looper);
+        });
         video.play();
     }
 }
