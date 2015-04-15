@@ -16,6 +16,7 @@
 <script src="src/core/youtube.js"></script>
 <script src="src/core/sorted_array.js"></script>
 <script src="src/core/audio.js"></script>
+<script src="src/core/demo.js"></script>
 
 <script src="src/seg/segment_model.js"></script>
 <script src="src/seg/segmentbar.js"></script>
@@ -34,12 +35,16 @@
 <div class="container segment">
 
 <div class="row" id="header">
-   <div class="column one-fourth text-label">DEMO HERE</div>
+   <div class="column one-fourth text-label">
+      <button id="start_demo">Play Demonstration</button>
+   </div>
    <div id="progress" class="column one-half text-label">PROGRESS HERE</div>
    <div id="status" class="column one-fourth text-label">STATS HERE</div>
 </div>
-<div class="row">
 
+<div id="demo"></div>
+
+<div class="row">
 <div id="title" class="text-label">
 INSTRUCTIONS
 </div>
@@ -114,9 +119,6 @@ INSTRUCTIONS
 <div id="buttons" class="row vspace">
 <div id="break" button-title="Start" hotkey-name="(spacebar)" hotkey-code="space" class="hotkey button fill-parent-width"></div>
 
-</div>
-
-<div id="instructions">
 </div>
 
 <div class="row vspace" id="dev">

@@ -130,3 +130,29 @@ chunk specific rules
    font-variant: small-caps;
    border-radius:2px;
 }
+
+.overlay {
+   left:10%;
+   top:20%;
+   width: 80%;
+   position: absolute;
+   border-radius:5px;
+   border-color:#7f8c8d;
+   border-style:solid;
+   border-width:2px;
+   z-index:1000;
+   background-color:white;
+   padding:10px;
+   height: 20em;
+}
+.demo-highlight{
+   border-radius:5px;
+   border-color:#eeee55;
+   background-color:rgba(200,200,100,0.3);
+   border-style:solid;
+}
+
+#start_demo{
+   background-color:#e74c3c;
+   color:#ecf0f1;
+}

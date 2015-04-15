@@ -456,6 +456,7 @@ var VideoBar  =function(bar_name, state){
 
 var SegmentController = function(){
   this.init = function(){
+    var that = this;
     this.prog = new ProgramState("player1", "controls", "hint");
     this.buttons = {};
     this.buttons.mark = new MarkButton("break", this.prog);
@@ -463,23 +464,59 @@ var SegmentController = function(){
     this.buttons.next = new NavigateButton("next", this.prog,false);
     this.buttons.prev = new NavigateButton("prev", this.prog,true);
     this.buttons.remove = new DeleteButton("delete", this.prog);
-    var amt = 0.25;
+    var amt = 0.20;
     this.buttons.ensl = new ShiftButton("en_sl", this.prog, false, true,amt);
     this.buttons.ensr = new ShiftButton("en_sr", this.prog, false,false,amt);
     this.buttons.undo = new HistoryButton("undo",this.prog, true);
     this.buttons.redo = new HistoryButton("redo",this.prog, false);
     this.hmgr = this.prog.get_hint_mgr();
+    
+    this.demo = new Demo("demo");
+    this.demo.set_splash("Welcome! In the following task, you will be breaking up videos "+
+      "into small, easy-to-caption chunks by marking pauses and silences in the video."+
+      "In the following practice round, we will walk you through the process. Thank you!")
 
+    this.demo.add_step("Start Segmentation Process",
+      "Press "+this.hmgr.button('Start')+" or tap the "+this.hmgr.key('spacebar')+" key to begin.",
+      [$("#break")]);
+    this.demo.add_step("Mark a Break in the Video",
+      "Mark a pause by tapping the "+this.hmgr.key('spacebar') +" key or pressing the " +this.hmgr.button('Break')+" button.",
+      [$("#break")]);
+
+    this.demo.add_step("Mark a Silence in the Video",
+      "Mark a silence by holding the "+this.hmgr.key('spacebar') +" key or pressing the " +this.hmgr.button('Break')+" button"+
+      "when the silence starts and releasing when the silence ends",
+      [$("#break")])
+
+    this.demo.add_step("Review segments created from Breaks/Silences",
+      "Review previously made segments using the "+this.hmgr.image('prev')+" and "+ this.hmgr.image('next')+" buttons."+
+      "you may also use the left and right arrow keys or click on segments in the segment bar.",
+      [$("#prev"),$("#next")]);
+
+    this.demo.add_step("Replay a segment from the beginning",
+      "Replay a segment or silence by pressing "+this.hmgr.image('replay')+" or pressing the up and down arrow keys.",
+      [$("#replay")])
+
+
+    this.demo.add_step("Adjust the length of the selected segment",
+      "Shift the end of each segment or silence with "+this.hmgr.image('lshift')+" and "+this.hmgr.image('rshift')+
+      " or use the "+this.hmgr.key('x')+" and "+this.hmgr.key('c')+ " arrow keys",
+      [$("#lshift"), $("#rshift")])
+
+    this.demo.add_step("Delete a break or a silence",
+      "Delete the break or silence to the right of the selected segment using the "+this.hmgr.image('delete')+
+      "button or "+this.hmgr.key('z')+" key.",
+      [$("#delete")])
+
+    this.demo.add_step("Undo/Redo changes",
+      "Undo or redo any actions using the "+this.hmgr.image('undo')+" and "+this.hmgr.image('redo')+" buttons or the "+
+      this.hmgr.key("Ctrl")+"+"+this.hmgr.key("Z")+" and "+this.hmgr.key("Ctrl")+"+"+this.hmgr.key("Y")+" keys.",
+      [$("#undo"), $("#redo")]);
+
+    $("#start_demo").click(function(){
+      that.demo.start();
+    })
     $("#title").html("Video Segmentation");
-    $("#instructions").html(
-      "Break up the video into short segments using "+this.hmgr.key('spacebar') +"or" +this.hmgr.button('Break')+". "+
-      "Each segment should be a short phrase or sentence that would be easy to write down.<br>"+
-      "Hold "+this.hmgr.button('Break')+" to mark a silence in the video.<br>"+
-      "Use "+this.hmgr.image('prev')+" and "+ this.hmgr.image('next')+" to review previously made segments and silences.<br>"+
-      "Replay a segment by pressing "+this.hmgr.image('replay')+" to replay a segment or silence<br>"+
-      "Delete segments or silences with "+this.hmgr.image('delete')+
-      " or shift the end of each segment or silence with "+this.hmgr.image('lshift')+" and "+this.hmgr.image('rshift')+
-      "Press "+this.hmgr.button('Start')+" to begin.<br>");
 
     this.status = new Status("progress","status",1);
   }
