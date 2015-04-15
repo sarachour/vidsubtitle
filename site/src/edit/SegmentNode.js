@@ -42,6 +42,7 @@ function __sn_activate () {
 // SegmentNode contains info about itself in relation to other nodes, and
 // has info about the edit.
 function SegmentNode (id, segment, prev) {
+    this.index = id + 1;
     this.id = 'segment_id_' + id;
     this.start = segment.start;
     this.end = segment.end;
