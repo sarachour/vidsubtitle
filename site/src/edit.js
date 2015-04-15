@@ -143,7 +143,7 @@ $("document").ready(function() {
                 go_next_segment();
             }
             return false;
-        } else if (keyCode == 0) {
+        } else if (keyCode == 32) {
             if (event.ctrlKey) {  // Ctrl-space
                 replay_segment();
                 return false;
