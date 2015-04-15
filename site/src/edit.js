@@ -134,15 +134,16 @@ $("document").ready(function() {
     load_json();
 
     // Register key presses.
-    $(document).keypress(function (event) {
-        if (event.keyCode == 9) { // TAB key.
+    $(document).keydown(function (event) {
+        var keyCode = event.keyCode;
+        if (keyCode == 9) {       // TAB key.
             if (event.shiftKey) { // Shift-tab.
                 go_prev_segment();
             } else {              // Regular tab.
                 go_next_segment();
             }
             return false;
-        } else if (event.keyCode == 0) {
+        } else if (keyCode == 0) {
             if (event.ctrlKey) {  // Ctrl-space
                 replay_segment();
                 return false;
