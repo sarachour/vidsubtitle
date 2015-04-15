@@ -1,17 +1,18 @@
 
 // Sample segments.
 var test_segments = [{start: 2, end: 17, text: "[fone ringing]"},
-                     {start: 18, end: 20, text: "Yo not paying attension"},
+                     {start: 17, end: 20, text: "Yo not paying attension"},
                      {start: 20, end: 23, text: "I just want to anser the fone!"},
                      {start: 23, end: 31, text: "Emo, look.  I mean listen.  Yo hav to learn too listen."},
-                     {start: 31, end: 38, text: "Thi sis not some game.  You i mean we could die out her.  Listen"},
-                     {start: 40, end: 43, text: "Listen to the sounds of the machine."}
+                     {start: 31, end: 40, text: "Thi sis not some game.  You i mean we could die out her.  Listen"},
+                     {start: 40, end: 44, text: "Listen to the sounds of the machine."}
                     ];
 
 var input_segments = test_segments;
 var active_segment = null;
 var first_seg = null;
 var last_seg = null;
+var video;
 
 function click_edit_segment (seg) {
     return function (event) {
@@ -25,8 +26,12 @@ function click_edit_segment (seg) {
         active_segment = seg;
         seg.activate();
 
+        // Enable/disable navigation buttons.
         $('#prev_button')[0].disabled = active_segment == first_seg;
         $('#next_button')[0].disabled = active_segment == last_seg;
+
+        video.segment(seg.start, seg.end, function () { });
+        video.play();
     }
 }
 
@@ -47,10 +52,11 @@ function go_prev_segment () {
     }
 }
 
-var video;
 $("document").ready(function() {
     video = new YoutubeVideo("player1");
     console.log("created video");
+
+    // Configure video events.
     video.listen('load', function(evt){
       var vid = evt.obj;
       /*
