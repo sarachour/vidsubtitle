@@ -2,15 +2,42 @@
 // Sample segments.
 var input_json = '{"data":[{"start": 2, "end": 17, "text": "[fone ringing]"},{"start": 17, "end": 20, "text": "Yo not paying attension"},{"start": 20, "end": 23, "text": "I just want to anser the fone!"},{"start": 23, "end": 31, "text": "Emo, look.  I mean listen.  Yo hav to learn too listen."},{"start": 31, "end": 40, "text": "Thi sis not some game.  You i mean we could die out her.  Listen"},{"start": 40, "end": 44, "text": "Listen to the sounds of the machine."}],"url": "media/vid1.webm"}';
 
-var input_obj = JSON.parse(input_json);
-
-var test_segments = input_obj.data;
-
-var input_segments = test_segments;
 var active_segment = null;
 var first_seg = null;
 var last_seg = null;
 var video;
+
+function load_json (json_str) {
+    var input_obj = JSON.parse(json_str);
+
+    // Reset the current state.
+    first_seg = last_seg = active_segment = null;
+    $('#edit_content').html('');
+    $('#player1').attr('src', input_obj.url);
+
+    // Add each segment to the container region.
+    var prev = null;
+    for (var i = 0; i < input_obj.data.length; ++i) {
+        var seg = new SegmentNode(i, input_obj.data[i], prev);
+
+        // Make the box for this segment.
+        var segment_box = '<div '
+            + 'id="segment_id_' + i + '" '
+            + 'class="segment_box active_box" '
+            + '>';
+        segment_box += '</div>';
+
+        $('#edit_content').append(segment_box);
+        // Start all boxes as inactive.
+        seg.deactivate(null);
+
+        // Set a function on this box that associates it with its node.
+        $('#segment_id_' + i).click(click_edit_segment(seg));
+        if (first_seg == null) first_seg = seg;
+        prev = seg;
+    }
+    last_seg = prev;
+}
 
 function setup_segment (seg) {
     // Set the video segment to play.  When the segment completes, it will
@@ -74,45 +101,10 @@ $("document").ready(function() {
     video = new YoutubeVideo("player1");
     console.log("created video");
 
-    // Configure video events.
-    video.listen('load', function(evt){
-      var vid = evt.obj;
-      /*
-      console.log("updating", evt);
-      vid.load("https://www.youtube.com/watch?v=kE75vRV9tos");
-      
-      vid.listen('ready', function(e){
-        e.obj.segment(55, 59);
-        e.obj.play();
-      },'autoplay');
-      */
-    }, "load-video");
-
     // Get the correct width for the floating segment.
     $('#floating_panel').width($('#left_pane').width());
 
-    // Add each segment to the container region.
-    var prev = null;
-    for (var i = 0; i < input_segments.length; ++i) {
-        var seg = new SegmentNode(i, input_segments[i], prev);
-
-        // Make the box for this segment.
-        var segment_box = '<div '
-            + 'id="segment_id_' + i + '" '
-            + 'class="segment_box active_box" '
-            + '>';
-        segment_box += '</div>';
-
-        $('#edit_content').append(segment_box);
-        // Start all boxes as inactive.
-        seg.deactivate(null);
-
-        // Set a function on this box that associates it with its node.
-        $('#segment_id_' + i).click(click_edit_segment(seg));
-        if (first_seg == null) first_seg = seg;
-        prev = seg;
-    }
-    last_seg = prev;
+    load_json(input_json);
 
     // Register key presses.
     $(document).keypress(function (event) {
