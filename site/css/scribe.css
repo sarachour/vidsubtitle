@@ -8,46 +8,69 @@ scribe specific rules
 
 .scribe.hotkey.button {
    white-space: normal;
-   height: 125px;
+   height: 100px;
+   margin-bottom:23px;
+   border-width:5px;
+   border-style:solid;
+   border-radius:7px;
 }
 .scribe .hotkey.title {
    color: #333333;
    padding-top:10px;
-   font-size:50px;
-   padding-bottom:15px;
+   font-size:45px;
 }
 .scribe .hotkey.shortcut {
    color: #666666;
-   font-size:30px;
-   padding-top: 22px;
+   font-size:28px;
+   padding-top: 17px;
 }
 
 .scribe.prev {
    background-color: #D4876A;
+   border-color: #803215;
 }
 
 .scribe.next {
    background-color: #64B058;
+   border-color: #1E6912;
 }
 
 .scribe.replay {
    background-color: #D4C66A;
+   border-color: #807115;
 }
 
-.scribe.label {
+.scribe.entry {
+   border-radius:12px;
+   height:190px;
+   margin-bottom:31px;
+   padding-left:15px;
+}
+
+.scribe.entry.label {
    font-size:24px;
-   line-height:28px;
-   text-align: left;
-   height:200px;
-   outline:2px solid #0000FF;
-   padding-bottom: 5px;
+   margin-left:20px;
+   text-align:left;
+   border-width:2px;
+   border-style:solid;
 }
 
-.textDisplay {
-   height:200px;
-   text-align: center;
-}
-
-.textEntry {
+.scribe.entry#entry {
    resize:none;
+   outline:none;
+   border-style:none;
+   border-color:transparent;
+   overflow:auto;
+   height:188px;
+}
+
+.scribe.entry.text {
+   font-size:24px;
+   margin-left:30px;
+   text-align:left;
+   border: 2px solid #777777;
+}
+
+.scribe.entry.label .container {
+   padding-top: 50px;
 }

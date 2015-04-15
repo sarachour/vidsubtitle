@@ -1,3 +1,8 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+
 <script src="lib/jquery-2.1.3.js"></script>
 <script src="lib/jquery-ui-1.11.3.js"></script>
 <script src="lib/jwerty.js"></script>
@@ -9,25 +14,23 @@
 <script src="src/core/observer.js"></script>
 <script src="src/core/stack.js"></script>
 <script src="src/core/undo.js"></script>
+<script src="src/core/status.js"></script>
 <script src="src/core/youtube.js"></script>
 <script src="src/core/sorted_array.js"></script>
 <script src="src/core/audio.js"></script>
 
-<script src="src/scribe.js"></script>
+<script src="src/scribe/scribe.js"></script>
 <script src="src/seg/segment_model.js"></script>
 <script src="src/seg/segmentbar.js"></script>
-<script src="src/scribe/text_model.js"></script>
 
 <link rel="stylesheet" href="css/jquery-ui-1.11.3.css" />
 <link rel="stylesheet" href="css/skeleton.css" />
 <link rel="stylesheet" href="lib/mejs/mediaelementplayer.min.css" />
 <link rel="stylesheet" href="css/scribe.css" />
 <link rel="stylesheet" href="css/base.css" />
+<link rel="stylesheet" href="css/segment.css" />
 
 <script type="text/javascript">
-
-var enteredText = [];
-var textIndex = 0;
 
 var highlightTextArea = function (){
     document.getElementById('entry').select();
@@ -35,32 +38,51 @@ var highlightTextArea = function (){
 
 $(document).ready(function() {
 
+   var enteredText = [];
+   var textIndex = 0;
+
+   var updateText = function() {
+      if (textIndex > 0) {
+         $(".scribe.prev").css("background-color", "#D4876A");
+         $("#prevText").css("background-color", "white");
+         $("#prevText").text(enteredText[textIndex - 1]);
+      } else {
+         $(".scribe.prev").css("background-color", "#EEEEEE");
+         $('#prevText').css("background-color", "#EEEEEE");
+         $("#prevText").text('');
+         $("#buttonPrev").prop("disabled", "");
+      }
+      $("#entry").val(enteredText[textIndex]);
+      if (textIndex == (enteredText.length - 1)) {
+         $("nextText").text('');
+      } else {
+         $("#nextText").text(enteredText[textIndex + 1]);
+      }
+   }
+
+   highlightTextArea();
+   updateText();
+
    document.getElementById("buttonPrev").onclick = function(e) {
       if (textIndex == (enteredText.length - 1)) {
          enteredText.push($('#entry').val());
-      } else {
-         enteredText[textIndex] = $('entry').val();
+         textIndex--;
+         updateText();
+      } else if (textIndex > 0) {
+         enteredText[textIndex] = $('#entry').val();
+         textIndex--;
+         updateText();
       }
-      textIndex--;
-      updateText();
    }
 
    document.getElementById("buttonNext").onclick = function(e) {
       if (textIndex == enteredText.length) {
+         enteredText.push($('#entry').val());
       } else {
-         enteredText[textIndex] = $('#entry').value();
+         enteredText[textIndex] = $('#entry').val();
       }
       textIndex++;
       updateText();
-   }
-
-   var updateText = function() {
-      console.log(textIndex);
-      console.log(textIndex[0]);
-
-      $("#prevDisplay").text(enteredText[textIndex - 1]);
-      $("#entry").val(enteredText[textIndex]);
-      $("#nextDisplay").text(enteredText[textIndex + 1]);
    }
 
 });
@@ -85,49 +107,47 @@ INSTRUCTIONS
 <h5>
 </div>
 <!-- content pane -->
-<div id="content">
+<div class="scribe" id="content">
 <!-- video and controls -->
-<div class="row">
 
    <div id="left_pane" class="column one-third">
 
-      <div id="floating_panel" class="floating_pane">
-   <!-- controls="none" --> 
-         <div class="row" id="video-container">
-            <video class="fill-parent" id="player1" preload="metadata" controls="none" width="100%" height="100%">
-               <source src="media/vid1.webm" />
+      <div class="row black-bg">
+         <div class="fill-parent-width" id="video-container">
+            <video class="fill-parent" id="player1" preload="none" width="100%" height="200px" controls="none">
+               <source src="media/vid1.mp4" type="video/mp4" />
             </video>
          </div>
+      </div>
 
-   <!-- progress bar -->
-         <div id="segmentbar" class="row vspace">
-            <div id="controls" class="fill-parent-width text-label">PROGRESS BAR HERE</div>
-         </div>
+<!-- progress bar -->
+      <div id="segmentbar" class="row vspace">
+         <div id="controls" class="fill-parent-width text-label">PROGRESS BAR HERE</div>
+      </div>
 
-         <div id="controlButtons" class="row vspace">
+      <div id="controlButtons" class="row vspace">
    <!-- break button crarr : use this http://www.amp-what.com/unicode/search/arrow to find unicode characters-->
-            <div id="buttonPrev" button-title="Back" hotkey-name="left arrow" hotkey-code="left" class="fill-parent-width scribe prev hotkey button"></div>
-            <div id="buttonReplay" button-title="Replay" hotkey-name="up arrow" hotkey-code="up/down" class="fill-parent-width scribe replay hotkey button"></div>
-            <div id="buttonNext" button-title="Next" hotkey-name="right arrow" hotkey-code="right" class="fill-parent-width scribe next hotkey button"></div>
-         </div>
+          <div id="buttonPrev" button-title="Back" hotkey-name="left arrow" hotkey-code="left" class="fill-parent-width scribe prev hotkey button"></div>
+         <div id="buttonReplay" button-title="Replay" hotkey-name="up arrow" hotkey-code="up/down" class="fill-parent-width scribe replay hotkey button"></div>
+         <div id="buttonNext" button-title="Next" hotkey-name="right arrow" hotkey-code="right" class="fill-parent-width scribe next hotkey button"></div>
       </div>
    </div>
 
 <div class="column two-thirds">
    <div class="column one-fourth text-label">
       <div id="textDisplay" class = "row vspace">
-         <div id="prevDisplay" class="fill-parent-width scribe label"><h5>Previous Segment<h5></div>
-         <div id="curDisplay" class="fill-parent-width scribe label"><h5>Current Segment<h5></div>
-         <div id="nextDisplay" class="fill-parent-width scribe label"><h5>Next Segment<h5></div>
+         <div id="prevDisplay" class="fill-parent-width scribe entry prev label"><div class="container"><h5>Previous Segment<h5></div></div>
+         <div id="curDisplay" class="fill-parent-width scribe entry replay label"><div class="container"><h5>Current Segment<h5></div></div>
+         <div id="nextDisplay" class="fill-parent-width scribe entry next label"><div class="container"><h5>Next Segment<h5></div></div>
       </div>
    </div>
    <div class="column three-fourths text-label">
       <div id="textDisplay" class = "row vspace">
-         <div id="prevDisplay" class="fill-parent-width textDisplay">Prev</div>
-         <div id="curDisplay" class="fill-parent-width textDisplay">
-            <textarea autofocus rows="12" id="entry" class="fill-parent-width textEntry"></textarea>
+         <div id="prevText" class="fill-parent-width scribe entry text"></div>
+         <div id="curText" class="fill-parent-width scribe entry text">
+            <textarea autofocus rows="12" id="entry" class="fill-parent-width scribe entry" placeholder="type stuff here"></textarea>
          </div>
-         <div id="nextDisplay" class="fill-parent-width textDisplay">Next</div>
+         <div id="nextText" class="fill-parent-width scribe entry text"></div>
       </div>
    </div>
 </div>
