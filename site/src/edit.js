@@ -1,14 +1,14 @@
 
 // Sample segments.
-var input_json = '{"data":[{"start": 2, "end": 17, "text": "[fone ringing]"},{"start": 17, "end": 20, "text": "Yo not paying attension"},{"start": 20, "end": 23, "text": "I just want to anser the fone!"},{"start": 23, "end": 31, "text": "Emo, look.  I mean listen.  Yo hav to learn too listen."},{"start": 31, "end": 40, "text": "Thi sis not some game.  You i mean we could die out her.  Listen"},{"start": 40, "end": 44, "text": "Listen to the sounds of the machine."}],"url": "media/vid1.webm"}';
+var sample_json = '{"data":[{"start": 2, "end": 17, "text": "[fone ringing]"},{"start": 17, "end": 20, "text": "Yo not paying attension"},{"start": 20, "end": 23, "text": "I just want to anser the fone!"},{"start": 23, "end": 31, "text": "Emo, look.  I mean listen.  Yo hav to learn too listen."},{"start": 31, "end": 40, "text": "Thi sis not some game.  You i mean we could die out her.  Listen"},{"start": 40, "end": 44, "text": "Listen to the sounds of the machine."}],"url": "media/vid1.webm"}';
 
 var active_segment = null;
 var first_seg = null;
 var last_seg = null;
 var video;
 
-function load_json (json_str) {
-    var input_obj = JSON.parse(json_str);
+function load_json () {
+    var input_obj = JSON.parse($('#output').val());
 
     // Reset the current state.
     first_seg = last_seg = active_segment = null;
@@ -37,6 +37,24 @@ function load_json (json_str) {
         prev = seg;
     }
     last_seg = prev;
+}
+
+function save_json () {
+    var data = [];
+
+    var node;
+    for (node = first_seg; node != null; node = node.next) {
+        data.push({ start: node.start,
+                    end: node.end,
+                    text: node.postedit });
+    }
+
+    var url = $('#player1').prop('src');
+
+    var obj = { data: data,
+                url: url };
+
+    $('#output').val(JSON.stringify(obj));
 }
 
 function setup_segment (seg) {
@@ -104,7 +122,8 @@ $("document").ready(function() {
     // Get the correct width for the floating segment.
     $('#floating_panel').width($('#left_pane').width());
 
-    load_json(input_json);
+    $('#output').val(sample_json);
+    load_json();
 
     // Register key presses.
     $(document).keypress(function (event) {
@@ -127,6 +146,9 @@ $("document").ready(function() {
     $('#next_button').click(go_next_segment);
     $('#prev_button').click(go_prev_segment);
     $('#replay_button').click(replay_segment);
+
+    $('#load').click(load_json);
+    $('#save').click(save_json);
 
     $('#replay_button')[0].disabled = true;
     $('#prev_button')[0].disabled = true;
