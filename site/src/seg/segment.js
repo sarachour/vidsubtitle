@@ -464,8 +464,18 @@ var SegmentController = function(){
     this.buttons.ensr = new ShiftButton("en_sr", this.prog, false,false,amt);
     this.buttons.undo = new HistoryButton("undo",this.prog, true);
     this.buttons.redo = new HistoryButton("redo",this.prog, false);
+    this.hmgr = this.prog.get_hint_mgr();
 
-    $("#instructions").html("Break up the following");
+    $("#title").html("Video Segmentation");
+    $("#instructions").html(
+      "Break up the video into short segments using "+this.hmgr.key('spacebar') +"or" +this.hmgr.button('Break')+". "+
+      "Each segment should be a short phrase or sentence that would be easy to write down.<br>"+
+      "Hold "+this.hmgr.button('Break')+" to mark a silence in the video.<br>"+
+      "Use "+this.hmgr.image('prev')+" and "+ this.hmgr.image('next')+" to review previously made segments and silences.<br>"+
+      "Replay a segment by pressing "+this.hmgr.image('replay')+" to replay a segment or silence<br>"+
+      "Delete segments or silences with "+this.hmgr.image('delete')+
+      " or shift the end of each segment or silence with "+this.hmgr.image('lshift')+" and "+this.hmgr.image('rshift')+
+      "Press "+this.hmgr.button('Start')+" to begin.<br>");
 
     this.status = new Status("progress","status",1);
   }
