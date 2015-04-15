@@ -1,5 +1,23 @@
-var video;
-var seg;
+var seg = {
+            "data":[
+               {"start":38.379466,"end":38.51878,"length":0.13931399999999883,"id":12,"type":"break"},
+               {"start":45.600575,"end":45.71667,"length":0.11609500000000139,"id":14,"type":"break"},
+               {"start":34.896616,"end":35.03593,"length":0.13931399999999883,"id":10,"type":"break"},
+               {"start":20.64015,"end":22.892393,"length":2.252243,"id":7,"type":"silence"},
+               {"start":35.569967,"end":36.289756,"length":0.7197889999999987,"id":11,"type":"silence"},
+               {"start":31.460204,"end":31.576299,"length":0.11609499999999784,"id":9,"type":"break"},
+               {"start":26.073396,"end":28.093449,"length":2.0200530000000008,"id":8,"type":"silence"},
+               {"start":42.23382,"end":42.373134,"length":0.13931399999999883,"id":13,"type":"break"},
+               {"start":16.274978,"end":16.391073,"length":0.11609499999999784,"id":6,"type":"break"},
+               {"start":14.208487,"end":14.324582,"length":0.11609499999999962,"id":5,"type":"break"},
+               {"start":11.259674,"end":11.375769,"length":0.11609499999999962,"id":4,"type":"break"},
+               {"start":9.425373,"end":9.541468,"length":0.11609499999999962,"id":3,"type":"break"},
+               {"start":7.63751,"end":7.776824,"length":0.1393140000000006,"id":2,"type":"break"},
+               {"start":5.338829,"end":5.431705,"length":0.0928760000000004,"id":1,"type":"break"},
+               {"start":4.990544,"end":5.129858,"length":0.13931399999999972,"id":0,"type":"break"}
+            ],
+            "url":"media/vid1.mp4"
+         };
 
 /*
 Video States: 
@@ -7,7 +25,6 @@ ready: the video is ready to play
 playing: the video is playing
 tick: the video has taken a time step
 paused: the video is paused
-
 User Action States:
 hold: the user began a marking
 unhold: the user stopped a marking
@@ -17,7 +34,7 @@ delete: the user deleted a marking
 
 
 */
-var ProgramState = function(vp_name, vb_name, hnt_name){
+var ProgramState = function(vp_name, vb_name){
   this.init = function(){
     var that = this;
     this.state = "";
@@ -26,7 +43,6 @@ var ProgramState = function(vp_name, vb_name, hnt_name){
     this._video_bar = new VideoBar(vb_name,this);
     this._history = new History();
     this._player = new SelectionPlayer(this);
-    this._hint = new HintManager(hnt_name, this);
     this._history.listen('undo', function(e){
       console.log(e);
       if(e.type == "shift"){
@@ -56,10 +72,6 @@ var ProgramState = function(vp_name, vb_name, hnt_name){
       that.state = e.state;
       that.obs.trigger(that.state);
     }, "state_change_listener")
-  }
-  this.set_hint = function(title,desc){
-    console.log("set hint",title, desc)
-    this._hint.set(title,desc);
   }
   this.undo = function(){
     this._history.undo();
@@ -108,34 +120,11 @@ var ProgramState = function(vp_name, vb_name, hnt_name){
   this.get_state = function(){
     return this.state;
   }
-  this.get_hint_mgr = function(){
-    return this._hint;
-  }
   this.video_player = function(){
     return this._video_player;
   }
   this.video_bar = function(){
     return this._video_bar;
-  }
-  this.init();
-}
-
-var HintManager = function(id){
-  this.init = function(){
-    this._hinter = $("#"+id);
-  }
-  this.set = function(title,description){
-    $("#title",this._hinter).html(title);
-    $("#description",this._hinter).html(description);
-  }
-  this.image = function(name){
-    return "<img src=res/"+name+".png class='hint icon'></img>";
-  }
-  this.button = function(b){
-    return '<div class="hint but">'+b+"</div>";
-  }
-  this.key = function(k){
-    return '<div class="hint key">' + k + "</div>"
   }
   this.init();
 }
@@ -199,10 +188,8 @@ var MarkButton = function(button_name, state){
   }
   this.init = function(){
     var that = this;
-    this.hmgr = this.state.get_hint_mgr();
     this.view.data("button-title","Start");
     this.title = "Start Video Segmentation";
-    this.description = "Press "+this.hmgr.button("Start")+" or "+this.hmgr.key("spacebar")+" to start breaking up the video into chunks.";
     that.view.unbind('click');
     this.view.click(function(){
       that.start();
@@ -212,8 +199,6 @@ var MarkButton = function(button_name, state){
     var that = this;
     this.view.data("button-title","Break").trigger('changeData');
     this.title = "Break Button";
-    this.description = "Press "+this.hmgr.button("Break")+"or"+this.hmgr.key("spacebar")+
-          "to mark a pause in the video. Hold while the speaker is silent to mark a silence."
     this.state.video_player().play();
     this.is_down = false;
     this.view.unbind('click');
@@ -228,57 +213,18 @@ var MarkButton = function(button_name, state){
   }
   this._init();
 }
-var HistoryButton = function(button_name, world, is_undo){
-  this.init = function(){
-    this.view = $("#"+button_name);
-    this.state = world;
-    this.hmgr = this.state.get_hint_mgr();
-    var that = this;
-    if(is_undo){
-      this.title = "Undo Action"
-      this.description = "Tap "+this.hmgr.image('undo-white')+" or "+
-      this.hmgr.key("Ctrl")+"+"+this.hmgr.key("Z")+" to undo the last modification or deletion to a silence or break."
-    }
-    else{
-      this.title = "Redo Action"
-      this.description =  "Tap "+this.hmgr.image('redo-white')+" or "+
-      this.hmgr.key("Ctrl")+"+"+this.hmgr.key("Y")+" to redo the last modification or deletion to a silence or break."
-    }
-    this.view.click(function(){
-      if(is_undo){
-        that.state.undo();
-      }
-      else{
-        that.state.redo();
-      }
-    })
-    .mouseleave(function(){that.state.set_hint("","")})
-    .mouseenter(function(){that.state.set_hint(that.title, that.description)})
-  }
-  this.init();
-}
+
 var NavigateButton = function(button_name, state, is_rev){
   this.init = function(){
     var that = this;
     this.view = $("#"+button_name);
     this.state = state;
-    this.hmgr = this.state.get_hint_mgr();
-    if(is_rev){
-      this.title = "Previous Segment"
-      this.description = "Tap "+this.hmgr.image('prev-white')+" or "+this.hmgr.key('&#9654;')+" to move to the previous segment."
-    }
-    else{
-      this.title = "Next Segment"
-      this.description = "Tap "+this.hmgr.image('next-white')+" or "+this.hmgr.key('&#9664;')+" to move to the next segment."
-    }
     this.view.click(function(){
       var sels = that.state.selections();
       var tmp = that.state.select(function(e){
         return e.type == "silence" || e.type == "segment";
       }, is_rev);
     })
-    .mouseleave(function(){that.state.set_hint("","")})
-    .mouseenter(function(){that.state.set_hint(that.title, that.description)})
   }
   
   this.init();
@@ -289,73 +235,14 @@ var ReplayButton = function(button_name, state){
     var that = this;
     this.view = $("#"+button_name);
     this.state = state;
-    this.hmgr = this.state.get_hint_mgr();
     this.player = new SelectionPlayer(state);
-    this.title = "Replay Segment";
-    this.description = "Tap "+this.hmgr.image('replay-white')+" or "
-      +this.hmgr.key("&#9650;")+"or "+this.hmgr.key("&#9660;")+" to replay the selected segment."
     this.view.click(function(){
       that.player.play();
     })
-    .mouseleave(function(){that.state.set_hint("","")})
-    .mouseenter(function(){that.state.set_hint(that.title, that.description)})
   }
 
   this.init();
 }
-var DeleteButton = function(button_name, state){
-  this.init = function(){
-    var that = this;
-    this.view = $("#"+button_name);
-    this.state = state;
-    this.hmgr = this.state.get_hint_mgr();
-    this.player = new SelectionPlayer(state);
-
-    this.title = "Delete Segment";
-    this.description = "Tap "+this.hmgr.image('delete-white')+" or press "+
-      this.hmgr.key("z")+" to delete the selected silence or ending break on the selected segment.";
-    this.view.click(function(){
-      that.state.remove();
-      that.player.play();
-    })
-    .mouseleave(function(){that.state.set_hint("","")})
-    .mouseenter(function(){that.state.set_hint(that.title, that.description)})
-  }
-
-  this.init();
-}
-var ShiftButton = function(button_name, state, is_start, is_left, amt){
-  this.init =function(){
-    var that = this;
-    this.view = $("#"+button_name);
-    this.state = state;
-    this.hmgr = this.state.get_hint_mgr();
-    this.player = new SelectionPlayer(state);
-    if(is_start) this.player.set_side('left');
-    else this.player.set_side('right');
-    this.amount = amt;
-    if(!is_left){  
-      this.title = "Make Segment Longer";
-      this.description = "Tap "+this.hmgr.image('rshift-white')+" or "+this.hmgr.key('c')+" to extend the end of the segment or silence.";
-    }
-    else{
-      this.title = "Make Segment Shorter";
-      this.description = "Tap "+this.hmgr.image('lshift-white')+" or "+this.hmgr.key('x')+" to shorten the end of the segment or silence.";
-    }
-    this.view.click(function(){
-      var amt = that.amount;
-      if(is_left) amt *= -1;
-      if(is_start) that.state.shift(amt,0);
-      else  that.state.shift(0,amt);
-      that.player.play();
-    })
-    .mouseleave(function(){that.state.set_hint("","")})
-    .mouseenter(function(){that.state.set_hint(that.title, that.description)})
-  }
-
-  this.init();
-}
-
 
 var VideoPane = function(video_name, state){
   this._init = function(){
@@ -452,20 +339,11 @@ var VideoBar  =function(bar_name, state){
 
 var SegmentController = function(){
   this.init = function(){
-    this.prog = new ProgramState("player1", "controls", "hint");
+    this.prog = new ProgramState("player1", "controls");
     this.buttons = {};
-    this.buttons.mark = new MarkButton("break", this.prog);
     this.buttons.replay = new ReplayButton("replay", this.prog);
     this.buttons.next = new NavigateButton("next", this.prog,false);
     this.buttons.prev = new NavigateButton("prev", this.prog,true);
-    this.buttons.remove = new DeleteButton("delete", this.prog);
-    var amt = 0.25;
-    this.buttons.ensl = new ShiftButton("en_sl", this.prog, false, true,amt);
-    this.buttons.ensr = new ShiftButton("en_sr", this.prog, false,false,amt);
-    this.buttons.undo = new HistoryButton("undo",this.prog, true);
-    this.buttons.redo = new HistoryButton("redo",this.prog, false);
-
-    $("#instructions").html("Break up the following");
 
     this.status = new Status("progress","status",1);
   }
@@ -488,17 +366,69 @@ var SegmentController = function(){
 
 var ctrl;
 
-//video_player, video_bar, break_button, next_button, prev_button, delay_button, earlier_button, delete_button
+var highlightTextArea = function (){
+    document.getElementById('entry').select();
+}
+
+
 $("document").ready(function() {
   var data = {};
   ctrl = new SegmentController();
-  $("#save",$("#dev")).click(function(){
-    var str = JSON.stringify(ctrl.to_json());
-    $("#output", $("#dev")).val(str);
-  })
-  $("#load", $("#dev")).click(function(){
+  $("#load", $("#dev")).click( function(){
     var data = $("#output", $("#dev")).val();
     ctrl.from_json(JSON.parse(data));
-  })
+  });
+
+  var enteredText = [];
+  var textIndex = -1;
+
+  var updateText = function() {
+      if (textIndex > 0) {
+         $(".scribe.prev").css("background-color", "#D4876A");
+         $("#prevText").css("background-color", "white");
+         $("#prevText").text(enteredText[textIndex - 1]);
+      } else {
+         $(".scribe.prev").css("background-color", "#EEEEEE");
+         $('#prevText').css("background-color", "#EEEEEE");
+         $("#prevText").text('');
+      }
+      $("#entry").val(enteredText[textIndex]);
+      if (textIndex == (enteredText.length - 1)) {
+         $("nextText").text('');
+      } else {
+         $("#nextText").text(enteredText[textIndex + 1]);
+      }
+   }
+
+   highlightTextArea();
+   updateText();
+
+   document.getElementById("prev").onclick = function(e) {
+      if (textIndex == (enteredText.length - 1)) {
+         enteredText.push($('#entry').val());
+         textIndex--;
+         updateText();
+      } else if (textIndex > 0) {
+         enteredText[textIndex] = $('#entry').val();
+         textIndex--;
+         updateText();
+      }
+   }
+
+   document.getElementById("next").onclick = function(e) {
+      if (textIndex == enteredText.length) {
+         enteredText.push($('#entry').val());
+         updateText();
+      } else if (textIndex == -1) {
+         $(".scribe.entry").css("visibility", "visible");
+         $("#prev").css("visibility", "visible");
+         $("#replay").css("visibility", "visible");
+         // $("#buttonNext").title = "Next";
+      } else {
+         enteredText[textIndex] = $('#entry').val();
+         updateText();
+      }
+      textIndex++;
+   }
 
 });
