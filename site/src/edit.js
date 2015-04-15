@@ -40,8 +40,15 @@ function load_json () {
 }
 
 function save_json () {
-    var data = [];
+    // Save existing work.
+    if (active_segment) {
+        active_segment.deactivate($('#active_text').val());
+        $('#replay_button')[0].disabled = true;
+        $('#prev_button')[0].disabled = true;
+    }
 
+    // Build an object with the data we want to save.
+    var data = [];
     var node;
     for (node = first_seg; node != null; node = node.next) {
         data.push({ start: node.start,
@@ -54,6 +61,7 @@ function save_json () {
     var obj = { data: data,
                 url: url };
 
+    // Store the object to the output buffer.
     $('#output').val(JSON.stringify(obj));
 }
 
