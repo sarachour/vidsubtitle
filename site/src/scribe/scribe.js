@@ -1,23 +1,4 @@
-var seg = {
-            "data":[
-               {"start":38.379466,"end":38.51878,"length":0.13931399999999883,"id":12,"type":"break"},
-               {"start":45.600575,"end":45.71667,"length":0.11609500000000139,"id":14,"type":"break"},
-               {"start":34.896616,"end":35.03593,"length":0.13931399999999883,"id":10,"type":"break"},
-               {"start":20.64015,"end":22.892393,"length":2.252243,"id":7,"type":"silence"},
-               {"start":35.569967,"end":36.289756,"length":0.7197889999999987,"id":11,"type":"silence"},
-               {"start":31.460204,"end":31.576299,"length":0.11609499999999784,"id":9,"type":"break"},
-               {"start":26.073396,"end":28.093449,"length":2.0200530000000008,"id":8,"type":"silence"},
-               {"start":42.23382,"end":42.373134,"length":0.13931399999999883,"id":13,"type":"break"},
-               {"start":16.274978,"end":16.391073,"length":0.11609499999999784,"id":6,"type":"break"},
-               {"start":14.208487,"end":14.324582,"length":0.11609499999999962,"id":5,"type":"break"},
-               {"start":11.259674,"end":11.375769,"length":0.11609499999999962,"id":4,"type":"break"},
-               {"start":9.425373,"end":9.541468,"length":0.11609499999999962,"id":3,"type":"break"},
-               {"start":7.63751,"end":7.776824,"length":0.1393140000000006,"id":2,"type":"break"},
-               {"start":5.338829,"end":5.431705,"length":0.0928760000000004,"id":1,"type":"break"},
-               {"start":4.990544,"end":5.129858,"length":0.13931399999999972,"id":0,"type":"break"}
-            ],
-            "url":"media/vid1.mp4"
-         };
+var video;
 
 /*
 Video States: 
@@ -372,9 +353,11 @@ var highlightTextArea = function (){
 
 
 $("document").ready(function() {
+
   var data = {};
   ctrl = new SegmentController();
-  $("#load", $("#dev")).click( function(){
+
+  $("#load", $("#dev")).click(function(){
     var data = $("#output", $("#dev")).val();
     ctrl.from_json(JSON.parse(data));
   });
