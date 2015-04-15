@@ -347,10 +347,6 @@ var SegmentController = function(){
 
 var ctrl;
 
-var highlightTextArea = function (){
-    document.getElementById('entry').select();
-}
-
 
 $("document").ready(function() {
 
@@ -360,10 +356,13 @@ $("document").ready(function() {
   $("#load", $("#dev")).click(function(){
     var data = $("#output", $("#dev")).val();
     ctrl.from_json(JSON.parse(data));
+    $(".scribe.entry").css("visibility", "visible");
+    $(".scribe.button.hotkey").css("visibility", "visible");
+    document.getElementById('entry').select();
   });
 
   var enteredText = [];
-  var textIndex = -1;
+  var textIndex = 0;
 
   var updateText = function() {
       if (textIndex > 0) {
@@ -383,35 +382,27 @@ $("document").ready(function() {
       }
    }
 
-   highlightTextArea();
    updateText();
 
-   document.getElementById("prev").onclick = function(e) {
+   document.getElementById("prev").click = function(e) {
       if (textIndex == (enteredText.length - 1)) {
          enteredText.push($('#entry').val());
          textIndex--;
-         updateText();
       } else if (textIndex > 0) {
          enteredText[textIndex] = $('#entry').val();
          textIndex--;
-         updateText();
       }
+      updateText();
    }
 
-   document.getElementById("next").onclick = function(e) {
+   document.getElementById("next").click = function(e) {
       if (textIndex == enteredText.length) {
          enteredText.push($('#entry').val());
-         updateText();
-      } else if (textIndex == -1) {
-         $(".scribe.entry").css("visibility", "visible");
-         $("#prev").css("visibility", "visible");
-         $("#replay").css("visibility", "visible");
-         // $("#buttonNext").title = "Next";
       } else {
          enteredText[textIndex] = $('#entry').val();
-         updateText();
       }
       textIndex++;
+      updateText();
    }
 
 });
