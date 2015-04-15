@@ -106,8 +106,9 @@ var SegmentModel  = function(){
       var shift_elem = function(e, left_amt, right_amt, is_left){
          if(e == null) return;
          if(e.type == "silence"){
-            if(is_left) e.start += left_amt;
-            else e.end += right_amt;
+            console.log("silence",is_left, left_amt, right_amt);
+            if(!is_left) e.start += right_amt;
+            else e.end += left_amt;
          }
          else if(e.type == "break") {
             var vamt = right_amt;
@@ -121,12 +122,12 @@ var SegmentModel  = function(){
 
       if(sel.type == "silence"){
          var e= this._get_by_id(sel.id);
-         shift_elem(e, left_amt,right_amt,true);
-         shift_elem(e, left_amt,right_amt,false);
+         shift_elem(e, right_amt+left_amt,right_amt+left_amt,true);
       }
       else if(sel.type == "segment"){
          var es = this._get_by_id(sel.sid);
          var ee= this._get_by_id(sel.eid);
+         console.log(es,ee);
          shift_elem(es, left_amt,right_amt,true);
          shift_elem(ee, left_amt,right_amt,false);
       }
@@ -170,15 +171,16 @@ var SegmentModel  = function(){
       var last = 0;
       var last_id = 0;
       this.data.segments.for_each(function(e){
-         var tmp = last;
-         last = e.end;
          last_id = e.id;
          if(e.type == "silence"){
-            selections.push({start:tmp, end:e.start, type:'segment',sid:last_id,eid:e.id, subtype:"normal"});
+            selections.push({start:last, end:e.start, type:'segment',sid:last_id,eid:e.id, subtype:"normal"});
             selections.push({start:e.start, end:e.end, type:'silence',id:e.id});
+            last = e.end;
          }
          else{
-            selections.push({start:tmp, end:e.end, type:'segment',sid:last_id,eid:e.id, subtype:"normal"});
+            var c = (e.start+e.end)/2;
+            selections.push({start:last, end:c, type:'segment',sid:last_id,eid:e.id, subtype:"normal"});
+            last = c;
          }
       });
       selections.push({start:last, end:this.data.duration,type:'segment', sid:last_id, eid:-1, subtype:"continue"});

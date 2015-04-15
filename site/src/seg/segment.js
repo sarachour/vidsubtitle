@@ -157,6 +157,7 @@ var SelectionPlayer = function(state){
     if(type == 'segment' || type == "silence"){
       var s = time;
       var e = sel.end;
+      console.log(s,e);
       if(time == undefined) s = sel.start;
       if(this.side == "left"){
         e = s+Math.min(e-s,2);
@@ -222,7 +223,10 @@ var MarkButton = function(button_name, state){
         that.is_down = true;
     })
     this.view.mouseup(function(){
-        if(that.playing && that.is_down) that.state.statemgr().trigger('state-change',{state:'unhold'});
+        if(that.playing && that.is_down){
+          that.state.video_player().pause();
+          that.state.statemgr().trigger('state-change',{state:'unhold'});
+        } 
 
     })
   }
