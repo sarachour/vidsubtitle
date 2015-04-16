@@ -1,14 +1,18 @@
 
+function __sn_htmlify (str) {
+    return str.replace("\n", "<br>");
+}
+
 // Generate an "inactive" version of the box.
 function __sn_deactivate (edit_text) {
     if (edit_text) this.postedit = edit_text;
 
     var html = '<div class="preedit_box">'
     html += '<b>Original:</b><br>';
-    html += this.preedit;
+    html += __sn_htmlify(this.preedit);
     html += '</div><div class="postedit_box">';
     html += '<b>Edit:</b><br>';
-    html += this.postedit;
+    html += __sn_htmlify(this.postedit);
     html += '</div>';
     $('#' + this.id).html(html);
 
@@ -22,7 +26,7 @@ function __sn_deactivate (edit_text) {
 function __sn_activate () {
     var html = '<div class="preedit_box">'
     html += '<b>Original:</b><br>';
-    html += this.preedit;
+    html += __sn_htmlify(this.preedit);
     html += '</div><div class="postedit_box">';
     html += '<b>Edit:</b><br>';
     html += '<textarea id="active_text">';

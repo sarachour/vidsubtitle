@@ -15,7 +15,7 @@ function load_json () {
     first_seg = last_seg = active_segment = null;
     $('#edit_content').html('');
     $('#player1').attr('src', input_obj.url);
-    $('#progress').html('Task not started');
+    $('#progress').html('Progress: Not started');
 
     // Create the new state.
     seg_count = input_obj.data.length;
@@ -69,6 +69,7 @@ function save_json () {
 
     // Store the object to the output buffer.
     $('#output').val(JSON.stringify(obj));
+    $('#progress').html('Changes saved');
 }
 
 function setup_segment (seg) {
