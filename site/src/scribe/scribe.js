@@ -353,35 +353,48 @@ $("document").ready(function() {
   var data = {};
   ctrl = new SegmentController();
 
-  $("#load", $("#dev")).click(function(){
-    var data = $("#output", $("#dev")).val();
-    ctrl.from_json(JSON.parse(data));
-    $(".scribe.entry").css("visibility", "visible");
-    $(".scribe.button.hotkey").css("visibility", "visible");
-    document.getElementById('entry').select();
-  });
+  test_data = ['{"data":[{"start":3.939453,"end":4.00911,"length":0.06965699999999986,"id":0,"type":"break"},{"start":17.798030000000008,"end":17.867687000000007,"length":0.06965699999999941,"id":1,"type":"break"},{"start":19.752259,"end":19.821916,"length":0.06965700000000297,"id":3,"type":"break"},{"start":27.12918,"end":27.198837000000005,"length":0.06965700000000297,"id":4,"type":"break"},{"start":29.224944,"end":29.271382,"length":0.046437999999998425,"id":2,"type":"break"},{"start":35.134845999999975,"end":35.204502999999974,"length":0.06965699999999941,"id":5,"type":"break"},{"start":36.764008,"end":36.856884,"length":0.09287600000000396,"id":6,"type":"break"},{"start":45.26954999999998,"end":45.33920699999998,"length":0.06965699999999941,"id":7,"type":"break"},{"start":46.94515,"end":47.014807,"length":0.06965699999999941,"id":8,"type":"break"},{"start":53.327208999999975,"end":53.396865999999974,"length":0.06965699999999941,"id":9,"type":"break"},{"start":55.118904,"end":55.188561,"length":0.06965699999999941,"id":10,"type":"break"},{"start":59.028667,"end":59.075105,"length":0.04643800000000198,"id":11,"type":"break"},{"start":61.141596,"end":61.188033999999995,"length":0.04643799999999487,"id":12,"type":"break"},{"start":63.834999999999994,"end":63.881438,"length":0.04643800000000908,"id":13,"type":"break"},{"start":66.09621399999999,"end":66.165871,"length":0.06965700000000652,"id":14,"type":"break"},{"start":69.164954,"end":69.234611,"length":0.06965700000000652,"id":15,"type":"break"},{"start":71.69054799999999,"end":71.73698599999999,"length":0.04643799999999487,"id":16,"type":"break"},{"start":75.935931,"end":76.005588,"length":0.06965700000000652,"id":17,"type":"break"},{"start":79.167205,"end":79.213643,"length":0.04643800000000908,"id":18,"type":"break"},{"start":84.90718599999998,"end":84.97684299999999,"length":0.06965700000000652,"id":19,"type":"break"}],"url":"media/movie2.mp4"}', '{"data":[{"start":3.126788,"end":3.196445,"length":0.0696570000000003,"id":0,"type":"break"},{"start":4.659242,"end":4.728899,"length":0.0696570000000003,"id":1,"type":"break"},{"start":9.305292000000003,"end":9.374949000000004,"length":0.06965700000000119,"id":3,"type":"break"},{"start":11.700682,"end":11.770339,"length":0.06965699999999941,"id":4,"type":"break"},{"start":16.483796,"end":16.553453,"length":0.06965699999999941,"id":5,"type":"break"},{"start":20.302265999999996,"end":20.371923,"length":0.06965700000000297,"id":6,"type":"break"},{"start":25.080242,"end":25.149898999999998,"length":0.06965699999999941,"id":7,"type":"break"},{"start":31.276158999999996,"end":31.369034999999997,"length":0.0928760000000004,"id":8,"type":"break"},{"start":35.26205,"end":35.354926,"length":0.09287599999999685,"id":9,"type":"break"},{"start":39.000309,"end":39.046747,"length":0.04643800000000198,"id":10,"type":"break"},{"start":41.391866,"end":41.461523,"length":0.06965699999999941,"id":11,"type":"break"},{"start":44.201365,"end":44.247803,"length":0.04643799999999487,"id":12,"type":"break"},{"start":48.125376,"end":48.195033,"length":0.06965699999999941,"id":13,"type":"break"},{"start":53.26732900000001,"end":53.33698600000001,"length":0.06965699999999941,"id":14,"type":"break"},{"start":61.978287,"end":62.047944,"length":0.06965699999999941,"id":15,"type":"break"},{"start":65.975788,"end":66.045445,"length":0.06965700000000652,"id":16,"type":"break"},{"start":68.344126,"end":68.390564,"length":0.04643799999999487,"id":17,"type":"break"},{"start":73.18423200000001,"end":73.25388900000002,"length":0.06965700000000652,"id":18,"type":"break"},{"start":79.503633,"end":79.57329,"length":0.06965700000000652,"id":19,"type":"break"},{"start":85.122631,"end":85.192288,"length":0.06965700000000652,"id":20,"type":"break"},{"start":89.882526,"end":89.952183,"length":0.06965700000000652,"id":21,"type":"break"},{"start":93.086748,"end":93.156405,"length":0.06965700000000652,"id":22,"type":"break"},{"start":99.239783,"end":99.30944,"length":0.06965699999999231,"id":23,"type":"break"},{"start":102.73740899999997,"end":102.80706599999996,"length":0.06965699999999231,"id":24,"type":"break"},{"start":105.411426,"end":105.481083,"length":0.06965699999999231,"id":25,"type":"break"},{"start":111.81670399999997,"end":111.88636099999997,"length":0.06965699999999231,"id":26,"type":"break"},{"start":114.699692,"end":114.74613,"length":0.04643799999999487,"id":27,"type":"break"},{"start":131.9314950000001,"end":132.0011520000001,"length":0.06965700000000652,"id":28,"type":"break"}],"url":"media/movie1.mp4"}'];
+  test_index = Math.floor(Math.random() * test_data.length);
 
-  $("#output",$("#dev")).val('{"data":[{"start":2.972153,"end":3.006983,"length":0.03482999999999992,"id":1,"type":"break"},{"start":4.50467,"end":9.937368,"length":5.932697999999999,"id":9,"type":"silence"},{"start":11.771744,"end":11.853014,"length":0.08126999999999995,"id":10,"type":"break"},{"start":16.277185,"end":16.358455,"length":0.08126999999999995,"id":11,"type":"break"},{"start":16.477639,"end":16.558909,"length":0.08126999999999995,"id":5,"type":"break"},{"start":20.483081,"end":20.529521,"length":0.04644000000000048,"id":13,"type":"break"},{"start":24.906482,"end":24.952922,"length":0.04644000000000048,"id":15,"type":"break"},{"start":31.710699,"end":31.745529,"length":0.03482999999999947,"id":16,"type":"break"},{"start":35.496323,"end":35.577593,"length":0.0812700000000035,"id":17,"type":"break"},{"start":39.293556,"end":39.339996,"length":0.04643999999999693,"id":18,"type":"break"},{"start":41.464621,"end":41.511061,"length":0.04643999999999693,"id":19,"type":"break"},{"start":44.170517,"end":44.251787,"length":0.0812700000000035,"id":20,"type":"break"},{"start":48.17673,"end":48.257999,"length":0.08126899999999893,"id":21,"type":"break"},{"start":53.182172,"end":53.228612,"length":0.04643999999999693,"id":22,"type":"break"},{"start":62.021241,"end":62.067681,"length":0.04643999999999693,"id":24,"type":"break"},{"start":63.484868,"end":63.531308,"length":0.046440000000004034,"id":25,"type":"break"},{"start":65.981784,"end":66.028224,"length":0.04643999999998982,"id":26,"type":"break"},{"start":67.816932,"end":67.863372,"length":0.046440000000004034,"id":27,"type":"break"},{"start":73.450854,"end":73.497294,"length":0.04643999999998982,"id":28,"type":"break"},{"start":79.418382,"end":79.464822,"length":0.046440000000004034,"id":32,"type":"break"},{"start":84.840241,"end":84.909901,"length":0.06965999999999894,"id":30,"type":"break"},{"start":87.430037,"end":87.464866,"length":0.034829000000002,"id":31,"type":"break"},{"start":89.891351,"end":89.926181,"length":0.03482999999999947,"id":33,"type":"break"},{"start":92.597246,"end":92.643686,"length":0.046440000000004034,"id":34,"type":"break"},{"start":99.552393,"end":99.564003,"length":0.011610000000004561,"id":35,"type":"break"},{"start":104.940193,"end":105.021463,"length":0.0812700000000035,"id":36,"type":"break"},{"start":105.021463,"end":112.485884,"length":4.2144210000000015,"id":37,"type":"silence"},{"start":105.032302,"end":105.032302,"length":0,"id":39,"type":"break"},{"start":105.032302,"end":105.032302,"length":0,"id":41,"type":"break"},{"start":113.867494,"end":113.948764,"length":0.0812700000000035,"id":40,"type":"break"}],"url":"media/movie1.mp4"}')
+  $("#save",$("#dev")).click(function(){
+    var str = JSON.stringify(ctrl.to_json());
+    $("#output", $("#dev")).val(str);
+  });
+  $("#load", $("#dev")).click(function(){
+                data = $("#output", $("#dev")).val();
+                ctrl.from_json(JSON.parse(data));
+                $(".scribe.entry").css("visibility", "visible");
+                $(".scribe.button.hotkey").css("visibility", "visible");
+                document.getElementById('entry').select();
+                });
+
+  $("#output", $("#dev")).val(test_data[test_index]);
   $("#load", $("#dev")).click();
+
+  var seg_count = JSON.parse(test_data[test_index])['data'].length;
+  var status = new Status("Status", "Progress", seg_count+1, "Segment");
   var enteredText = [];
   var textIndex = 0;
 
   var updateText = function() {
-      if (textIndex > 0) {
-         $(".scribe.prev").css("background-color", "#D4876A");
-         $("#prevText").css("background-color", "white");
-         $("#prevText").text(enteredText[textIndex - 1]);
+      if (textIndex == 0) {
+        $(".scribe.prev").css("background-color", "#EEEEEE");
+        $('#prevText').css("background-color", "#EEEEEE");
+        $("#prevText").text('');
+        $("#nextText").text(enteredText[textIndex + 1]);
+      } else if (textIndex == seg_count) {
+        $(".scribe.next").css("background-color", "#EEEEEE");
+        $('#nextText').css("background-color", "#EEEEEE");
+         $("#nextText").text('');
       } else {
-         $(".scribe.prev").css("background-color", "#EEEEEE");
-         $('#prevText').css("background-color", "#EEEEEE");
-         $("#prevText").text('');
+        $(".scribe.prev").css("background-color", "#D4876A");
+        $("#prevText").css("background-color", "white");
+        $(".scribe.next").css("background-color", "#64B058");
+        $("#nextText").css("background-color", "white");
+        $("#prevText").text(enteredText[textIndex - 1]);
+        $("#nextText").text(enteredText[textIndex + 1]);
       }
       $("#entry").val(enteredText[textIndex]);
-      if (textIndex == (enteredText.length - 1)) {
-         $("nextText").text('');
-      } else {
-         $("#nextText").text(enteredText[textIndex + 1]);
-      }
    }
 
    updateText();
@@ -390,21 +403,26 @@ $("document").ready(function() {
       if (textIndex == (enteredText.length - 1)) {
          enteredText.push($('#entry').val());
          textIndex--;
+         status.prev();
       } else if (textIndex > 0) {
          enteredText[textIndex] = $('#entry').val();
          textIndex--;
+         status.prev();
       }
       updateText();
    }
 
    document.getElementById("next").click = function(e) {
-      if (textIndex == enteredText.length) {
-         enteredText.push($('#entry').val());
-      } else {
-         enteredText[textIndex] = $('#entry').val();
+      if (textIndex < seg_count) {
+        if (textIndex == enteredText.length) {
+          enteredText.push($('#entry').val());
+        } else {
+          enteredText[textIndex] = $('#entry').val();
+        }
+        textIndex++;
+        status.next();
+        updateText();
       }
-      textIndex++;
-      updateText();
    }
 
 });
