@@ -23,14 +23,17 @@
     margin: 10px 10px 0px 10px;
     padding: 0px 0px 10px 0px;
     border-bottom: 1px dashed #00F;
+    font-size: 16px;
 }
 
 .postedit_box {
     margin: 10px;
     padding: 0px;
+    font-size: 16px;
 }
 
 textarea {
     width: 100%;
+    font-size: 16px;
 }
 
