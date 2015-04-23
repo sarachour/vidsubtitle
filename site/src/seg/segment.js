@@ -543,6 +543,14 @@ var SegmentController = function(){
     this.prog.video_player().load(url);
     this.prog.video_bar().model.from_json(segdata);
   }
+  this.export = function(d){
+    var data = {};
+    var segdata = this.prog.video_bar().model.export();
+    data.data = segdata;
+    data.url = this.prog.video_player().get_model().get_url();
+    return data;
+  }
+
   this.init();
 }
 
@@ -555,6 +563,10 @@ $("document").ready(function() {
   ctrl = new SegmentController();
   $("#save",$("#dev")).click(function(){
     var str = JSON.stringify(ctrl.to_json());
+    $("#output", $("#dev")).val(str);
+  })
+  $("#export",$("#dev")).click(function(){
+    var str = JSON.stringify(ctrl.export());
     $("#output", $("#dev")).val(str);
   })
   $("#load", $("#dev")).click(function(){

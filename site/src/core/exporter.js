@@ -16,18 +16,10 @@ var SubtitleExporter = function(){
    }
    this.for_each = function(json, cbk){
       var elems = json.data;
-      var last = 0;
       var str = "";
       for(var i=0; i < elems.length; i++){
          var e = elems[i];
-         if(e.type == "break"){
-            str += cbk(e,i, last, e.end);
-            last = e.end;
-         }
-         else{
-            str += cbk(e,i, last, e.start, e.text);
-            last = e.end;
-         }
+         str += cbk(e,i, e.start, e.end);
 
       }
       return str;
@@ -88,11 +80,13 @@ var SubtitleExporter = function(){
       return str;
    }
    this.to_file = function(data){
-      var data = new Blob([data], {type: 'text/plain'});
+      window.URL = window.URL || window.webkitURL;
+      var blob = new Blob([data], {type: 'text/plain'});
       if(this.file != null){
          window.URL.revokeObjectURL(this.file);
       }
-      this.file = window.URL.createObjectURL(data);
+      this.file = window.URL.createObjectURL(blob);
+      console.log(this.file, blob)
       return this.file;
    }
 }

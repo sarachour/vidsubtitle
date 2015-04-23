@@ -22,9 +22,28 @@ var SegmentModel  = function(){
    this.listen = function(ename, cbk){
       this._evt.listen(ename, cbk);
    }
-   //gets normalized data for plotting, as well as scale
    this.get_data = function(){
       return this.data;
+   }
+   //gets normalized data for plotting, as well as scale
+   this.export = function(){
+      var last_time = 0;
+      var data = [];
+      this.data.segments.for_each(function(seg){
+         var s = seg.start;
+         var e = seg.end;
+         if(seg.type == "break"){
+            var t = (s+e)/2;
+            data.push({start:last_time, end:t, caption:{}});
+         }
+         else if(seg.type == "silence"){
+            var t = e;
+            data.push({start:last_time, end:s, caption:{}});
+            data.push({start:s, end:t, caption:""});
+         }
+         last_time = t;
+      })
+      return data;
    }
    this.to_json = function(){
       return this.data.segments.get_array();
