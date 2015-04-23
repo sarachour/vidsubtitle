@@ -24,6 +24,29 @@ var SubtitleExporter = function(){
       }
       return str;
    }
+   this.to_raw = function(json){
+      var delim = ";";
+      var nline = "\n";
+      var that = this;
+      var str = this.for_each(json, function(n,i,s,e){
+         var nub = "";
+         nub = "Speaker";
+         nub += delim;
+         nub += s;
+         nub += delim;
+         nub += e;
+         nub += delim;
+         if(n.text != undefined){
+            nub += n.text;
+         }
+         else{
+            nub += that.lorem.createText(1, Lorem.TYPE.SENTENCE);
+         }
+         nub += nline;
+         return nub;
+      })
+      return str;
+   }
    this.to_vtt = function(json){
       var that = this;
       var tc = function(s){
