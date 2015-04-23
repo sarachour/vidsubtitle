@@ -4,7 +4,6 @@ var data = {};
 var load_track = function(){
    var vid = $("video");
    vid.attr('crossorigin','anonymous');
-   console.log("loading subs");
    //create track
    var track = vid[0].addTextTrack("captions", "English","en");
    track.mode = "showing";
@@ -25,7 +24,20 @@ var load_track = function(){
 
 }
 
+var add_buttons = function(){
+   var vid = $("video");
+   var request = $("<button/>")
+      .html("Request Video")
+      .css('position','absolute')
+      .css('right',vid.offset().left)
+      .css('top',vid.offset().top)
+      .css('width',200)
+      .css('height',100)
+      .css('background-color', 'blue');
+   $("body").append(request);
+}
+
 $("document").ready(function(){
    load_track();
-
+   add_buttons();
 })
