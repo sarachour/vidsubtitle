@@ -1,9 +1,13 @@
 var static = require('node-static')
-var http = require('http');
-var https = require('https');
 var fs = require('fs');
 
-var file = new(static.Server)('../../site/');
+var file = new static.Server('../../site/',
+   {
+      headers: {
+         "Access-Control-Allow-Origin":"*",
+         "Access-Control-Allow-Headers":"X-Requested-With"
+      }
+   });
 
 var options = {
   key: fs.readFileSync('key.pem'),
@@ -13,18 +17,19 @@ var options = {
 };
 
 var process_file = function(req,res){
-   res.setHeader("Access-Control-Allow-Origin", "*");
-   res.setHeader("Access-Control-Allow-Headers", "X-Requested-With");
-   file.serve(req, res);
+   req.addListener('end', function(){
+      file.serve(req, res);
+   });
+    req.resume();
 }
 console.log("starting https");
-https.createServer(options, function (req, res) {
+require('https').createServer(options, function (req, res) {
   process_file(req,res);
 }).listen(4443);
 
 
 console.log("starting http");
-http.createServer(function (req, res) {
+require('http').createServer(function (req, res) {
   process_file(req,res);
 }).listen(8080);
 
