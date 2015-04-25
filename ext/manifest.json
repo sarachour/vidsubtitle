@@ -20,8 +20,8 @@
   "content_scripts": [
     {
       "matches": ["http://www.youtube.com/watch?*","https://www.youtube.com/watch?*"],
-      "css": [],
-      "js": ["lib/jquery.js", "inject.js"]
+      "css": ["sidebar.css"],
+      "js": ["lib/jquery.js","sidebar.js", "hiddensubtext.js", "inject.js"]
     }
   ]
 }
