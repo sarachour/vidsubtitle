@@ -15,7 +15,6 @@ function load_json () {
     first_seg = last_seg = active_segment = null;
     $('#edit_content').html('');
     $('#player1').attr('src', input_obj.url);
-    $('#progress').html('Progress: Not started');
 
     // Create the new state.
     seg_count = input_obj.data.length;
@@ -23,7 +22,7 @@ function load_json () {
     // Add each segment to the container region.
     var prev = null;
     for (var i = 0; i < seg_count; ++i) {
-        var seg = new SegmentNode(i, input_obj.data[i], prev);
+        var seg = new SegmentNode(i, input_obj.data[i], prev, seg_count);
 
         // Make the box for this segment.
         var segment_box = '<div '
@@ -69,7 +68,6 @@ function save_json () {
 
     // Store the object to the output buffer.
     $('#output').val(JSON.stringify(obj));
-    $('#progress').html('Changes saved');
 }
 
 function setup_segment (seg) {
@@ -99,9 +97,6 @@ function click_edit_segment (seg) {
         $('#prev_button')[0].disabled = active_segment == first_seg;
         $('#next_button')[0].disabled = active_segment == last_seg;
         $('#replay_button')[0].disabled = false;
-
-        $('#progress').html('Segment ' + seg.index
-                            + ' of ' + seg_count);
 
         setup_segment(seg);
         video.play();
@@ -171,5 +166,4 @@ $("document").ready(function() {
 
     $('#replay_button')[0].disabled = true;
     $('#prev_button')[0].disabled = true;
-    $('#demo_button')[0].disabled = true;
 });
