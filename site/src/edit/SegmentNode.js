@@ -7,7 +7,11 @@ function __sn_htmlify (str) {
 function __sn_deactivate (edit_text) {
     if (edit_text) this.postedit = edit_text;
 
-    var html = '<div class="preedit_box">'
+    var html = '<div class="segment_counter">Segment ';
+    html += this.index + ' of ' + this.total;
+    html += '</div>';
+
+    html += '<div class="preedit_box">'
     html += '<b>Original:</b><br>';
     html += __sn_htmlify(this.preedit);
     html += '</div><div class="postedit_box">';
@@ -24,7 +28,11 @@ function __sn_deactivate (edit_text) {
 
 // Generate an "active" version of the box that can take edits.
 function __sn_activate () {
-    var html = '<div class="preedit_box">'
+    var html = '<div class="segment_counter">Segment ';
+    html += this.index + ' of ' + this.total;
+    html += '</div>';
+
+    html += '<div class="preedit_box">'
     html += '<b>Original:</b><br>';
     html += __sn_htmlify(this.preedit);
     html += '</div><div class="postedit_box">';
@@ -45,8 +53,9 @@ function __sn_activate () {
 
 // SegmentNode contains info about itself in relation to other nodes, and
 // has info about the edit.
-function SegmentNode (id, segment, prev) {
+function SegmentNode (id, segment, prev, total) {
     this.index = id + 1;
+    this.total = total;
     this.id = 'segment_id_' + id;
     this.start = segment.start;
     this.end = segment.end;

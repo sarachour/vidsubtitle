@@ -23,7 +23,7 @@ function load_json () {
     // Add each segment to the container region.
     var prev = null;
     for (var i = 0; i < seg_count; ++i) {
-        var seg = new SegmentNode(i, input_obj.data[i], prev);
+        var seg = new SegmentNode(i, input_obj.data[i], prev, seg_count);
 
         // Make the box for this segment.
         var segment_box = '<div '
