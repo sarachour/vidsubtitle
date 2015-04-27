@@ -92,7 +92,7 @@ var SegmentBar = function(id, model){
 
       colors.background = {};
       colors.background.all = "white";
-      colors.background.markers = "#444444";
+      colors.background.markers = "white";
       colors.background.footer = "white";
 
       if(d.duration == null || d.duration == 0) return;

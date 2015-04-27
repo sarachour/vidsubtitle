@@ -13,10 +13,13 @@ var SegmentModel  = function(){
       this.data.time = 0;
       this.data.hold = null;
       this.data.duration = 0;
-      this.data.eps = 0.5;
 
-      this.data.selection = null;
-
+      this.data.selection = {
+         type:'segment',
+         subtype:'continue',
+         start:0,
+         end:this.data.duration
+      };
       this._evt = new Observer();
    }
    this.listen = function(ename, cbk){
@@ -35,11 +38,6 @@ var SegmentModel  = function(){
          if(seg.type == "break"){
             var t = (s+e)/2;
             data.push({start:last_time, end:t, caption:{}});
-         }
-         else if(seg.type == "silence"){
-            var t = e;
-            data.push({start:last_time, end:s, caption:{}});
-            data.push({start:s, end:t, caption:""});
          }
          last_time = t;
       })
@@ -124,26 +122,15 @@ var SegmentModel  = function(){
       }
       var shift_elem = function(e, left_amt, right_amt, is_left){
          if(e == null) return;
-         if(e.type == "silence"){
-            console.log("silence",is_left, left_amt, right_amt);
-            if(!is_left) e.start += right_amt;
-            else e.end += left_amt;
-         }
-         else if(e.type == "break") {
-            var vamt = right_amt;
-            if(is_left) vamt = left_amt;
-            e.start += vamt;
-            e.end += vamt;
-         }
+         var vamt = right_amt;
+         if(is_left) vamt = left_amt;
+         e.start += vamt;
+         e.end += vamt;
       }
       var that = this;
       if(sel == null) return;
 
-      if(sel.type == "silence"){
-         var e= this._get_by_id(sel.id);
-         shift_elem(e, right_amt+left_amt,right_amt+left_amt,true);
-      }
-      else if(sel.type == "segment"){
+      if(sel.type == "segment"){
          var es = this._get_by_id(sel.sid);
          var ee= this._get_by_id(sel.eid);
          console.log(es,ee);
@@ -174,9 +161,6 @@ var SegmentModel  = function(){
          if(sel.eid < 0) return;
          var e=this.data.segments.remove_all(function(e){return e.id == sel.eid});
       }
-      else if(sel.type == "silence"){
-         var e=this.data.segments.remove_all(function(e){return e.id == sel.id});
-      }
       var enc = this.get_enclosing_selection(sel.end);
       this.data.selection = enc;
       this._evt.trigger('update',{obj:this});
@@ -191,16 +175,9 @@ var SegmentModel  = function(){
       var last_id = 0;
       this.data.segments.for_each(function(e){
          last_id = e.id;
-         if(e.type == "silence"){
-            selections.push({start:last, end:e.start, type:'segment',sid:last_id,eid:e.id, subtype:"normal"});
-            selections.push({start:e.start, end:e.end, type:'silence',id:e.id});
-            last = e.end;
-         }
-         else{
-            var c = (e.start+e.end)/2;
-            selections.push({start:last, end:c, type:'segment',sid:last_id,eid:e.id, subtype:"normal"});
-            last = c;
-         }
+         var c = (e.start+e.end)/2;
+         selections.push({start:last, end:c, type:'segment',sid:last_id,eid:e.id, subtype:"normal"});
+         last = c;
       });
       selections.push({start:last, end:this.data.duration,type:'segment', sid:last_id, eid:-1, subtype:"continue"});
       return selections;
@@ -214,15 +191,11 @@ var SegmentModel  = function(){
       s.length = end-start;
       s.id = this._id;
       this._id+=1;
-      if(len < this.data.eps) { //pause
-         s.type = "break";
-      }
-      else{
-         s.type = "silence"
-      }
+      s.type = "break";
       this.data.segments.push(s);
+
+      //update selection if we're tracking the continuation
       var sel = this.data.selection;
-      //update 
       if( sel != null && sel.subtype == "continue"){
          if(sel.start < end) sel.start = end;
          sel.sid = this.data.segments.length()-1;
@@ -254,6 +227,9 @@ var SegmentModel  = function(){
    this.duration = function(d){
       if(isValue(d)){
          this.data.duration = d;
+         if(this.data.selection.subtype == "continue"){
+            this.data.selection.end = this.data.duration;
+         }
          this._evt.trigger('update',{obj:this});
       }
       return this.data.duration;
