@@ -79,7 +79,7 @@ var SegmentBar = function(id, model){
       //the cursor showing where you are currently
       colors.cursor = {};
       colors.cursor.marker = "#f1c40f";
-      colors.cursor.stem = "#black";
+      colors.cursor.stem = "#f39c12";
 
       //the selected segment
       colors.selected = "#2ecc71";

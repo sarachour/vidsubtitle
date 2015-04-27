@@ -11,9 +11,10 @@ chunk specific rules
 .segment #dev{
    margin-top: 50px;
 }
-.segment #segmentbar{
-   margin-top: 2px;
-   margin-bottom:px;
+#segmentbar{
+   margin-top: 1em;
+   margin-bottom:1em;
+
 }
 
 .scribe #segmentbar{
