@@ -47,6 +47,10 @@
    width: 16px;
    height:16px;
 }
+.icon.small-medium {
+   width: 24px;
+   height:24px;
+}
 .icon.med {
    width: 32px;
    height:32px;
