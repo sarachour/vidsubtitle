@@ -45,6 +45,7 @@ function __sn_activate () {
 
     $('#' + this.id).removeClass('inactive_box');
     $('#' + this.id).addClass('active_box');
+    $('#' + this.id)[0].scrollIntoView();
 
     $('#active_text').focus();
 
