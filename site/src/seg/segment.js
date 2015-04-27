@@ -247,12 +247,12 @@ var HistoryButton = function(button_name, world, is_undo){
     var that = this;
     if(is_undo){
       this.title = "Undo Action"
-      this.description = "Tap "+this.hmgr.image('undo-white')+" or "+
+      this.description = "Tap "+this.hmgr.image('undo')+" or "+
       this.hmgr.key("Ctrl")+"+"+this.hmgr.key("Z")+" to undo the last modification or deletion of a marker."
     }
     else{
       this.title = "Redo Action"
-      this.description =  "Tap "+this.hmgr.image('redo-white')+" or "+
+      this.description =  "Tap "+this.hmgr.image('redo')+" or "+
       this.hmgr.key("Ctrl")+"+"+this.hmgr.key("Y")+" to redo the last modification or deletion of a marker."
     }
     this.view.click(function(){
@@ -277,11 +277,11 @@ var NavigateButton = function(button_name, state, is_rev){
     this.hmgr = this.state.get_hint_mgr();
     if(is_rev){
       this.title = "Previous Segment"
-      this.description = "Tap "+this.hmgr.image('prev-white')+" or "+this.hmgr.key(keys.left)+" to move to the previous segment."
+      this.description = "Tap "+this.hmgr.image('prev')+" or "+this.hmgr.key(keys.left)+" to move to the previous segment."
     }
     else{
       this.title = "Next Segment"
-      this.description = "Tap "+this.hmgr.image('next-white')+" or "+this.hmgr.key(keys.right)+" to move to the next segment."
+      this.description = "Tap "+this.hmgr.image('next')+" or "+this.hmgr.key(keys.right)+" to move to the next segment."
     }
     this.view.click(function(){
       var sels = that.state.selections();
@@ -304,7 +304,7 @@ var ReplayButton = function(button_name, state){
     this.hmgr = this.state.get_hint_mgr();
     this.player = new SelectionPlayer(state);
     this.title = "Replay Segment";
-    this.description = "Tap "+this.hmgr.image('replay-white')+" or "
+    this.description = "Tap "+this.hmgr.image('replay')+" or "
       +this.hmgr.key(keys.up)+"or "+this.hmgr.key(keys.down)+" to replay the selected segment."
     this.view.click(function(){
       that.player.play();
@@ -324,7 +324,7 @@ var DeleteButton = function(button_name, state){
     this.player = new SelectionPlayer(state);
 
     this.title = "Delete Segment";
-    this.description = "Tap "+this.hmgr.image('delete-white')+" or press "+
+    this.description = "Tap "+this.hmgr.image('delete')+" or press "+
       this.hmgr.key("z")+" to merge two adjacent segments by removing the marker at the end of the current segment.";
     this.view.click(function(){
       that.state.remove();
@@ -348,11 +348,11 @@ var ShiftButton = function(button_name, state, is_start, is_left, amt){
     this.amount = amt;
     if(!is_left){  
       this.title = "Make Segment Longer";
-      this.description = "Tap "+this.hmgr.image('rshift-white')+" or "+this.hmgr.key('c')+" to extend the end of the segment.";
+      this.description = "Tap "+this.hmgr.image('rshift')+" or "+this.hmgr.key('c')+" to extend the end of the segment.";
     }
     else{
       this.title = "Make Segment Shorter";
-      this.description = "Tap "+this.hmgr.image('lshift-white')+" or "+this.hmgr.key('x')+" to shorten the end of the segment.";
+      this.description = "Tap "+this.hmgr.image('lshift')+" or "+this.hmgr.key('x')+" to shorten the end of the segment.";
     }
     this.view.click(function(){
       var amt = that.amount;

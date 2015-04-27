@@ -42,9 +42,18 @@ var YoutubeVideo = function(id) {
       //args.mode = "auto"
       args.mode = "native"
       this.player = $("#"+that.id).mediaelementplayer(args);
-   }
-   this.dims = function(w,h){
-      this.media.seT
+
+      this.dummy = $("<div/>").attr('id','video-dummy').css({
+         position:'absolute',
+         width:'100%',
+         height:'100%',
+         top:0,
+         left:0,
+         'z-index':'100'
+      });
+      this.dummy.click(function(){return false;})
+      console.log(this.id);
+      $("#"+this.id).parent().css('position','relative').append(this.dummy);
    }
    this.rate = function(e){
       this.media.playbackRate = e;
