@@ -79,7 +79,7 @@ var SegmentBar = function(id, model){
       //the cursor showing where you are currently
       colors.cursor = {};
       colors.cursor.marker = "#f1c40f";
-      colors.cursor.stem = "#d35400";
+      colors.cursor.stem = "#black";
 
       //the selected segment
       colors.selected = "#2ecc71";
@@ -90,34 +90,40 @@ var SegmentBar = function(id, model){
       colors.progbar.total = "#E0E0E0";
       colors.progbar.ignore = "#ecf0f1";
 
-      colors.background = "white";
+      colors.background = {};
+      colors.background.all = "white";
+      colors.background.markers = "#444444";
+      colors.background.footer = "white";
 
-
-
+      if(d.duration == null || d.duration == 0) return;
       //fill in background
-      ctx.fillStyle = colors.background;
+      ctx.fillStyle = colors.background.all;
       ctx.fillRect(x(0),y(0),x(d.duration),y(1));
 
       ctx.fillStyle = colors.ignore;
-      ctx.fillRect(x(0),y(prop.prog.start),x(1),y(prop.prog.end-prop.prog.start));
+      ctx.fillRect(x(0),y(prop.prog.start),x(d.duration),y(prop.prog.end-prop.prog.start));
 
+      ctx.fillStyle = colors.background.markers;
+      ctx.fillRect(x(0),y(prop.markers.start),x(d.duration),y(prop.markers.end-prop.markers.start));
       
-      var plumbob_draw = function(s,c){
-         ctx.beginPath();
-         ycoord = (prop.markers.start + prop.markers.end)/2;
-         yrad = (prop.markers.end - prop.markers.start)/2;
-         ctx.arc(x(s),y(ycoord),y(yrad),0,2*Math.PI);
-         ctx.fillStyle = ctx.strokeStyle = c.marker;
-         ctx.fill();
+      ctx.fillStyle = colors.background.footer;
+      ctx.fillRect(x(0),y(prop.footer.start),x(d.duration),y(prop.footer.end-prop.footer.start));
 
-         ctx.beginPath();
-         ctx.moveTo(x(s), y(prop.prog.start));
-         ctx.lineTo(x(s), y(prop.prog.end));
+      var plumbob_draw = function(s,c){
+         var ht = prop.markers.end - prop.markers.start;
+         var wd = 1;
+         ycoord = prop.markers.start;
+         xcoord = s;
+         ctx.fillStyle = ctx.strokeStyle = c.marker;
+         ctx.fillRect(x(xcoord-wd/2),y(ycoord),x(wd),y(ht));
+
+         var lwd = wd/3;
+         var ycoord = prop.prog.start;
+         var ht = (prop.prog.end - prop.prog.start);
          ctx.fillStyle = ctx.strokeStyle = c.stem;
-         ctx.lineWidth = 2;
-         ctx.stroke();
+         ctx.fillRect(x(xcoord-lwd/2),y(ycoord),x(lwd),y(ht));
+
       }
-      console.log(d);
       var sel_draw = function(o,color){
          var s = o.start;
          var e = o.end;

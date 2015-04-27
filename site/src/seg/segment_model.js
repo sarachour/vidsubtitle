@@ -12,7 +12,7 @@ var SegmentModel  = function(){
       this.data.segments = new SortedArray(seg_cmp);
       this.data.time = 0;
       this.data.hold = null;
-      this.data.duration = 1;
+      this.data.duration = 0;
       this.data.eps = 0.5;
 
       this.data.selection = null;
