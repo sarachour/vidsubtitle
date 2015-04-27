@@ -82,19 +82,19 @@ chunk specific rules
 }
 
 .hint.icon{
-   width:16px;
-   height:16px;
+   width:24px;
+   height:24px;
    margin-left:5px;
    margin-right:5px;
 }
 .hint.title{
    font-size:12pt;
    font-weight:bold;
-   color:#ecf0f1;
+   color:#303030;
 }
 .hint.text{
    font-size:12pt;
-   color:#bdc3c7;
+   color:#303030;
 }
 .hint.but{
    display:inline-block;

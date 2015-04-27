@@ -11,7 +11,7 @@ var SegmentBar = function(id, model){
       that._state.y = null;
       this._state.selection = null;
       this._model.listen('update',function(){that._draw();})
-      $("#"+id).html("").css('height',40);
+      $("#"+id).html("").css('height',30);
       this._canv
          .css('width',"100%")
          .css('height',"100%");
@@ -54,74 +54,107 @@ var SegmentBar = function(id, model){
       var h = this._canv.height();
       var x = function(v){return v*w/d.duration;}
       var y = function(v){return v*h/1;}
-      var colors = {
-         pause:"#C22424", //red
-         silence:"#6E92A1", //blue
-         hilight:"#EEEE44",
-         background:"#222222", //background color
-         progress:"#404E56",
-         hilight_seg:"#685757",
-         selection_prog:"#D9EC9A",
-         selection:"#ACC25E",
-         cursor:"rgba(200,200,200,0.3)"
-      }
+
+      var prop = {};
+      
+
+      prop.markers = {};
+      prop.markers.start = 0;
+      prop.markers.end = 0.25;
+
+      prop.prog = {};
+      prop.prog.start = 0.25;
+      prop.prog.end = 0.75;
+      
+      prop.footer = {};
+      prop.footer.start = 0.75;
+      prop.footer.end = 1;
+
+      var colors = {};
+      // a pause marker
+      colors.pause = {};
+      colors.pause.marker = "#2980b9";
+      colors.pause.stem = "#2980b9";
+      
+      //the cursor showing where you are currently
+      colors.cursor = {};
+      colors.cursor.marker = "#f1c40f";
+      colors.cursor.stem = "#d35400";
+
+      //the selected segment
+      colors.selected = "#2ecc71";
+      colors.hovered = "#f1c40f";
+
+      colors.progbar = {};
+      colors.progbar.elapsed = "#F5A9A9";
+      colors.progbar.total = "#E0E0E0";
+      colors.progbar.ignore = "#ecf0f1";
+
+      colors.background = "white";
+
+
+
       //fill in background
-      ctx.fillStyle = colors['background'];
+      ctx.fillStyle = colors.background;
       ctx.fillRect(x(0),y(0),x(d.duration),y(1));
 
-      //fill in elapsed time
-      ctx.fillStyle = colors['progress'];
-      ctx.fillRect(x(0),y(0),x(d.time),y(1));
+      ctx.fillStyle = colors.ignore;
+      ctx.fillRect(x(0),y(prop.prog.start),x(1),y(prop.prog.end-prop.prog.start));
 
       
-      var line_draw = function(s,c){
+      var plumbob_draw = function(s,c){
          ctx.beginPath();
-         ctx.moveTo(x(s), y(0));
-         ctx.lineTo(x(s), y(1));
-         ctx.fillStyle = ctx.strokeStyle = c;
+         ycoord = (prop.markers.start + prop.markers.end)/2;
+         yrad = (prop.markers.end - prop.markers.start)/2;
+         ctx.arc(x(s),y(ycoord),y(yrad),0,2*Math.PI);
+         ctx.fillStyle = ctx.strokeStyle = c.marker;
+         ctx.fill();
+
+         ctx.beginPath();
+         ctx.moveTo(x(s), y(prop.prog.start));
+         ctx.lineTo(x(s), y(prop.prog.end));
+         ctx.fillStyle = ctx.strokeStyle = c.stem;
          ctx.lineWidth = 2;
          ctx.stroke();
       }
-      var seg_draw = function(o,segcolor,silcolor){
+      console.log(d);
+      var sel_draw = function(o,color){
          var s = o.start;
          var e = o.end;
-         var type = o.type;
-         var subtype = o.subtype;
-         if(type == "break"){
-            line_draw(s,segcolor);
-         }
-         else if(type == "silence" || type == "segment"){
-            ctx.fillStyle = silcolor;
-            ctx.fillRect(x(s), y(0), x(e-s),y(1));
-         }
+         ctx.fillStyle = color;
+         ctx.fillRect(x(s), y(prop.footer.start), x(e-s),y(prop.footer.end - prop.footer.start));
+      }
+      var prog_draw = function(s,e,t){
+         ctx.fillStyle = colors.progbar.total;
+         ctx.fillRect(x(s),y(prop.prog.start),x(e-s),y(prop.prog.end-prop.prog.start));
+         ctx.fillStyle = colors.progbar.elapsed;
+         ctx.fillRect(x(s),y(prop.prog.start),x(t-s),y(prop.prog.end-prop.prog.start));
       }
       var selected = false;
-      d.segments.for_each(function(e){
-         //if this selection is selected
-         seg_draw(e,colors['pause'],colors['silence']);
-      })
+      
+      //go through each selection  and hilight the selection you've selected
       this._model.get_selections().for_each(function(e){
          if(!selected && that._state.x != null && that._state.x <= e.end+1 && that._state.x >= e.start-1){
-            seg_draw(e,colors['hilight_seg'],colors['hilight_seg']);
+            sel_draw(e,colors.hovered);
             selected = true;
             that._state.selection = e;
          }
       })
       if(d.selection != null){
-         seg_draw(d.selection, colors['selection'],colors['selection']);
+         sel_draw(d.selection,colors.selected);
          if(d.selection.end > d.time && d.selection.start < d.time){
-            ctx.fillStyle = colors['selection_prog'];
-            ctx.fillRect(x(d.selection.start),y(0),x(d.time-d.selection.start),y(1));
+            prog_draw(d.selection.start, d.selection.end, d.time);
          }
       }
-      //draw the current hold
-      if(d.hold != null){
-         if(d.time-d.hold > d.eps) ctx.fillStyle = colors['silence'];
-         else  ctx.fillStyle = colors['pause'];
-         ctx.fillRect(x(d.hold),y(0),x(d.time-d.hold),y(1));
+      else{
+            prog_draw(0, d.duration, d.time);
       }
+      d.segments.for_each(function(e){
+         //if this selection is selected
+         plumbob_draw(e.start,colors.pause);
+      })
       if(this._state.x != null){
-         line_draw(this._state.x, colors['cursor']);
+         plumbob_draw(this._state.x,colors.cursor);
       }
    }
 

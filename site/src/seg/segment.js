@@ -65,7 +65,6 @@ var ProgramState = function(vp_name, vb_name, hnt_name){
     }, "state_change_listener")
   }
   this.set_hint = function(title,desc){
-    console.log("set hint",title, desc)
     this._hint.set(title,desc);
   }
   this.undo = function(){
@@ -132,7 +131,10 @@ var HintManager = function(id){
     this._hinter = $("#"+id);
   }
   this.set = function(title,description){
-    $("#title",this._hinter).html(title);
+    if(title != "")
+      $("#title",this._hinter).html(title+":");
+    else
+      $("#title",this._hinter).html("");
     $("#description",this._hinter).html(description);
   }
   this.image = function(name){
