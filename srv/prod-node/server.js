@@ -27,6 +27,7 @@ var process_file = function(req,res){
 }
 console.log("starting https");
 require('https').createServer(options, function (req, res) {
+  console.log(req);
   process_file(req,res);
 }).listen(4443);
 
