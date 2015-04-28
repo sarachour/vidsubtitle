@@ -336,9 +336,10 @@ var SegmentBar = function(id, model){
       
       d.segments.for_each(function(e){
          //if this selection is selected
-         plumbob_draw((e.end+e.start)/2,colors.pause);
-         gmark_draw((e.end+e.start)/2,colors.pause);
+         plumbob_draw(e.time,colors.pause);
+         gmark_draw(e.time,colors.pause);
       })
+
       if(this._state.x != null){
          plumbob_draw(x_to_t(this._state.x),colors.cursor);
          gmark_draw(x_to_t(this._state.x),colors.cursor);

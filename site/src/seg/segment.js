@@ -227,16 +227,9 @@ var MarkButton = function(button_name, state){
     this.state.video_player().play();
     this.is_down = false;
     this.view.unbind('click');
-    this.view.mousedown(function(){
-        if(that.playing) that.state.statemgr().trigger('state-change',{state:'hold'});
+    this.view.click(function(){
+        if(that.playing) that.state.statemgr().trigger('state-change',{state:'mark'});
         that.is_down = true;
-    })
-    this.view.mouseup(function(){
-        if(that.playing && that.is_down){
-          that.state.video_player().pause();
-          that.state.statemgr().trigger('state-change',{state:'unhold'});
-        } 
-
     })
   }
   this._init();
@@ -428,13 +421,9 @@ var VideoBar  =function(bar_name, state){
     this.state.statemgr().listen('tick', function(){
       that._update_time();
     })
-
     //update bar for hold and unhold situations
-    this.state.statemgr().listen('hold', function(){
-      that.hold();
-    })
-    this.state.statemgr().listen('unhold', function(){
-      that.unhold();
+    this.state.statemgr().listen('mark', function(){
+      that.mark();
     })
   }
   this._update_time = function(){
@@ -451,19 +440,10 @@ var VideoBar  =function(bar_name, state){
   this.remove = function(){
     return this.model.remove();
   }
-  this.hold = function(){
-      this.start_time= this.state.video_player().get_model().time();
-      this.model.hold();
-  }
-  this.unhold = function(){
-      var e = this.state.video_player().get_model().time();
-      var s = this.start_time;
-      var j = e;
-      if(j < 0) j = 0;
-      this.model.add_segment(s,e);
-      this.model.unhold();
-      console.log(e-1, this.model.duration());
-      this.state.video_player().segment(j,this.model.duration(), function(){console.log("done")});
+  this.mark = function(){
+      var t = this.state.video_player().get_model().time();
+      this.model.add_segment(t);
+      this.state.video_player().segment(t,this.model.duration(), function(){console.log("done")});
       this.state.video_player().play();
   }
   this._init();

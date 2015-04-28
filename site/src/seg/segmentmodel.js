@@ -33,12 +33,7 @@ var SegmentModel  = function(){
       var last_time = 0;
       var data = [];
       this.data.segments.for_each(function(seg){
-         var s = seg.start;
-         var e = seg.end;
-         if(seg.type == "break"){
-            var t = (s+e)/2;
-            data.push({start:last_time, end:t, caption:{}});
-         }
+         data.push({start:last_time, end:seg.time, caption:{}});
          last_time = t;
       })
       return data;
@@ -52,7 +47,7 @@ var SegmentModel  = function(){
       this.data.segments.clear();
       for(var i=0; i < d.length; i++){
          var seg = d[i];
-         that.add_segment(seg.start, seg.end);
+         that.add_segment(seg.time);
       }
    }
    this.select_nearby = function(filter, reverse){
@@ -124,8 +119,14 @@ var SegmentModel  = function(){
          if(e == null) return;
          var vamt = right_amt;
          if(is_left) vamt = left_amt;
-         e.start += vamt;
-         e.end += vamt;
+
+         if(e.type == "break"){
+            e.time = vamt;
+         } 
+         else{
+            e.start += vamt;
+            e.end += vamt;  
+         }
       }
       var that = this;
       if(sel == null) return;
@@ -175,29 +176,25 @@ var SegmentModel  = function(){
       var last_id = 0;
       this.data.segments.for_each(function(e){
          last_id = e.id;
-         var c = (e.start+e.end)/2;
-         selections.push({start:last, end:c, type:'segment',sid:last_id,eid:e.id, subtype:"normal"});
-         last = c;
+         selections.push({time:e.time, type:'break',sid:last_id,eid:e.id, subtype:"normal"});
+         selections.push({start:last, end:e.time, type:'segment',sid:last_id,eid:e.id, subtype:"normal"});
+         last = e.time;
       });
       selections.push({start:last, end:this.data.duration,type:'segment', sid:last_id, eid:-1, subtype:"continue"});
       return selections;
    }
-   this.add_segment = function(start,end){
+   this.add_segment = function(time){
       var s = {};
-      var len = end-start;
-      var mode;
-      s.start = start;
-      s.end = end;
-      s.length = end-start;
+      s.time = time;
       s.id = this._id;
-      this._id+=1;
       s.type = "break";
+      this._id+=1;
       this.data.segments.push(s);
 
       //update selection if we're tracking the continuation
       var sel = this.data.selection;
       if( sel != null && sel.subtype == "continue"){
-         if(sel.start < end) sel.start = end;
+         if(sel.start < time) sel.start = time;
          sel.sid = this.data.segments.length()-1;
       }
       this._evt.trigger('update',{obj:this});
@@ -216,12 +213,8 @@ var SegmentModel  = function(){
       this._evt.trigger('update',{obj:this});
 
    }
-   this.hold = function(){
-      this.data.hold = this.data.time;
-      this._evt.trigger('update',{obj:this});
-   }
-   this.unhold = function(){
-      this.data.hold = null;
+   this.click = function(){
+      this.data.click_time = this.data.time;
       this._evt.trigger('update',{obj:this});
    }
    this.duration = function(d){
