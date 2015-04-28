@@ -242,7 +242,7 @@ var MarkButton = function(button_name, state){
         if(that.playing) that.state.statemgr().trigger('state-change',{state:'mark'});
         that.is_down = true;
         $(this)
-          .pulse({'background-color':'#f39c12'},{pulses:1,duration:200});
+          .pulse({'background-color':'#d33434',color:'white'},{pulses:1,duration:200});
     })
   }
   this._init();
@@ -286,7 +286,7 @@ var NavigateButton = function(button_name, state, is_rev){
     this.view = $("#"+button_name).addClass('disabled');
     this.state = state;
     this.hmgr = this.state.get_hint_mgr();
-    
+
     this.state.listen('play',function(){that.view.removeClass('disabled')});
     if(is_rev){
       this.title = "Previous Segment"
