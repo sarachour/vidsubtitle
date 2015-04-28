@@ -488,12 +488,114 @@ var VideoBar  =function(bar_name, state){
   this._init();
 }
 
+var DoneButton = function(id,state){
+  var that = this;
+  this.resolver = new Navigator();
+  this.state = state;
+  this.root = $("#"+id).click(function(){
+    console.log("ttt");
+      that.redirect();
+  });
+
+  this.redirect = function(){
+    var data = {};
+    data.go = "scribe";
+    data.from = "segment";
+    data.data = this.export();
+    var purl = this.resolver.portal("segment",data);
+    this.resolver.redirect(purl);
+  }
+
+  this.export = function(d){
+    var data = {};
+    var segdata = this.state.video_bar().model.export();
+    data.data = segdata;
+    data.url = this.state.video_player().get_model().get_url();
+    return data;
+  }
+  
+}
+
+var PreviewButton = function(id,state){
+  var that = this;
+  this.resolver = new Navigator();
+  this.state = state;
+  this.root = $("#"+id).click(function(){
+    that.redirect();
+  });
+  this.redirect = function(){
+    var data = {};
+    data.go = "preview";
+    data.from = "segment";
+    data.data = this.export();
+    var purl = this.resolver.portal("segment",data);
+    this.resolver.redirect(purl);
+  }
+  this.export = function(d){
+    var data = {};
+    var segdata = this.state.video_bar().model.export();
+    data.data = segdata;
+    data.url = this.state.video_player().get_model().get_url();
+    return data;
+  }
+  
+}
+
+var DonePrompt = function(state,other_settings,done_button, preview_button){
+  var that = this;
+  this.done = $("#"+done_button);
+  this.preview = $("#"+preview_button);
+  this.compl_settings = $("#"+other_settings);
+  this.view = {};
+  this.view.root = $("<div/>")
+    .addClass('overlay')
+    .hide();
+
+  this.view.prompt = $("<div/>")
+  .css('text-align','center')
+  .html(
+    "The video has finished! What do you want to do next?"
+  )
+  this.view.edit = $("<div/>").addClass('button')
+    .css('display','block')
+    .html('Continue Editing the Segments')
+    .click(function(){
+      that.view.root.fadeOut();
+      that.compl_settings.fadeIn();
+    });
+
+  this.view.done = $("<div/>").addClass('button')
+    .css('display','block')
+    .html('I\'m Done')
+    .click(function(){
+      that.view.root.fadeOut();
+      that.compl_settings.fadeIn();
+      that.done.click();
+    });
+
+  this.view.preview = $("<div/>").addClass('button')
+    .css('display','block')
+    .html('Preview the Video with Segments')
+    .click(function(){
+      that.view.root.fadeOut();
+      that.compl_settings.fadeIn();
+      that.preview.click();
+    });
+
+  this.view.root.append(this.view.prompt,this.view.edit, this.view.done, this.view.preview);
+  $("body").append(this.view.root);
+
+  this.show = function(){
+    this.view.root.fadeIn();
+  }
+}
+
 var SegmentController = function(){
   this.init = function(){
     var that = this;
     this.prog = new ProgramState("player1", "controls", "hint");
-    this.queryResolver = new Navigator();
 
+    this.queryResolver = new Navigator();
     //load url
     var args = this.queryResolver.get();
     //load request
@@ -503,12 +605,7 @@ var SegmentController = function(){
     }
 
     this.prog.listen('ended', function(){
-      var data = {};
-      data.go = "scribe";
-      data.data = that.export();
-      var purl = that.queryResolver.portal("segment",data);
-      that.queryResolver.redirect(purl);
-
+      that.done_prompt.show();
     });
 
     this.buttons = {};
@@ -522,6 +619,12 @@ var SegmentController = function(){
     this.buttons.ensr = new ShiftButton("en_sr", this.prog, false,false,amt);
     this.buttons.undo = new HistoryButton("undo",this.prog, true);
     this.buttons.redo = new HistoryButton("redo",this.prog, false);
+
+    this.buttons.done = new DoneButton('done',this.prog);
+    this.buttons.preview = new PreviewButton('preview', this.prog);
+
+    this.done_prompt = new DonePrompt(this.prog,'completed-controls',"done","preview");
+
     this.hmgr = this.prog.get_hint_mgr();
     
     this.demo = new Demo("demo");
@@ -583,13 +686,7 @@ var SegmentController = function(){
     this.prog.video_player().load(url);
     this.prog.video_bar().model.from_json(segdata);
   }
-  this.export = function(d){
-    var data = {};
-    var segdata = this.prog.video_bar().model.export();
-    data.data = segdata;
-    data.url = this.prog.video_player().get_model().get_url();
-    return data;
-  }
+  
   this.load = function(v){
     this.prog.video_player().load(v);
   }

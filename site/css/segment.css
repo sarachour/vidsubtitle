@@ -19,7 +19,7 @@ chunk specific rules
 
 .scribe #segmentbar{
    margin-top: 2px;
-   margin-bottom: 55px;
+   margin-bottom: 4px;
 }
 
 .segment.hotkey.button {
@@ -67,7 +67,7 @@ chunk specific rules
    padding:4px;
 }
 #compact-controls{
-   margin-bottom:25px;
+   margin-bottom:20px;
    padding: 2px;
 }
 .dark-bg {
@@ -159,4 +159,12 @@ chunk specific rules
 #start_demo{
    background-color:#e74c3c;
    color:#ecf0f1;
+}
+
+#seg-done{
+   background-color:#e74c3c;
+   color:#ecf0f1;
+}
+#seg-preview{
+
 }
