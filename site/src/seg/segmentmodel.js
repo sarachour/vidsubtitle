@@ -5,7 +5,7 @@ selections are identified by (location, not id)
 var SegmentModel  = function(){
    this.init = function(){
       var seg_cmp = function(a,b){
-         return (a.start - b.start);
+         return (a.time - b.time);
       }
       this._id = 0;
       this.data = {};
@@ -71,6 +71,9 @@ var SegmentModel  = function(){
       }
       this.select((e.end+e.start)/2,false);
    }
+   this.get = function(id){
+      return this._get_by_id(id);
+   }
    this.select = function(time,start_at){
       if(time != undefined){
          this.data.selection = this.get_enclosing_selection(time);
@@ -81,8 +84,9 @@ var SegmentModel  = function(){
       }
       else {
          var sel = this.data.selection;
-         if(sel != null)
-            this.data.selection = this.get_enclosing_selection((sel.end + sel.start)/2);
+         if(sel != null){
+            this.data.selection = this.get_enclosing_selection(sel.time);
+         }
          else
             this.data.selection = this.get_enclosing_selection(0);
       }
@@ -90,8 +94,9 @@ var SegmentModel  = function(){
       return this.data.selection;
    }
    this.get_enclosing_selection = function(time){
+      var that = this;
       var enc = this.get_selections().match(function(e){
-         return (time <= e.end && time >= e.start);
+         return (e.type == "segment" && time <= e.end && time >= e.start);
       });
       if(enc.length() == 0) return null;
       else {
@@ -119,14 +124,10 @@ var SegmentModel  = function(){
          if(e == null) return;
          var vamt = right_amt;
          if(is_left) vamt = left_amt;
-
-         if(e.type == "break"){
-            e.time = vamt;
-         } 
-         else{
-            e.start += vamt;
-            e.end += vamt;  
-         }
+         e.start += vamt;
+         e.end += vamt;  
+         e.time += vamt;
+         
       }
       var that = this;
       if(sel == null) return;
@@ -134,13 +135,8 @@ var SegmentModel  = function(){
       if(sel.type == "segment"){
          var es = this._get_by_id(sel.sid);
          var ee= this._get_by_id(sel.eid);
-         console.log(es,ee);
          shift_elem(es, left_amt,right_amt,true);
          shift_elem(ee, left_amt,right_amt,false);
-      }
-      else if(sel.type == "break"){
-         var e = this._get_by_id(sel.id);
-         shift_elem(e, left_amt,right_amt,true);
       }
       if(id == null){
          sel.start += left_amt; 
@@ -171,16 +167,17 @@ var SegmentModel  = function(){
          return 0;
    }
    this.get_selections = function(){
-      var selections = new SortedArray(function(a,b){return a.start - b.start});
+      var selections = new SortedArray(function(a,b){
+         return a.time - b.time;
+      });
       var last = 0;
-      var last_id = 0;
+      var last_id = -1;
       this.data.segments.for_each(function(e){
+         selections.push({time:(last+e.time)/2, start:last, end:e.time, type:'segment',sid:last_id,eid:e.id, subtype:"normal"});
          last_id = e.id;
-         selections.push({time:e.time, type:'break',sid:last_id,eid:e.id, subtype:"normal"});
-         selections.push({start:last, end:e.time, type:'segment',sid:last_id,eid:e.id, subtype:"normal"});
          last = e.time;
       });
-      selections.push({start:last, end:this.data.duration,type:'segment', sid:last_id, eid:-1, subtype:"continue"});
+      selections.push({time:(last+this.data.duration)/2, start:last, end:this.data.duration,type:'segment', sid:last_id, eid:-1, subtype:"continue"});
       return selections;
    }
    this.add_segment = function(time){
