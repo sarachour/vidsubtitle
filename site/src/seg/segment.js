@@ -105,6 +105,10 @@ var ProgramState = function(vp_name, vb_name, hnt_name){
     this.select();
     this.obs.trigger('remove');
   }
+  this.play = function(){
+    this.obs.trigger('play')
+    this._video_player.play();
+  }
   this.selections = function(){
     return this.video_bar().model.get_selections();
   }
@@ -210,7 +214,10 @@ var MarkButton = function(button_name, state){
   this.init = function(){
     var that = this;
     this.hmgr = this.state.get_hint_mgr();
-    this.view.data("button-title","Start");
+    this.view
+      .data("button-title","Start")
+      .pulse({'background-color':'#96E6B8'},{pulses:-1,duration:1000});
+
     this.title = "Start Video Segmentation";
     this.description = "Press "+this.hmgr.button("Start")+" or "+this.hmgr.key("spacebar")+" to start marking the speech.";
     that.view.unbind('click');
@@ -224,9 +231,10 @@ var MarkButton = function(button_name, state){
     this.title = "Break Button";
     this.description = "Press "+this.hmgr.button("Break")+"or"+this.hmgr.key("spacebar")+
           "to mark a pause in the video. Hold while the speaker is silent to mark a silence."
-    this.state.video_player().play();
+    this.state.play();
     this.is_down = false;
-    this.view.unbind('click');
+    this.view.unbind('click')
+      .pulse('destroy');
     this.view.click(function(){
         if(that.playing) that.state.statemgr().trigger('state-change',{state:'mark'});
         that.is_down = true;
@@ -409,14 +417,18 @@ var VideoBar  =function(bar_name, state){
   this._init = function(){
     var that = this;
     this.model = new SegmentModel();
+    this.root = $("#"+bar_name);
     this.view  =new SegmentBar(bar_name, this.model);
     this.state = state;
     this.start_time = null;
+    this.root.hide();
     this.state.statemgr().listen('ready', function(){
       that._update_duration();
     })
     this.state.statemgr().listen('play', function(){
       that._update_duration();
+      that.root.show();
+      console.log("playing");
     })
     this.state.statemgr().listen('tick', function(){
       that._update_time();

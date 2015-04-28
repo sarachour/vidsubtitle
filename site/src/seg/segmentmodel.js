@@ -53,6 +53,7 @@ var SegmentModel  = function(){
    this.select_nearby = function(filter, reverse){
       var s = this.select();
       var found = false;
+      if(s == null) return;
       var matches = this.get_selections().match(function(e){
          if(e.id == s.id && e.sid == s.sid && e.eid == s.eid){
             found = true; 

@@ -41,11 +41,14 @@ $(document).ready(function(){
         title_div.html(title);
         title_div.addClass('hotkey title');
 
-        hotkey_div.html(name);
-        hotkey_div.addClass("hotkey shortcut");
-
         that.append(title_div);
-        that.append(hotkey_div);
+        
+        if(name != ""){
+          hotkey_div.html(name);
+          hotkey_div.addClass("hotkey shortcut");
+          that.append(hotkey_div);
+        }
+
       }
 
 

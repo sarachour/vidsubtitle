@@ -18,11 +18,11 @@ var SegmentBar = function(id, model){
       that._state.viewport.width = 30;
 
       this._model.listen('update',function(){that._draw();})
-      $("#"+id).html("").css('height',100);
+      $("#"+id).html("");
 
       this._view.canv
          .css('width',"100%")
-         .css('height',40);
+         .css('height',30);
 
       this._view.gcanv
          .css('width',"100%")
@@ -50,9 +50,6 @@ var SegmentBar = function(id, model){
       }
       //segment canvas
       this._view.canv
-         .css({
-            'margin-bottom':'15px'
-         })
          .data('drag', false)
          .data('coord', {x:null,y:null})
          .mousemove(function(e){
@@ -83,6 +80,7 @@ var SegmentBar = function(id, model){
          .bind("contextmenu",function(e){
             var c = norm(e);
             that._model.add_segment(c.t);
+            that._model.select(c.t);
            return false;
          });
 
@@ -94,8 +92,17 @@ var SegmentBar = function(id, model){
             that._model.select(c.t);
 
          })
+         .bind("contextmenu",function(e){
+            var c = gnorm(e);
+            that._view.canv.data('coord',c);
+            that._model.select(c.t);
+            return false;
+         })
+         .css({
+            'margin-bottom':'5px'
+         })
          .mouseleave(function(e){
-            $(this).data('coord',{x:null,y:null}).data('drag',false);
+            that._view.canv.data('coord',{x:null,y:null}).data('drag',false);
          })
          .mousemove(function(e){
             var c = gnorm(e);
@@ -107,7 +114,7 @@ var SegmentBar = function(id, model){
       this._view.end = $("<span/>").css('float','right').html("End Time");
       this._view.times.append(this._view.start,this._view.end)
 
-      $("#"+id).html("").append(this._view.canv,this._view.gcanv);
+      $("#"+id).html("").append(this._view.gcanv,this._view.canv);
       this._draw();
    }
    this._resize = function(){
@@ -221,7 +228,7 @@ var SegmentBar = function(id, model){
       colors.global.background = "white";
       colors.global.highlight = "#D3EAFA";
       colors.global.progress = "darkgrey";
-      colors.global.oobprogress = "darkgrey";
+      colors.global.selected = "#2ecc71";
 
       this._view.start.html(viewport.start);
       this._view.end.html(viewport.end);
@@ -253,20 +260,14 @@ var SegmentBar = function(id, model){
       gctx.fillRect(gx(0),gy(prop.global.seg.start),gx(d.time),gy(prop.global.seg.end-prop.global.seg.start));
 
       
-      if(d.selection != null){
+      if(d.selection != null ){
          var sstart = d.selection.start;
-         if(sstart < viewport.start){
+         if(d.selection.subtype == 'continue')
             gctx.fillStyle = colors.global.progress;
-            gctx.fillRect(gx(viewport.start),gy(prop.global.seg.start),gx(d.time-viewport.start),gy(prop.global.seg.end-prop.global.seg.start));
-            gctx.fillStyle = colors.global.oobprogress;
-            gctx.fillRect(gx(sstart),gy(prop.global.seg.start),gx(viewport.start-sstart),gy(prop.global.seg.end-prop.global.seg.start));
-            
-         }
-         else{
-            gctx.fillStyle = colors.global.progress;
-            gctx.fillRect(gx(sstart),gy(prop.global.seg.start),gx(d.time-sstart),gy(prop.global.seg.end-prop.global.seg.start));
+         else
+            gctx.fillStyle = colors.global.selected;
+         gctx.fillRect(gx(sstart),gy(prop.global.seg.start),gx(d.time-sstart),gy(prop.global.seg.end-prop.global.seg.start));
           
-         }
       }
       else{
          gctx.fillStyle = colors.global.progress;
@@ -353,25 +354,12 @@ var SegmentBar = function(id, model){
       //go through each selection  and hilight the selection you've selected
       this._model.get_selections().for_each(function(e){
          //check hover
-         var local_hover = false;
          if(!hovered && hover_t != null){
             //hovering over a segment
             if (e.type == "segment" && hover_t <= e.end && hover_t >= e.start)
             {
-               if(e.subtype == "continue"){
-                  var ce = clone(e); ce.end = Math.max(d.time,ce.start);
-                  block_draw(ce, colors.hovered);
-               }
-               else{
-                  block_draw(e,colors.hovered);
-                  var br = that._model.get(e.eid);
-                  plumbob_draw(br.time,{marker:colors.hovered,stem:colors.hovered});
-                  gmark_draw(br.time,{marker:colors.hovered,stem:colors.hovered}); 
-
-               }
-               local_hover = hovered = true; 
+               hovered = true; 
                sel_draw(e,colors.hovered);
-
             }
             
          }
@@ -390,7 +378,7 @@ var SegmentBar = function(id, model){
                plumbob_draw(br.time,{marker:colors.selected,stem:colors.selected});
                gmark_draw(br.time,{marker:colors.selected,stem:colors.selected}); 
             }
-            else if(!local_hover){
+            else {
                block_draw(e,colors.block);
                var br = that._model.get(e.eid);
                plumbob_draw(br.time,colors.pause);

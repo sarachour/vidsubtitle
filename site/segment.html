@@ -3,6 +3,7 @@
 
 <script src="lib/jquery-2.1.3.js"></script>
 <script src="lib/jquery-ui-1.11.3.js"></script>
+<script src="lib/jquery-pulse.js"></script>
 <script src="lib/jwerty.js"></script>
 <script src="lib/mejs/mediaelementplayer.min.js"></script>
 
@@ -75,10 +76,7 @@ INSTRUCTIONS
 
 <div id="compact-controls" class="fill-parent-width white-text row">
  
-   <div id="nav-controls" class="compact one-third column">
-   <div id="play" title="play (start)" hotkey-code="left" class="node hotkey small icon compact left">
-      <img src="res/play.png" class="fill-parent"></img>
-   </div>
+   <div id="nav-controls" class="compact three columns">
 
    <div id="prev" title="previous segment (left key)" hotkey-code="left" class="node hotkey small icon compact left">
       <img src="res/prev.png" class="fill-parent"></img>
@@ -91,7 +89,10 @@ INSTRUCTIONS
    </div>
    </div>  
 
-   <div id="edit-controls" class="compact one-third column offset-by-one-third">
+   <div id="break" button-title="Start" hotkey-name="" hotkey-code="space" class="hotkey button four columns"></div>
+
+
+   <div id="edit-controls" class="compact four columns">
    <div id="redo" hotkey-name="ctrl+y" hotkey-code="ctrl+y" class="hotkey node small icon compact right ">
       <img src="res/redo.png" class="fill-parent"></img>
    </div>
@@ -119,10 +120,7 @@ INSTRUCTIONS
 
 
 <!-- break button crarr : use this http://www.amp-what.com/unicode/search/arrow to find unicode characters-->
-<div id="buttons" class="row vspace">
-<div id="break" button-title="Start" hotkey-name="(spacebar)" hotkey-code="space" class="hotkey button fill-parent-width"></div>
 
-</div>
 
 <!-- Hint -->
 <div class="row">
