@@ -34,7 +34,7 @@ var SegmentModel  = function(){
       var data = [];
       this.data.segments.for_each(function(seg){
          data.push({start:last_time, end:seg.time, caption:{}});
-         last_time = t;
+         last_time = seg.time;
       })
       return data;
    }
