@@ -3,6 +3,7 @@ var Navigator = function(){
 
    this._parse_query = function(e){
       var qlist = e.split("?")[1];
+      if(qlist == undefined) return {};
       var terms =qlist.split("&");
       var dict = {};
       for(var i=0; i < terms.length; i++){
