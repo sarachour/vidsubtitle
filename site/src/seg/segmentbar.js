@@ -50,6 +50,9 @@ var SegmentBar = function(id, model){
       }
       //segment canvas
       this._view.canv
+         .css({
+            'margin-bottom':'15px'
+         })
          .data('drag', false)
          .data('coord', {x:null,y:null})
          .mousemove(function(e){
@@ -90,6 +93,9 @@ var SegmentBar = function(id, model){
             that._view.canv.data('coord',c);
             that._model.select(c.t);
 
+         })
+         .mouseleave(function(e){
+            $(this).data('coord',{x:null,y:null}).data('drag',false);
          })
          .mousemove(function(e){
             var c = gnorm(e);
@@ -201,7 +207,7 @@ var SegmentBar = function(id, model){
       colors.progress = "#ABEBC6";
 
       colors.progbar = {};
-      colors.progbar.elapsed = "lightgrey";
+      colors.progbar.elapsed = "#2ecc71";
       colors.progbar.total = "white";
       colors.progbar.ignore = "#ecf0f1";
 
@@ -213,8 +219,8 @@ var SegmentBar = function(id, model){
       colors.global = {};
       colors.global.segments = "black";
       colors.global.background = "white";
-      colors.global.highlight = "white";
-      colors.global.progress = "lightgrey";
+      colors.global.highlight = "#D3EAFA";
+      colors.global.progress = "darkgrey";
       colors.global.oobprogress = "darkgrey";
 
       this._view.start.html(viewport.start);
@@ -403,7 +409,7 @@ var SegmentBar = function(id, model){
          gmark_draw(d.time,colors.cursor);
       }
 
-
+     
       //draw some more of the global bar
 
    }
