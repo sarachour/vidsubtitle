@@ -567,7 +567,9 @@ var SegmentController = function(){
     data.url = this.prog.video_player().get_model().get_url();
     return data;
   }
-
+  this.load = function(v){
+    this.prog.video_player().load(v);
+  }
   this.init();
 }
 
@@ -578,6 +580,15 @@ var ctrl;
 $("document").ready(function() {
   var data = {};
   ctrl = new SegmentController();
+  var queryResolver = new Navigator();
+
+  //load url
+  var args = queryResolver.get();
+  if(isValue(args.data)){
+    var url = args.data.replace(/\"/g,"");
+    console.log(url);
+    ctrl.load(url);
+  }
   $("#save",$("#dev")).click(function(){
     var str = JSON.stringify(ctrl.to_json());
     $("#output", $("#dev")).val(str);
