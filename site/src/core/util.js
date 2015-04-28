@@ -12,3 +12,17 @@ var clone = function(c){
    }
    return x;
 }
+
+var src_pulse = function(e,delay){
+   var orig = e.attr('src');
+   if(orig.indexOf('-active.png') >= 0) return;
+
+   var base = orig.split('.png')[0];
+   e.attr('src',base + "-active.png");
+
+   setTimeout(function() { 
+      var orig = e.attr('src');
+      var base = orig.split('-active.png')[0];
+     e.attr('src', base+".png");
+   }, delay);
+}

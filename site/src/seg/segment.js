@@ -64,6 +64,9 @@ var ProgramState = function(vp_name, vb_name, hnt_name){
       that.obs.trigger(that.state);
     }, "state_change_listener")
   }
+  this.listen = function(name,cbk){
+    this.obs.listen(name, cbk);
+  }
   this.set_hint = function(title,desc){
     this._hint.set(title,desc);
   }
@@ -238,16 +241,20 @@ var MarkButton = function(button_name, state){
     this.view.click(function(){
         if(that.playing) that.state.statemgr().trigger('state-change',{state:'mark'});
         that.is_down = true;
+        $(this)
+          .pulse({'background-color':'#f39c12'},{pulses:1,duration:200});
     })
   }
   this._init();
 }
 var HistoryButton = function(button_name, world, is_undo){
   this.init = function(){
-    this.view = $("#"+button_name);
+    this.view = $("#"+button_name).addClass('disabled');
     this.state = world;
     this.hmgr = this.state.get_hint_mgr();
     var that = this;
+
+    this.state.listen('play',function(){that.view.removeClass('disabled')});
     if(is_undo){
       this.title = "Undo Action"
       this.description = "Tap "+this.hmgr.image('undo')+" or "+
@@ -259,6 +266,7 @@ var HistoryButton = function(button_name, world, is_undo){
       this.hmgr.key("Ctrl")+"+"+this.hmgr.key("Y")+" to redo the last modification or deletion of a marker."
     }
     this.view.click(function(){
+      src_pulse($("img",$(this)), 200);
       if(is_undo){
         that.state.undo();
       }
@@ -275,9 +283,11 @@ var HistoryButton = function(button_name, world, is_undo){
 var NavigateButton = function(button_name, state, is_rev){
   this.init = function(){
     var that = this;
-    this.view = $("#"+button_name);
+    this.view = $("#"+button_name).addClass('disabled');
     this.state = state;
     this.hmgr = this.state.get_hint_mgr();
+    
+    this.state.listen('play',function(){that.view.removeClass('disabled')});
     if(is_rev){
       this.title = "Previous Segment"
       this.description = "Tap "+this.hmgr.image('prev')+" or "+this.hmgr.key(keys.left)+" to move to the previous segment."
@@ -287,6 +297,7 @@ var NavigateButton = function(button_name, state, is_rev){
       this.description = "Tap "+this.hmgr.image('next')+" or "+this.hmgr.key(keys.right)+" to move to the next segment."
     }
     this.view.click(function(){
+      src_pulse($("img",$(this)), 200);
       var sels = that.state.selections();
       var tmp = that.state.select(function(e){
         return e.type == "silence" || e.type == "segment";
@@ -302,14 +313,19 @@ var NavigateButton = function(button_name, state, is_rev){
 var ReplayButton = function(button_name, state){
   this.init = function(){
     var that = this;
-    this.view = $("#"+button_name);
+    this.view = $("#"+button_name).addClass('disabled');
     this.state = state;
     this.hmgr = this.state.get_hint_mgr();
     this.player = new SelectionPlayer(state);
     this.title = "Replay Segment";
     this.description = "Tap "+this.hmgr.image('replay')+" or "
       +this.hmgr.key(keys.up)+"or "+this.hmgr.key(keys.down)+" to replay the selected segment."
+
+
+    this.state.listen('play',function(){that.view.removeClass('disabled')});
+
     this.view.click(function(){
+      src_pulse($("img",$(this)), 200);
       that.player.play();
     })
     .mouseleave(function(){that.state.set_hint("","")})
@@ -321,15 +337,18 @@ var ReplayButton = function(button_name, state){
 var DeleteButton = function(button_name, state){
   this.init = function(){
     var that = this;
-    this.view = $("#"+button_name);
+    this.view = $("#"+button_name).addClass('disabled');
     this.state = state;
     this.hmgr = this.state.get_hint_mgr();
     this.player = new SelectionPlayer(state);
+
+    this.state.listen('play',function(){that.view.removeClass('disabled')});
 
     this.title = "Delete Segment";
     this.description = "Tap "+this.hmgr.image('delete')+" or press "+
       this.hmgr.key("z")+" to merge two adjacent segments by removing the marker at the end of the current segment.";
     this.view.click(function(){
+      src_pulse($("img",$(this)), 200);
       that.state.remove();
       that.player.play();
     })
@@ -342,10 +361,13 @@ var DeleteButton = function(button_name, state){
 var ShiftButton = function(button_name, state, is_start, is_left, amt){
   this.init =function(){
     var that = this;
-    this.view = $("#"+button_name);
+    this.view = $("#"+button_name).addClass('disabled');
     this.state = state;
     this.hmgr = this.state.get_hint_mgr();
     this.player = new SelectionPlayer(state);
+
+    this.state.listen('play',function(){that.view.removeClass('disabled')});
+
     if(is_start) this.player.set_side('left');
     else this.player.set_side('right');
     this.amount = amt;
@@ -358,6 +380,7 @@ var ShiftButton = function(button_name, state, is_start, is_left, amt){
       this.description = "Tap "+this.hmgr.image('lshift')+" or "+this.hmgr.key('x')+" to shorten the end of the segment.";
     }
     this.view.click(function(){
+      src_pulse($("img",$(this)), 200);
       var amt = that.amount;
       if(is_left) amt *= -1;
       if(is_start) that.state.shift(amt,0);

@@ -82,6 +82,10 @@ chunk specific rules
 
 }
 
+.disabled.hotkey{
+   opacity:0.5;
+   pointer-events: none;
+}
 .hint.icon{
    width:12px;
    height:12px;
