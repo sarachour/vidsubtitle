@@ -504,7 +504,7 @@ var SegmentController = function(){
 
     this.prog.listen('ended', function(){
       var data = {};
-      data.go = "edit";
+      data.go = "scribe";
       data.data = that.export();
       var purl = that.queryResolver.portal("segment",data);
       that.queryResolver.redirect(purl);
