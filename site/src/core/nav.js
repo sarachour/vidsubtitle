@@ -32,6 +32,9 @@ var Navigator = function(){
    this.edit = function(data){
       return this._encode_data(this.base_url + "/edit.html",data);
    }
+   this.preview = function(data){
+      return this._encode_data(this.base_url + "/preview.html",data);
+   }
    this.portal = function(phase,data){
       var url = this._encode_data(this.base_url+"/portal.html",data);
       url + "&phase="+phase;

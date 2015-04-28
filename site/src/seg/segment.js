@@ -413,6 +413,11 @@ var VideoPane = function(video_name, state){
       //e.obj.rate(0.75);
       that.state.statemgr().trigger('state-change',{state:'playing'});
     }, 'vp-play');
+
+    this.video.listen('done', function(e){
+      //e.obj.rate(0.75);
+      that.state.statemgr().trigger('state-change',{state:'ended'});
+    }, 'vp-end');
     
     this.video.listen('update', function(){
       that.state.statemgr().trigger('state-change',{state:'tick'});
@@ -451,7 +456,6 @@ var VideoBar  =function(bar_name, state){
     this.state.statemgr().listen('play', function(){
       that._update_duration();
       that.root.show();
-      console.log("playing");
     })
     this.state.statemgr().listen('tick', function(){
       that._update_time();
@@ -488,6 +492,25 @@ var SegmentController = function(){
   this.init = function(){
     var that = this;
     this.prog = new ProgramState("player1", "controls", "hint");
+    this.queryResolver = new Navigator();
+
+    //load url
+    var args = this.queryResolver.get();
+    //load request
+    if(isValue(args.data)){
+      var url = args.data.replace(/\"/g,"");
+      that.load(url);
+    }
+
+    this.prog.listen('ended', function(){
+      var data = {};
+      data.go = "preview";
+      data.data = that.export();
+      var purl = that.queryResolver.portal("segment",data);
+      that.queryResolver.redirect(purl);
+
+    });
+
     this.buttons = {};
     this.buttons.mark = new MarkButton("break", this.prog);
     this.buttons.replay = new ReplayButton("replay", this.prog);
@@ -580,15 +603,7 @@ var ctrl;
 $("document").ready(function() {
   var data = {};
   ctrl = new SegmentController();
-  var queryResolver = new Navigator();
-
-  //load url
-  var args = queryResolver.get();
-  if(isValue(args.data)){
-    var url = args.data.replace(/\"/g,"");
-    console.log(url);
-    ctrl.load(url);
-  }
+  
   $("#save",$("#dev")).click(function(){
     var str = JSON.stringify(ctrl.to_json());
     $("#output", $("#dev")).val(str);
