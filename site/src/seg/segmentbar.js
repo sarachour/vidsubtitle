@@ -14,8 +14,9 @@ var SegmentBar = function(id, model){
 
       that._state = {};
       this._state.viewport = {};
-       that._state.viewport.force_slide = false;
+      that._state.viewport.force_slide = false;
       that._state.viewport.width = 30;
+
       this._model.listen('update',function(){that._draw();})
       $("#"+id).html("").css('height',100);
 
@@ -68,7 +69,6 @@ var SegmentBar = function(id, model){
             if($(this).data('drag')){
                var del = delta(this,c); 
                var d = that._model.get_data();
-               that._model.select(to_time(c.x));
                that._model.shift(0,to_time_delta(del.x));
             }
             $(this).data('coord',c);
@@ -83,6 +83,7 @@ var SegmentBar = function(id, model){
          })
          .mousedown(function(e){
             var c = norm(e);
+            that._model.select(to_time(c.x));
             $(this).data('coord',c).data('drag',true);
          })
          .mouseup(function(e){
@@ -103,11 +104,16 @@ var SegmentBar = function(id, model){
             that._model.select(to_gtime(c.x));
 
          })
+         .mousemove(function(e){
+            var c = gnorm(e);
+            that._view.canv.data('coord',c);
+         });
       this._view.times = $("<div/>");
       this._view.start = $("<span/>").css('float','left').html("Start Time");
       this._view.end = $("<span/>").css('float','right').html("End Time");
       this._view.times.append(this._view.start,this._view.end)
-      $("#"+id).html("").append(this._view.canv,this._view.times,this._view.gcanv);
+
+      $("#"+id).html("").append(this._view.canv,this._view.gcanv);
       this._draw();
    }
    this._resize = function(){
@@ -187,6 +193,9 @@ var SegmentBar = function(id, model){
       prop.global.start = 0;
       prop.global.end = 1.0;
 
+      prop.global.seg = {};
+      prop.global.seg.start = 0.25;
+      prop.global.seg.end = 0.75;
       var colors = {};
       // a pause marker
       colors.pause = {};
@@ -206,8 +215,8 @@ var SegmentBar = function(id, model){
       colors.progress = "#ABEBC6";
 
       colors.progbar = {};
-      colors.progbar.elapsed = "#F5A9A9";
-      colors.progbar.total = "#E0E0E0";
+      colors.progbar.elapsed = "lightgrey";
+      colors.progbar.total = "white";
       colors.progbar.ignore = "#ecf0f1";
 
       colors.background = {};
@@ -216,10 +225,11 @@ var SegmentBar = function(id, model){
       colors.background.footer = "white";
 
       colors.global = {};
-      colors.global.background = "black";
-      colors.global.highlight = "lightgrey";
-      colors.global.progress = "#2ecc71";
-      colors.global.oobprogress = "#1A7540";
+      colors.global.segments = "black";
+      colors.global.background = "white";
+      colors.global.highlight = "white";
+      colors.global.progress = "lightgrey";
+      colors.global.oobprogress = "darkgrey";
 
       this._view.start.html(viewport.start);
       this._view.end.html(viewport.end);
@@ -242,27 +252,33 @@ var SegmentBar = function(id, model){
       gctx.fillStyle = colors.global.background;
       gctx.fillRect(gx(0),gy(prop.global.start),gx(d.duration),gy(prop.global.end));
 
+      //draw highlight bar
       gctx.fillStyle = colors.global.highlight;
       gctx.fillRect(gx(viewport.start),gy(prop.global.start),gx(viewport.end-viewport.start),gy(prop.global.end-prop.global.start));
+      
+      //draw segments bar
+      gctx.fillStyle = colors.global.segments;
+      gctx.fillRect(gx(0),gy(prop.global.seg.start),gx(d.time),gy(prop.global.seg.end-prop.global.seg.start));
+
       
       if(d.selection != null){
          var sstart = d.selection.start;
          if(sstart < viewport.start){
             gctx.fillStyle = colors.global.progress;
-            gctx.fillRect(gx(viewport.start),y(prop.global.start),gx(d.time-viewport.start),h(prop.global.end-prop.global.start));
+            gctx.fillRect(gx(viewport.start),gy(prop.global.seg.start),gx(d.time-viewport.start),gy(prop.global.seg.end-prop.global.seg.start));
             gctx.fillStyle = colors.global.oobprogress;
-            gctx.fillRect(gx(sstart),y(prop.global.start),gx(viewport.start-sstart),h(prop.global.end-prop.global.start));
+            gctx.fillRect(gx(sstart),gy(prop.global.seg.start),gx(viewport.start-sstart),gy(prop.global.seg.end-prop.global.seg.start));
             
          }
          else{
             gctx.fillStyle = colors.global.progress;
-            gctx.fillRect(gx(sstart),y(prop.global.start),gx(d.time-sstart),h(prop.global.end-prop.global.start));
+            gctx.fillRect(gx(sstart),gy(prop.global.seg.start),gx(d.time-sstart),gy(prop.global.seg.end-prop.global.seg.start));
           
          }
       }
       else{
          gctx.fillStyle = colors.global.progress;
-         gctx.fillRect(gx(viewport.start),y(prop.global.start),gx(d.time-viewport.start),h(prop.global.end-prop.global.start));
+         gctx.fillRect(gx(viewport.start),gy(prop.global.seg.start),gx(d.time-viewport.start),gy(prop.global.seg.end-prop.global.seg.start));
       }
       
       
@@ -336,19 +352,17 @@ var SegmentBar = function(id, model){
             ctx.fill();
          }
       }
-      var prog_draw = function(s,e,t){
-         ctx.fillStyle = colors.progbar.total;
-         ctx.fillRect(x(s),y(prop.prog.start),w(e-s)+fixed.plumbob.stem_width,h(prop.prog.end-prop.prog.start));
-         ctx.fillStyle = colors.progbar.elapsed;
-         ctx.fillRect(x(s),y(prop.prog.start),w(t-s)+fixed.plumbob.stem_width,h(prop.prog.end-prop.prog.start));
-      }
 
       var eps = w_to_t((fixed.plumbob.stem_width + fixed.block_pad)/width);
       var hovered = false;
       var hover_x = this._view.canv.data('coord').x;
+
+      
+
       //go through each selection  and hilight the selection you've selected
       this._model.get_selections().for_each(function(e){
          //check hover
+         var local_hover = false;
          if(!hovered && hover_x != null){
             //hovering over a segment
             if (e.type == "segment" && x_to_t(hover_x) <= e.end && x_to_t(hover_x) >= e.start)
@@ -364,9 +378,8 @@ var SegmentBar = function(id, model){
                   gmark_draw(br.time,{marker:colors.hovered,stem:colors.hovered}); 
 
                }
-               hovered = true; 
+               local_hover = hovered = true; 
                sel_draw(e,colors.hovered);
-               return;
 
             }
             
@@ -381,12 +394,12 @@ var SegmentBar = function(id, model){
          //draw nonhover segment
          else if(e.type == "segment" && e.subtype != "continue"){
             if(d.selection != null && d.selection.sid == e.sid && d.selection.eid == e.eid ){
-               prog_block_draw(e,d.time,{fg:colors.progress,bg:colors.selected});
+               prog_block_draw(e,d.time,{fg:colors.progbar.elapsed,bg:colors.progbar.total});
                var br = that._model.get(e.eid);
                plumbob_draw(br.time,{marker:colors.selected,stem:colors.selected});
                gmark_draw(br.time,{marker:colors.selected,stem:colors.selected}); 
             }
-            else {
+            else if(!local_hover){
                block_draw(e,colors.block);
                var br = that._model.get(e.eid);
                plumbob_draw(br.time,colors.pause);
