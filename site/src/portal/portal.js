@@ -41,7 +41,7 @@ $(document).ready(function(){
    var is_redirect = handle_redirects(s);
 
    if(!is_redirect){
-      s.start("https://www.youtube.com/watch?v=nqFq1jL_4V4",function(vid_url){
+      s.start("https://www.youtube.com/watch?v=bqzUI1ihfpk",function(vid_url){
          var seg_url = s.segment(vid_url);
          s.redirect(seg_url);
       });
