@@ -49,13 +49,15 @@ textarea {
 }
 
 .added {
-    background-color: #090;
-    color: #FFF;
+    background-color: #CF9;
+    color: #000;
+    text-decoration: underline;
 }
 
 .removed {
-    background-color: #F00;
-    color: #FFF;
+    background-color: #FCC;
+    color: #000;
+    text-decoration: line-through;
 }
 
 .modified {
