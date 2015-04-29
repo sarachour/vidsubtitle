@@ -22,6 +22,15 @@ var SegmentModel  = function(){
    this.listen = function(ename, cbk){
       this._evt.listen(ename, cbk);
    }
+   this.export = function(){
+      var last_time = 0;
+      var data = [];
+      this.data.segments.for_each(function(seg){
+         data.push({start:last_time, end:seg.time, caption:{}});
+         last_time = seg.time;
+      })
+      return data;
+   }
    //gets normalized data for plotting, as well as scale
    this.get_data = function(){
       return this.data;
