@@ -1,0 +1,21 @@
+#row {
+	position: absolute;
+	text-align: center;
+}
+p {
+	position: relative;
+	display: block;
+	margin: 0 auto;
+}
+input {
+	position: relative;
+	display: block;
+	margin: 0 auto;
+}
+button {
+	position: relative;
+	display: block;
+	margin: 0 auto;
+	background-color: gray;
+	color: white;
+}
