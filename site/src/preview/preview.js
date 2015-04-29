@@ -3,19 +3,58 @@ var PreviewController = function(){
    this.init = function(){
     this.video = new YoutubeVideo("player1");
     this.exp = new SubtitleExporter();
+    this.resolver = new Navigator();
+
+    var that = this;
+    this.views = {};
+    this.views.play = $("#play").click(function(){
+      that.video.play();
+    });
+
+    this.views.srt = $("#srt").click(function(){
+      that.export('srt');
+    });
+
+    this.views.vtt = $("#vtt").click(function(){
+      that.export('vtt');
+    });
+
+    this.views.vtt = $("#raw").click(function(){
+      that.export('raw');
+    });
+
+    this.track = $("<track/>")
+      .attr('kind', 'subtitles')
+      .attr('srclang', 'en')
+      .attr('label', 'English')
+
+    this.load_from_query();
+
+    $("video").append(this.track);
+   }
+   this.load_from_query = function(){
+      var data = this.resolver.get();
+      if(data.data == undefined) return;
+      var d = JSON.parse(JSON.parse(data.data));
+      this.data = d;
+      this.url = d.url;
+      console.log(d.data);
+      this.video.load(this.url);
+      this.export('vtt');
+      this.track.attr('src', this.file_url);
+
    }
    this.load_subtitles = function(){
       var dat = JSON.parse($("#output",$("#dev")).val());
       var url = dat.url;
       var str = this.exp.to_vtt(dat);
       var fn = this.exp.to_file(str);
-      this.video.load(url);
+      this.video.load(this.url);
       console.log(fn,url);
    }
 
    this.export = function(type){
-    var dat = JSON.parse($("#output",$("#dev")).val());
-    var url = dat.url;
+    var dat = this.data;
     if(type == "vtt")
       var str = this.exp.to_vtt(dat);
     else if(type == "srt")
@@ -24,16 +63,13 @@ var PreviewController = function(){
       var str = this.exp.to_raw(dat);
 
     var fn = this.exp.to_file(str);
-    this.video.load(url);
-    console.log(fn,url);
+    this.file_url = fn;
    }
    this.init();
 }
 var pc;
+//http://localhost:8080/preview.html?data=%22%7B%5C%22data%5C%22%3A%5B%7B%5C%22start%5C%22%3A0%2C%5C%22end%5C%22%3A1.637008%2C%5C%22caption%5C%22%3A%7B%7D%7D%2C%7B%5C%22start%5C%22%3A1.637008%2C%5C%22end%5C%22%3A4.539383%2C%5C%22caption%5C%22%3A%7B%7D%7D%2C%7B%5C%22start%5C%22%3A4.539383%2C%5C%22end%5C%22%3A6.721969%2C%5C%22caption%5C%22%3A%7B%7D%7D%2C%7B%5C%22start%5C%22%3A6.721969%2C%5C%22end%5C%22%3A9.670782%2C%5C%22caption%5C%22%3A%7B%7D%7D%2C%7B%5C%22start%5C%22%3A9.670782%2C%5C%22end%5C%22%3A11.528302%2C%5C%22caption%5C%22%3A%7B%7D%7D%2C%7B%5C%22start%5C%22%3A11.528302%2C%5C%22end%5C%22%3A13.919859%2C%5C%22caption%5C%22%3A%7B%7D%7D%2C%7B%5C%22start%5C%22%3A13.919859%2C%5C%22end%5C%22%3A15.127247%2C%5C%22caption%5C%22%3A%7B%7D%7D%2C%7B%5C%22start%5C%22%3A15.127247%2C%5C%22end%5C%22%3A18.911944%2C%5C%22caption%5C%22%3A%7B%7D%7D%2C%7B%5C%22start%5C%22%3A18.911944%2C%5C%22end%5C%22%3A20.212208%2C%5C%22caption%5C%22%3A%7B%7D%7D%2C%7B%5C%22start%5C%22%3A20.212208%2C%5C%22end%5C%22%3A21.233844%2C%5C%22caption%5C%22%3A%7B%7D%7D%2C%7B%5C%22start%5C%22%3A21.233844%2C%5C%22end%5C%22%3A23.509306%2C%5C%22caption%5C%22%3A%7B%7D%7D%2C%7B%5C%22start%5C%22%3A23.509306%2C%5C%22end%5C%22%3A24.670256%2C%5C%22caption%5C%22%3A%7B%7D%7D%2C%7B%5C%22start%5C%22%3A24.670256%2C%5C%22end%5C%22%3A25.668673%2C%5C%22caption%5C%22%3A%7B%7D%7D%5D%2C%5C%22url%5C%22%3A%5C%22http%3A%2F%2Flocalhost%3A8080%2Fmedia%2Fyoutube%2FnqFq1jL_4V4.mp4%5C%22%7D%22
 $(document).ready(function(){
    pc = new PreviewController();
-   $("#output",$("#dev"))
-   .val('{"data":[{"start":0,"end":2.2143555,"caption":""},{"start":2.2143555,"end":4.101198,"caption":""},{"start":4.101198,"end":10.065308999999996,"caption":""},{"start":10.065308999999996,"end":11.502137,"caption":""},{"start":11.502137,"end":13.900550499999994,"caption":""},{"start":13.900550499999994,"end":16.1555385,"caption":""},{"start":16.1555385,"end":19.0988415,"caption":""},{"start":19.0988415,"end":20.31203,"caption":""},{"start":20.31203,"end":22.708771,"caption":""},{"start":22.708771,"end":25.031274000000003,"caption":""},{"start":25.031274000000003,"end":29.962547999999998,"caption":""},{"start":29.962547999999998,"end":31.4308385,"caption":""},{"start":31.4308385,"end":35.024271,"caption":""},{"start":35.024271,"end":39.0988845,"caption":""},{"start":39.0988845,"end":41.119236,"caption":""},{"start":41.119236,"end":44.091257,"caption":""},{"start":44.091257,"end":47.829502000000005,"caption":""},{"start":47.829502000000005,"end":52.333971000000005,"caption":""},{"start":52.333971000000005,"end":53.523940499999995,"caption":""},{"start":53.523940499999995,"end":56.6642985,"caption":""},{"start":56.6642985,"end":61.865335,"caption":""},{"start":61.865335,"end":64.001475,"caption":""},{"start":64.001475,"end":65.6848465,"caption":""},{"start":65.6848465,"end":67.992384,"caption":""},{"start":67.992384,"end":71.7654575,"caption":""},{"start":71.7654575,"end":73.3907815,"caption":""},{"start":73.3907815,"end":77.616318,"caption":""},{"start":77.616318,"end":79.218423,"caption":""},{"start":79.218423,"end":81.57016999999999,"caption":""},{"start":81.57016999999999,"end":84.603298,"caption":""},{"start":84.603298,"end":87.23284,"caption":""},{"start":87.23284,"end":89.694045,"caption":""},{"start":89.694045,"end":91.5863865,"caption":""},{"start":91.5863865,"end":92.48031499999999,"caption":""},{"start":92.48031499999999,"end":96.288217,"caption":""},{"start":96.288217,"end":98.981611,"caption":""},{"start":98.981611,"end":100.42371750000001,"caption":""},{"start":100.42371750000001,"end":102.81212,"caption":""},{"start":102.81212,"end":105.0035625,"caption":""},{"start":105.0035625,"end":112.49851899999999,"caption":""},{"start":112.49851899999999,"end":113.95826,"caption":""}],"url":"http://127.0.0.1:8080/media/movie1.mp4"}')
-    
-    pc.load_subtitles();
+
 })
