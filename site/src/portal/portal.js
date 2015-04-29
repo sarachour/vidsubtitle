@@ -3,7 +3,7 @@ stages: segment, scribe, edit
 */
 var handle_redirects = function(s){
    var par_args = s.get();
-   if(par_args.data == undefined) return;
+   if(par_args.data == undefined) return false;
    var args = JSON.parse(par_args.data);
 
    var go = args.go;
@@ -32,6 +32,7 @@ var handle_redirects = function(s){
       return true;
    }
    console.log("args:",args);
+   return false;
 }
 
 
@@ -39,8 +40,17 @@ $(document).ready(function(){
    console.log("ready");
    var s = new Navigator();
    var is_redirect = handle_redirects(s);
-   var input_url = document.getElementById("input_url").value;
+   //var input_url = document.getElementById("input_url").value;
+
+
    $("#begin").click(function() {
+      /*
+      Hey - i found the bug, you need to get the input value during the click
+      otherwise it's just empty
+      */
+      //var input_url = document.getElementById("input_url").value;
+      // This is shorthand for the line you had above :)
+      var input_url = $("#input_url").val();
       if(!is_redirect){
          s.start(input_url,function(vid_url){
             var seg_url = s.segment(vid_url);
