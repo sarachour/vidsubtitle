@@ -17,12 +17,7 @@ delete: the user deleted a marking
 
 
 */
-var keys = {
-  left: '&#9654;',
-  right: '&#9664;',
-  up: '&#9650;',
-  down: '&#9660'
-}
+
 
 var ProgramState = function(vp_name, vb_name, hnt_name){
   this.init = function(){
@@ -34,6 +29,10 @@ var ProgramState = function(vp_name, vb_name, hnt_name){
     this._history = new History();
     this._player = new SelectionPlayer(this);
     this._hint = new HintManager(hnt_name, this);
+
+    var hint = HINTS["default"];
+    that._hint.set(hint.title,hint.desc);
+
     this._history.listen('undo', function(e){
       console.log(e);
       if(e.type == "shift"){
@@ -67,8 +66,25 @@ var ProgramState = function(vp_name, vb_name, hnt_name){
   this.listen = function(name,cbk){
     this.obs.listen(name, cbk);
   }
-  this.set_hint = function(title,desc){
-    this._hint.set(title,desc);
+  this.bind_hint = function(elem,c){
+    var that = this;
+    if(typeof(c) != "function")
+      cbk = function(){return c;};
+    else
+      cbk = c;
+
+    elem.mouseleave(function(){
+        var hint = HINTS["default"];
+        that._hint.set(hint.title,hint.desc);
+    })
+    .mouseenter((function(callback){ 
+      return function(){
+        var key = callback();
+        var hint = HINTS[key];
+        console.log(key);
+        that._hint.set(hint.name,hint.desc);
+      }
+    })(cbk));
   }
   this.undo = function(){
     this._history.undo();
@@ -121,9 +137,6 @@ var ProgramState = function(vp_name, vb_name, hnt_name){
   this.get_state = function(){
     return this.state;
   }
-  this.get_hint_mgr = function(){
-    return this._hint;
-  }
   this.video_player = function(){
     return this._video_player;
   }
@@ -138,20 +151,12 @@ var HintManager = function(id){
     this._hinter = $("#"+id);
   }
   this.set = function(title,description){
-    if(title != "")
-      $("#title",this._hinter).html(title+":");
+    if(title != null && title != "")
+      this._hinter.html(title+":");
     else
-      $("#title",this._hinter).html("");
-    $("#description",this._hinter).html(description);
-  }
-  this.image = function(name){
-    return "<img src=res/"+name+".png class='hint icon'></img>";
-  }
-  this.button = function(b){
-    return '<div class="hint but">'+b+"</div>";
-  }
-  this.key = function(k){
-    return '<div class="hint key">' + k + "</div>"
+      this._hinter.html("");
+
+    this._hinter.html(description);
   }
   this.init();
 }
@@ -193,10 +198,9 @@ var SelectionPlayer = function(state){
 var MarkButton = function(button_name, state){
   this._init = function(){
     var that = this;
-    this.view = $("#"+button_name)
-      .mouseleave(function(){that.state.set_hint("","")})
-      .mouseenter(function(){that.state.set_hint(that.title, that.description)});
+    this.view = $("#"+button_name);
     this.state = state;
+    this.state.bind_hint(this.view, function(){if(that.started) return 'break'; else return 'start'});
     this.playing = false;
     this.init();
 
@@ -212,28 +216,24 @@ var MarkButton = function(button_name, state){
       that.init();
     })
 
-    
+    this.started = false;
   }
   this.init = function(){
     var that = this;
-    this.hmgr = this.state.get_hint_mgr();
     this.view
       .data("button-title","Start")
       .pulse({'background-color':'#96E6B8'},{pulses:-1,duration:1000});
 
-    this.title = "Start Video Segmentation";
-    this.description = "Press "+this.hmgr.button("Start")+" or "+this.hmgr.key("spacebar")+" to start marking the speech.";
     that.view.unbind('click');
     this.view.click(function(){
       that.start();
     })
+    this.started = false;
   }
   this.start = function(){
     var that = this;
+    this.started = true;
     this.view.data("button-title","Break").trigger('changeData');
-    this.title = "Break Button";
-    this.description = "Press "+this.hmgr.button("Break")+"or"+this.hmgr.key("spacebar")+
-          "to mark a pause in the video. Hold while the speaker is silent to mark a silence."
     this.state.play();
     this.is_down = false;
     this.view.unbind('click')
@@ -251,20 +251,10 @@ var HistoryButton = function(button_name, world, is_undo){
   this.init = function(){
     this.view = $("#"+button_name).addClass('disabled');
     this.state = world;
-    this.hmgr = this.state.get_hint_mgr();
     var that = this;
 
     this.state.listen('play',function(){that.view.removeClass('disabled')});
-    if(is_undo){
-      this.title = "Undo Action"
-      this.description = "Tap "+this.hmgr.image('undo')+" or "+
-      this.hmgr.key("Ctrl")+"+"+this.hmgr.key("Z")+" to undo the last modification or deletion of a marker."
-    }
-    else{
-      this.title = "Redo Action"
-      this.description =  "Tap "+this.hmgr.image('redo')+" or "+
-      this.hmgr.key("Ctrl")+"+"+this.hmgr.key("Y")+" to redo the last modification or deletion of a marker."
-    }
+    this.state.bind_hint(this.view, function(){if(is_undo) return 'undo'; else return 'redo'});
     this.view.click(function(){
       src_pulse($("img",$(this)), 200);
       if(is_undo){
@@ -274,8 +264,6 @@ var HistoryButton = function(button_name, world, is_undo){
         that.state.redo();
       }
     })
-    .mouseleave(function(){that.state.set_hint("","")})
-    .mouseenter(function(){that.state.set_hint(that.title, that.description)})
   }
   this.init();
 }
@@ -285,17 +273,11 @@ var NavigateButton = function(button_name, state, is_rev){
     var that = this;
     this.view = $("#"+button_name).addClass('disabled');
     this.state = state;
-    this.hmgr = this.state.get_hint_mgr();
 
     this.state.listen('play',function(){that.view.removeClass('disabled')});
-    if(is_rev){
-      this.title = "Previous Segment"
-      this.description = "Tap "+this.hmgr.image('prev')+" or "+this.hmgr.key(keys.left)+" to move to the previous segment."
-    }
-    else{
-      this.title = "Next Segment"
-      this.description = "Tap "+this.hmgr.image('next')+" or "+this.hmgr.key(keys.right)+" to move to the next segment."
-    }
+
+    this.state.bind_hint(this.view, function(){if(is_rev) return 'prev'; else return 'next'});
+
     this.view.click(function(){
       src_pulse($("img",$(this)), 200);
       var sels = that.state.selections();
@@ -303,8 +285,6 @@ var NavigateButton = function(button_name, state, is_rev){
         return e.type == "silence" || e.type == "segment";
       }, is_rev);
     })
-    .mouseleave(function(){that.state.set_hint("","")})
-    .mouseenter(function(){that.state.set_hint(that.title, that.description)})
   }
   
   this.init();
@@ -315,21 +295,15 @@ var ReplayButton = function(button_name, state){
     var that = this;
     this.view = $("#"+button_name).addClass('disabled');
     this.state = state;
-    this.hmgr = this.state.get_hint_mgr();
     this.player = new SelectionPlayer(state);
-    this.title = "Replay Segment";
-    this.description = "Tap "+this.hmgr.image('replay')+" or "
-      +this.hmgr.key(keys.up)+"or "+this.hmgr.key(keys.down)+" to replay the selected segment."
 
-
+    this.state.bind_hint(this.view, "replay");
     this.state.listen('play',function(){that.view.removeClass('disabled')});
 
     this.view.click(function(){
       src_pulse($("img",$(this)), 200);
       that.player.play();
     })
-    .mouseleave(function(){that.state.set_hint("","")})
-    .mouseenter(function(){that.state.set_hint(that.title, that.description)})
   }
 
   this.init();
@@ -339,21 +313,16 @@ var DeleteButton = function(button_name, state){
     var that = this;
     this.view = $("#"+button_name).addClass('disabled');
     this.state = state;
-    this.hmgr = this.state.get_hint_mgr();
     this.player = new SelectionPlayer(state);
 
+    this.state.bind_hint(this.view, "delete");
     this.state.listen('play',function(){that.view.removeClass('disabled')});
 
-    this.title = "Delete Segment";
-    this.description = "Tap "+this.hmgr.image('delete')+" or press "+
-      this.hmgr.key("z")+" to merge two adjacent segments by removing the marker at the end of the current segment.";
     this.view.click(function(){
       src_pulse($("img",$(this)), 200);
       that.state.remove();
       that.player.play();
     })
-    .mouseleave(function(){that.state.set_hint("","")})
-    .mouseenter(function(){that.state.set_hint(that.title, that.description)})
   }
 
   this.init();
@@ -363,22 +332,15 @@ var ShiftButton = function(button_name, state, is_start, is_left, amt){
     var that = this;
     this.view = $("#"+button_name).addClass('disabled');
     this.state = state;
-    this.hmgr = this.state.get_hint_mgr();
     this.player = new SelectionPlayer(state);
 
     this.state.listen('play',function(){that.view.removeClass('disabled')});
+    this.state.bind_hint(this.view, function(){if(is_left) return 'lshift'; else return 'rshift'});
 
     if(is_start) this.player.set_side('left');
     else this.player.set_side('right');
     this.amount = amt;
-    if(!is_left){  
-      this.title = "Make Segment Longer";
-      this.description = "Tap "+this.hmgr.image('rshift')+" or "+this.hmgr.key('c')+" to extend the end of the segment.";
-    }
-    else{
-      this.title = "Make Segment Shorter";
-      this.description = "Tap "+this.hmgr.image('lshift')+" or "+this.hmgr.key('x')+" to shorten the end of the segment.";
-    }
+    
     this.view.click(function(){
       src_pulse($("img",$(this)), 200);
       var amt = that.amount;
@@ -387,8 +349,6 @@ var ShiftButton = function(button_name, state, is_start, is_left, amt){
       else  that.state.shift(0,amt);
       that.player.play();
     })
-    .mouseleave(function(){that.state.set_hint("","")})
-    .mouseenter(function(){that.state.set_hint(that.title, that.description)})
   }
 
   this.init();
@@ -493,7 +453,9 @@ var RedirectButton = function(id,to,state){
   this.resolver = new Navigator();
   this.state = state;
   this.dest = to;
-  this.src = "segment;"
+  this.src = "segment;";
+
+
   this.root = $("#"+id).click(function(){
     console.log("ttt");
       that.redirect();
@@ -571,11 +533,13 @@ var SegmentController = function(){
   this.init = function(){
     var that = this;
     this.prog = new ProgramState("player1", "controls", "hint");
-
     this.queryResolver = new Navigator();
     //load url
     var args = this.queryResolver.get();
     //load request
+    if(args.practice != undefined && args.practice){
+      this.queryResolver.redirect('segment_practice.html');
+    }
     if(isValue(args.data)){
       var url = args.data.replace(/\"/g,"");
       that.load(url);
@@ -603,66 +567,10 @@ var SegmentController = function(){
 
     this.done_prompt = new DonePrompt(this.prog,'completed-controls',"done","preview");
 
-    this.hmgr = this.prog.get_hint_mgr();
-    
-    this.demo = new Demo("demo");
-    this.demo.set_splash("Welcome! In the following task, you will be breaking up videos "+
-      "into small, easy-to-caption chunks by marking when speakers start and stop speaking in the video."+
-      "In the following practice round, we will walk you through the process. Thank you!")
 
-    this.demo.add_step("Start Segmentation Process",
-      "Press "+this.hmgr.button('Start')+" or tap the "+this.hmgr.key('spacebar')+" key to begin.",
-      [$("#break")]);
-
-    this.demo.add_step("Mark in the Video",
-      "Mark when a speaker starts or stops speaking by tapping the "+this.hmgr.key('spacebar') +" key or pressing the " +this.hmgr.button('Break')+" button.",
-      [$("#break")]);
-
-    this.demo.add_step("Review Video Segments created from Marking Speech Start/End",
-      "Review previously made segments using the "+this.hmgr.image('prev')+" and "+ this.hmgr.image('next')+" buttons."+
-      "you may also use the "+this.hmgr.key(keys.left)+" and "+this.hmgr.key(keys.right)+" keys or click on segments in the segment bar.",
-      [$("#prev"),$("#next")]);
-
-    this.demo.add_step("Replay a Segment from the Beginning",
-      "Replay a segment by pressing "+this.hmgr.image('replay')+" or pressing the "
-        +this.hmgr.key(keys.up)+" and "+this.hmgr.key(keys.down)+" keys.",
-      [$("#replay")])
-
-
-    this.demo.add_step("Adjust the length of the Selected Segment",
-      "Shift the marker at the end of each segment to fix cut off words with "+this.hmgr.image('lshift')+" and "+this.hmgr.image('rshift')+
-      " or use the "+this.hmgr.key('x')+" and "+this.hmgr.key('c')+ " keys",
-      [$("#lshift"), $("#rshift")])
-
-    this.demo.add_step("Merge Two Adjacent Segments by Deleting Speech Marker",
-      "Delete the marker to the right of the selected segment using the "+this.hmgr.image('delete')+
-      "button or "+this.hmgr.key('z')+" key.",
-      [$("#delete")])
-
-    this.demo.add_step("Undo/Redo changes",
-      "Undo or redo any actions using the "+this.hmgr.image('undo')+" and "+this.hmgr.image('redo')+" buttons or the "+
-      this.hmgr.key("Ctrl")+"+"+this.hmgr.key("Z")+" and "+this.hmgr.key("Ctrl")+"+"+this.hmgr.key("Y")+" keys.",
-      [$("#undo"), $("#redo")]);
-
-    $("#start_demo").click(function(){
-      that.demo.start();
-    })
-    $("#title").html("Video Segmentation");
+    $("#title").html(INSTRUCTIONS);
 
     this.status = new Status("progress","status",1);
-  }
-  this.to_json = function(){
-    var data = {};
-    var segdata = this.prog.video_bar().model.to_json();
-    data.data = segdata;
-    data.url = this.prog.video_player().get_model().get_url();
-    return data;
-  }
-  this.from_json = function(d){
-    var url = d.url;
-    var segdata = d.data;
-    this.prog.video_player().load(url);
-    this.prog.video_bar().model.from_json(segdata);
   }
   
   this.load = function(v){
@@ -678,18 +586,5 @@ var ctrl;
 $("document").ready(function() {
   var data = {};
   ctrl = new SegmentController();
-  
-  $("#save",$("#dev")).click(function(){
-    var str = JSON.stringify(ctrl.to_json());
-    $("#output", $("#dev")).val(str);
-  })
-  $("#export",$("#dev")).click(function(){
-    var str = JSON.stringify(ctrl.export());
-    $("#output", $("#dev")).val(str);
-  })
-  $("#load", $("#dev")).click(function(){
-    var data = $("#output", $("#dev")).val();
-    ctrl.from_json(JSON.parse(data));
-  })
 
 });

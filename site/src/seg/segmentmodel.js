@@ -143,7 +143,7 @@ var SegmentModel  = function(){
          sel.start += left_amt; 
          sel.end += right_amt;
       }
-      this._evt.trigger('update',{obj:this});
+      this._evt.trigger('update',{obj:this,type:'shift',left:left_amt,right:right_amt});
    }
    this.remove = function(id,amt){
       if(amt == undefined){
@@ -161,7 +161,7 @@ var SegmentModel  = function(){
       }
       var enc = this.get_enclosing_selection(sel.end);
       this.data.selection = enc;
-      this._evt.trigger('update',{obj:this});
+      this._evt.trigger('update',{obj:this,type:'remove'});
       if(e.length() > 0)
          return e.get(0).elem;
       else
@@ -195,7 +195,7 @@ var SegmentModel  = function(){
          if(sel.start < time) sel.start = time;
          sel.sid = this.data.segments.length()-1;
       }
-      this._evt.trigger('update',{obj:this});
+      this._evt.trigger('update',{obj:this, type:'add'});
    }
    this.time = function(t){
       var that = this;

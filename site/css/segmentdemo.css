@@ -1,0 +1,10 @@
+.view {
+   width:640;
+}
+.no-click{
+   pointer-events: none;
+}
+
+#video-container{
+   height:400px;
+}

@@ -20,6 +20,7 @@
 <script src="src/core/audio.js"></script>
 <script src="src/core/demo.js"></script>
 
+<script src="src/seg/data.js"></script>
 <script src="src/seg/segmentmodel.js"></script>
 <script src="src/seg/segmentbar.js"></script>
 <script src="src/seg/segment.js"></script>
@@ -36,6 +37,7 @@
 
 <div class="container segment">
 
+<!--
 <div class="row" id="header">
    <div class="column one-fourth text-label">
       <button id="start_demo">Play Demonstration</button>
@@ -43,14 +45,18 @@
    <div id="progress" class="column one-half text-label">PROGRESS HERE</div>
    <div id="status" class="column one-fourth text-label dummy">STATS HERE</div>
 </div>
-
+-->
+   
 <div id="demo"></div>
 
 
 <!-- content pane -->
 <div id="content">
 
-
+<!-- Hint -->
+<div class="row">
+<div id="title" class="text small centered"></div>
+</div>
 
 
 <!-- video -->
@@ -73,10 +79,7 @@
 
 <!-- Hint -->
 <div class="row">
-<div id="hint" class="">
-<span id="title" class="hint title">Title Here</span>
-<span id="description" class="hint text">Description Here</span>
-</div>
+   <div id="hint" class="centered text"></div>
 </div>
 
 <div class="row">

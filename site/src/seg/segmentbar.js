@@ -5,11 +5,11 @@ var SegmentBar = function(id, model){
       this._id = id;
       this._model = model;
       this._view = {};
-      this._view.canv = $("<canvas/>");
+      this._view.canv = $("<canvas/>").attr('id','micro');
       this._view.ctx = this._view.canv[0].getContext('2d');
 
 
-      this._view.gcanv = $("<canvas/>");
+      this._view.gcanv = $("<canvas/>").attr('id','macro');
       this._view.gctx = this._view.gcanv[0].getContext('2d');
 
       that._state = {};
