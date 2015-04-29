@@ -341,6 +341,17 @@ var SegmentController = function(){
     this.prog.video_player().load(url);
     this.prog.video_bar().model.from_json(segdata);
   }
+  //load and get data
+  this.load = function(u){
+    this.prog.video_player().load(u);
+  }
+  this.export = function(d){
+    var data = {};
+    var segdata = this.prog.video_bar().model.export();
+    data.data = segdata;
+    data.url = this.prog.video_player().get_model().get_url();
+    return data;
+  }
   this.init();
 }
 
@@ -353,8 +364,43 @@ $("document").ready(function() {
   var data = {};
   ctrl = new SegmentController();
 
-  var test_data = ['{"data":[{"start":3.939453,"end":4.00911,"length":0.06965699999999986,"id":0,"type":"break"},{"start":17.798030000000008,"end":17.867687000000007,"length":0.06965699999999941,"id":1,"type":"break"},{"start":19.752259,"end":19.821916,"length":0.06965700000000297,"id":3,"type":"break"},{"start":27.12918,"end":27.198837000000005,"length":0.06965700000000297,"id":4,"type":"break"},{"start":29.224944,"end":29.271382,"length":0.046437999999998425,"id":2,"type":"break"},{"start":35.134845999999975,"end":35.204502999999974,"length":0.06965699999999941,"id":5,"type":"break"},{"start":36.764008,"end":36.856884,"length":0.09287600000000396,"id":6,"type":"break"},{"start":45.26954999999998,"end":45.33920699999998,"length":0.06965699999999941,"id":7,"type":"break"},{"start":46.94515,"end":47.014807,"length":0.06965699999999941,"id":8,"type":"break"},{"start":53.327208999999975,"end":53.396865999999974,"length":0.06965699999999941,"id":9,"type":"break"},{"start":55.118904,"end":55.188561,"length":0.06965699999999941,"id":10,"type":"break"},{"start":59.028667,"end":59.075105,"length":0.04643800000000198,"id":11,"type":"break"},{"start":61.141596,"end":61.188033999999995,"length":0.04643799999999487,"id":12,"type":"break"},{"start":63.834999999999994,"end":63.881438,"length":0.04643800000000908,"id":13,"type":"break"},{"start":66.09621399999999,"end":66.165871,"length":0.06965700000000652,"id":14,"type":"break"},{"start":69.164954,"end":69.234611,"length":0.06965700000000652,"id":15,"type":"break"},{"start":71.69054799999999,"end":71.73698599999999,"length":0.04643799999999487,"id":16,"type":"break"},{"start":75.935931,"end":76.005588,"length":0.06965700000000652,"id":17,"type":"break"},{"start":79.167205,"end":79.213643,"length":0.04643800000000908,"id":18,"type":"break"},{"start":84.90718599999998,"end":84.97684299999999,"length":0.06965700000000652,"id":19,"type":"break"}],"url":"media/movie2.mp4"}', '{"data":[{"start":3.126788,"end":3.196445,"length":0.0696570000000003,"id":0,"type":"break"},{"start":4.659242,"end":4.728899,"length":0.0696570000000003,"id":1,"type":"break"},{"start":9.305292000000003,"end":9.374949000000004,"length":0.06965700000000119,"id":3,"type":"break"},{"start":11.700682,"end":11.770339,"length":0.06965699999999941,"id":4,"type":"break"},{"start":16.483796,"end":16.553453,"length":0.06965699999999941,"id":5,"type":"break"},{"start":20.302265999999996,"end":20.371923,"length":0.06965700000000297,"id":6,"type":"break"},{"start":25.080242,"end":25.149898999999998,"length":0.06965699999999941,"id":7,"type":"break"},{"start":31.276158999999996,"end":31.369034999999997,"length":0.0928760000000004,"id":8,"type":"break"},{"start":35.26205,"end":35.354926,"length":0.09287599999999685,"id":9,"type":"break"},{"start":39.000309,"end":39.046747,"length":0.04643800000000198,"id":10,"type":"break"},{"start":41.391866,"end":41.461523,"length":0.06965699999999941,"id":11,"type":"break"},{"start":44.201365,"end":44.247803,"length":0.04643799999999487,"id":12,"type":"break"},{"start":48.125376,"end":48.195033,"length":0.06965699999999941,"id":13,"type":"break"},{"start":53.26732900000001,"end":53.33698600000001,"length":0.06965699999999941,"id":14,"type":"break"},{"start":61.978287,"end":62.047944,"length":0.06965699999999941,"id":15,"type":"break"},{"start":65.975788,"end":66.045445,"length":0.06965700000000652,"id":16,"type":"break"},{"start":68.344126,"end":68.390564,"length":0.04643799999999487,"id":17,"type":"break"},{"start":73.18423200000001,"end":73.25388900000002,"length":0.06965700000000652,"id":18,"type":"break"},{"start":79.503633,"end":79.57329,"length":0.06965700000000652,"id":19,"type":"break"},{"start":85.122631,"end":85.192288,"length":0.06965700000000652,"id":20,"type":"break"},{"start":89.882526,"end":89.952183,"length":0.06965700000000652,"id":21,"type":"break"},{"start":93.086748,"end":93.156405,"length":0.06965700000000652,"id":22,"type":"break"},{"start":99.239783,"end":99.30944,"length":0.06965699999999231,"id":23,"type":"break"},{"start":102.73740899999997,"end":102.80706599999996,"length":0.06965699999999231,"id":24,"type":"break"},{"start":105.411426,"end":105.481083,"length":0.06965699999999231,"id":25,"type":"break"},{"start":111.81670399999997,"end":111.88636099999997,"length":0.06965699999999231,"id":26,"type":"break"},{"start":114.699692,"end":114.74613,"length":0.04643799999999487,"id":27,"type":"break"},{"start":131.9314950000001,"end":132.0011520000001,"length":0.06965700000000652,"id":28,"type":"break"}],"url":"media/movie1.mp4"}'];
-  var test_index = Math.floor(Math.random() * test_data.length);
+  
+  //load request
+
+  //SARA: load url and get data url
+  var resolver = new Navigator();
+  var args = resolver.get();
+
+
+  var test_data = null;
+
+  if(isValue(args.data)){
+    var san_data = args.data.substring(1,args.data.length-1).replace(/\\"/g, "\"");
+    var data = JSON.parse(san_data);
+    console.log(san_data);
+
+    $("#output", $("#dev")).val(san_data);
+    var test_data = [san_data];
+    var test_index = 0;
+  }
+  if(test_data == null){
+    var test_data = ['{"data":[{"start":3.939453,"end":4.00911,"length":0.06965699999999986,"id":0,"type":"break"},{"start":17.798030000000008,"end":17.867687000000007,"length":0.06965699999999941,"id":1,"type":"break"},{"start":19.752259,"end":19.821916,"length":0.06965700000000297,"id":3,"type":"break"},{"start":27.12918,"end":27.198837000000005,"length":0.06965700000000297,"id":4,"type":"break"},{"start":29.224944,"end":29.271382,"length":0.046437999999998425,"id":2,"type":"break"},{"start":35.134845999999975,"end":35.204502999999974,"length":0.06965699999999941,"id":5,"type":"break"},{"start":36.764008,"end":36.856884,"length":0.09287600000000396,"id":6,"type":"break"},{"start":45.26954999999998,"end":45.33920699999998,"length":0.06965699999999941,"id":7,"type":"break"},{"start":46.94515,"end":47.014807,"length":0.06965699999999941,"id":8,"type":"break"},{"start":53.327208999999975,"end":53.396865999999974,"length":0.06965699999999941,"id":9,"type":"break"},{"start":55.118904,"end":55.188561,"length":0.06965699999999941,"id":10,"type":"break"},{"start":59.028667,"end":59.075105,"length":0.04643800000000198,"id":11,"type":"break"},{"start":61.141596,"end":61.188033999999995,"length":0.04643799999999487,"id":12,"type":"break"},{"start":63.834999999999994,"end":63.881438,"length":0.04643800000000908,"id":13,"type":"break"},{"start":66.09621399999999,"end":66.165871,"length":0.06965700000000652,"id":14,"type":"break"},{"start":69.164954,"end":69.234611,"length":0.06965700000000652,"id":15,"type":"break"},{"start":71.69054799999999,"end":71.73698599999999,"length":0.04643799999999487,"id":16,"type":"break"},{"start":75.935931,"end":76.005588,"length":0.06965700000000652,"id":17,"type":"break"},{"start":79.167205,"end":79.213643,"length":0.04643800000000908,"id":18,"type":"break"},{"start":84.90718599999998,"end":84.97684299999999,"length":0.06965700000000652,"id":19,"type":"break"}],"url":"media/movie2.mp4"}', '{"data":[{"start":3.126788,"end":3.196445,"length":0.0696570000000003,"id":0,"type":"break"},{"start":4.659242,"end":4.728899,"length":0.0696570000000003,"id":1,"type":"break"},{"start":9.305292000000003,"end":9.374949000000004,"length":0.06965700000000119,"id":3,"type":"break"},{"start":11.700682,"end":11.770339,"length":0.06965699999999941,"id":4,"type":"break"},{"start":16.483796,"end":16.553453,"length":0.06965699999999941,"id":5,"type":"break"},{"start":20.302265999999996,"end":20.371923,"length":0.06965700000000297,"id":6,"type":"break"},{"start":25.080242,"end":25.149898999999998,"length":0.06965699999999941,"id":7,"type":"break"},{"start":31.276158999999996,"end":31.369034999999997,"length":0.0928760000000004,"id":8,"type":"break"},{"start":35.26205,"end":35.354926,"length":0.09287599999999685,"id":9,"type":"break"},{"start":39.000309,"end":39.046747,"length":0.04643800000000198,"id":10,"type":"break"},{"start":41.391866,"end":41.461523,"length":0.06965699999999941,"id":11,"type":"break"},{"start":44.201365,"end":44.247803,"length":0.04643799999999487,"id":12,"type":"break"},{"start":48.125376,"end":48.195033,"length":0.06965699999999941,"id":13,"type":"break"},{"start":53.26732900000001,"end":53.33698600000001,"length":0.06965699999999941,"id":14,"type":"break"},{"start":61.978287,"end":62.047944,"length":0.06965699999999941,"id":15,"type":"break"},{"start":65.975788,"end":66.045445,"length":0.06965700000000652,"id":16,"type":"break"},{"start":68.344126,"end":68.390564,"length":0.04643799999999487,"id":17,"type":"break"},{"start":73.18423200000001,"end":73.25388900000002,"length":0.06965700000000652,"id":18,"type":"break"},{"start":79.503633,"end":79.57329,"length":0.06965700000000652,"id":19,"type":"break"},{"start":85.122631,"end":85.192288,"length":0.06965700000000652,"id":20,"type":"break"},{"start":89.882526,"end":89.952183,"length":0.06965700000000652,"id":21,"type":"break"},{"start":93.086748,"end":93.156405,"length":0.06965700000000652,"id":22,"type":"break"},{"start":99.239783,"end":99.30944,"length":0.06965699999999231,"id":23,"type":"break"},{"start":102.73740899999997,"end":102.80706599999996,"length":0.06965699999999231,"id":24,"type":"break"},{"start":105.411426,"end":105.481083,"length":0.06965699999999231,"id":25,"type":"break"},{"start":111.81670399999997,"end":111.88636099999997,"length":0.06965699999999231,"id":26,"type":"break"},{"start":114.699692,"end":114.74613,"length":0.04643799999999487,"id":27,"type":"break"},{"start":131.9314950000001,"end":132.0011520000001,"length":0.06965700000000652,"id":28,"type":"break"}],"url":"media/movie1.mp4"}'];
+    var test_index = Math.floor(Math.random() * test_data.length);
+  }
+  //SARA:
+  $("#next_step").click(function(){
+    console.log("test");
+    var data = ctrl.export();
+    console.log(data.data.length, enteredText.length);
+    for(var i=0; i < data.data.length; i++){
+      data.data[i].caption['speaker'] = enteredText[i];
+    }
+    console.log(data);
+    var url = resolver.portal('edit',data);
+    console.log(url);
+    resolver.redirect(url);
+  });
+
 
   $("#save",$("#dev")).click(function(){
     str = JSON.stringify({"captions":enteredText, "video":JSON.parse(test_data[test_index])['url']});
@@ -367,11 +413,11 @@ $("document").ready(function() {
                 $(".scribe.button.hotkey").css("visibility", "visible");
                 document.getElementById('entry').select();
                 });
-
+  //do not use test data
   $("#output", $("#dev")).val(test_data[test_index]);
   $("#load", $("#dev")).click();
-
   var seg_count = JSON.parse(test_data[test_index])['data'].length;
+  
   var status = new Status("Status", "Progress", seg_count+1, "Segment");
   var enteredText = [];
   for (i = 0; i <= seg_count; i++) enteredText.push('');

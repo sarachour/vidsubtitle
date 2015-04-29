@@ -218,7 +218,7 @@ var SegmentModel  = function(){
    this.duration = function(d){
       if(isValue(d)){
          this.data.duration = d;
-         if(this.data.selection.subtype == "continue"){
+         if(this.data.selection != null && this.data.selection.subtype == "continue"){
             this.data.selection.end = this.data.duration;
          }
          this._evt.trigger('update',{obj:this});
