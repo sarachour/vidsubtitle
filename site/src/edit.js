@@ -130,7 +130,6 @@ function replay_segment () {
 
 $("document").ready(function() {
     video = new YoutubeVideo("player1");
-    console.log("created video");
 
     // Get the correct width for the floating segment.
     $('#floating_panel').width($('#left_pane').width());
