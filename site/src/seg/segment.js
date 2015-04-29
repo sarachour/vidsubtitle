@@ -488,10 +488,12 @@ var VideoBar  =function(bar_name, state){
   this._init();
 }
 
-var DoneButton = function(id,state){
+var RedirectButton = function(id,to,state){
   var that = this;
   this.resolver = new Navigator();
   this.state = state;
+  this.dest = to;
+  this.src = "segment;"
   this.root = $("#"+id).click(function(){
     console.log("ttt");
       that.redirect();
@@ -499,38 +501,13 @@ var DoneButton = function(id,state){
 
   this.redirect = function(){
     var data = {};
-    data.go = "scribe";
-    data.from = "segment";
+    data.go = this.dest;
+    data.from = this.src;
     data.data = this.export();
-    var purl = this.resolver.portal("segment",data);
+    var purl = this.resolver.portal(this.src,data);
     this.resolver.redirect(purl);
   }
 
-  this.export = function(d){
-    var data = {};
-    var segdata = this.state.video_bar().model.export();
-    data.data = segdata;
-    data.url = this.state.video_player().get_model().get_url();
-    return data;
-  }
-  
-}
-
-var PreviewButton = function(id,state){
-  var that = this;
-  this.resolver = new Navigator();
-  this.state = state;
-  this.root = $("#"+id).click(function(){
-    that.redirect();
-  });
-  this.redirect = function(){
-    var data = {};
-    data.go = "preview";
-    data.from = "segment";
-    data.data = this.export();
-    var purl = this.resolver.portal("segment",data);
-    this.resolver.redirect(purl);
-  }
   this.export = function(d){
     var data = {};
     var segdata = this.state.video_bar().model.export();
@@ -620,8 +597,9 @@ var SegmentController = function(){
     this.buttons.undo = new HistoryButton("undo",this.prog, true);
     this.buttons.redo = new HistoryButton("redo",this.prog, false);
 
-    this.buttons.done = new DoneButton('done',this.prog);
-    this.buttons.preview = new PreviewButton('preview', this.prog);
+    this.buttons.done = new RedirectButton('done',"scribe",this.prog);
+    this.buttons.done_to_edit = new RedirectButton('done_to_edit',"edit",this.prog);
+    this.buttons.preview = new RedirectButton('preview','preview',this.prog);
 
     this.done_prompt = new DonePrompt(this.prog,'completed-controls',"done","preview");
 

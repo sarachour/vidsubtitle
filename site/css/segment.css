@@ -155,11 +155,19 @@ chunk specific rules
    background-color:rgba(200,200,100,0.3);
    border-style:solid;
 }
-
+.small.text{
+   font-size:10pt;
+   color:#303030;
+}
+.med.text{
+   font-size:18pt;
+   color:#303030;
+}
 #start_demo{
    background-color:#e74c3c;
    color:#ecf0f1;
 }
+
 
 #seg-done{
    background-color:#e74c3c;

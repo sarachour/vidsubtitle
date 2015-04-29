@@ -1,8 +1,8 @@
 var Status = function(msg, status,nparts,label){
-   label = typeof label !== 'undefined' ? label : "Video";
 
-   this.init = function(){
-      this.msg = $("#"+msg);
+   this.init = function(){   
+      label = typeof label !== 'undefined' ? label : "Video";
+      this.msg = $("#"+msg).addClass("med text");
       this.status = $("#"+status);
       this.n = nparts;
       this.i = 0;
@@ -27,7 +27,7 @@ var Status = function(msg, status,nparts,label){
       else{
          this.status_button.html("In Progress").prop('disabled',true);
       }
-      this.msg.html("<h4>" + label + " " + (this.i+1) + "/" + this.n + "<h4>");
+      this.msg.html(label + " " + (this.i+1) + " of " + this.n);
    }
    this.init();
 }
