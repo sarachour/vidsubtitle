@@ -48,3 +48,16 @@ textarea {
     font-size: 16px;
 }
 
+.added {
+    background-color: #090;
+    color: #FFF;
+}
+
+.removed {
+    background-color: #F00;
+    color: #FFF;
+}
+
+.modified {
+    background-color: #FF0;
+}
