@@ -3,7 +3,9 @@
 var DummySegmentationInterface = function(){
    this.init = function(){
       this.url = "media/movie1.mp4";
-      this.data = "";
+      this.data = JSON.parse(
+         '[{"time":0,"id":0,"type":"break"},{"time":0.996876,"id":2,"type":"break"},{"time":0.996876,"id":1,"type":"break"},{"time":1.995293,"id":3,"type":"break"},{"time":1.995293,"id":4,"type":"break"},{"time":3.550966,"id":5,"type":"break"},{"time":3.550966,"id":6,"type":"break"},{"time":4.549383,"id":7,"type":"break"},{"time":4.549383,"id":8,"type":"break"},{"time":6.70875,"id":9,"type":"break"},{"time":6.70875,"id":10,"type":"break"},{"time":8.960994,"id":11,"type":"break"},{"time":8.960994,"id":12,"type":"break"},{"time":10.121944,"id":13,"type":"break"},{"time":10.121944,"id":14,"type":"break"},{"time":12.885005,"id":15,"type":"break"},{"time":12.885005,"id":16,"type":"break"},{"time":13.604794,"id":17,"type":"break"},{"time":13.604794,"id":18,"type":"break"},{"time":18.248594,"id":19,"type":"break"},{"time":18.248594,"id":20,"type":"break"},{"time":20.175771,"id":21,"type":"break"},{"time":20.175771,"id":22,"type":"break"},{"time":22.381576,"id":23,"type":"break"},{"time":22.381576,"id":24,"type":"break"}]'
+      );
       this.video = new YoutubeVideo("player1",$("#view"));
       this.model = new SegmentModel();
       this.bar = new SegmentBar($("#segmentbar"), this.model);
@@ -31,41 +33,47 @@ var DummySegmentationInterface = function(){
       }
 
       if(phase == "start"){
-         this.video.time(0);
-         var is_started = false;
-         var handle_break = function(){
-            $("#break",v).pulse({'background-color':'#d33434',color:'white'},{pulses:1,duration:200});
-            that.model.add_segment(that.video.time());
-            that.obs.trigger('break');
-         }
-         var handle_start = function(){
-            if(is_started){
-               handle_break(); return;
-            }
-            $("#break",v).pulse('destroy').html('Break');
-            $("#segmentbar",v).fadeIn();
-            that.video.play();
-            that.obs.trigger('start');
-            is_started = true;
-         }
          $("#segmentbar",v).hide();
-         $("#break",v).pulse({'background-color':'#96E6B8'},{pulses:-1,duration:1000}).click(function(){
-            if(that.enabled.start_button){
-               that.obs.trigger('start-button');
-               handle_start();
-            }
-         });
-         jwerty.key('space', function(){
-            if(that.enabled.start_key){
-               that.obs.trigger('start-key');
-               handle_start();
-            }
-            return false;
-         })
+         $("#break",v).pulse({'background-color':'#96E6B8'},{pulses:-1,duration:1000}).html('Start');
+         var is_started = false;
       }
-      if(phase == "edit"){
-
+      else if(phase == 'edit'){
+         $("#segmentbar",v).show();
+         $("#break",v).pulse('destroy').html('Break');
+         var is_started = true;
+         this.model.from_json(this.data);
+         this.video.play();
       }
+      this.video.time(0);
+      var handle_break = function(){
+         $("#break",v).pulse({'background-color':'#d33434',color:'white'},{pulses:1,duration:200});
+         that.model.add_segment(that.video.time());
+         that.obs.trigger('break');
+      }
+      var handle_start = function(){
+         if(is_started){
+            handle_break(); return;
+         }
+         $("#break",v).pulse('destroy').html('Break');
+         $("#segmentbar",v).fadeIn();
+         that.video.play();
+         that.obs.trigger('start');
+         is_started = true;
+      }
+      $("#break",v).click(function(){
+         if(that.enabled.start_button){
+            that.obs.trigger('start-button');
+            handle_start();
+         }
+      });
+      jwerty.key('space', function(){
+         if(that.enabled.start_key){
+            that.obs.trigger('start-key');
+            handle_start();
+         }
+         return false;
+      })
+      
    }
    this.unload = function(){
       var v = $("#view").addClass('dummy').detach().appendTo('body');  
@@ -150,7 +158,10 @@ var AboutBar = function(){
       this.id = "aboutbar";
    }
    this.load = function(demo){
-
+      var that = this;
+      var iface = demo.get_iface();
+      iface.load(this.id, "edit", []);
+      
    }
 
    this.init();
@@ -162,6 +173,9 @@ var AboutBar2 = function(){
       this.id = "aboutbar2";
    }
    this.load = function(demo){
+      var that = this;
+      var iface = demo.get_iface();
+      iface.load(this.id, "edit", []);
 
    }
 
@@ -306,7 +320,7 @@ var Demonstration = function(){
          'buttons',
          'alltogether'
       ]
-      this.idx = 4;
+      this.idx = 5;
       //this.idx = 0;
       //load initial step
       this.load(this.stages[this.order[this.idx]]);
@@ -374,8 +388,9 @@ var Demonstration = function(){
 
    this.init();
 }
+var demo
 $(document).ready(function(){
-   var demo = new Demonstration();
+   demo = new Demonstration();
    /*
    $(".card").each(function(){
       var name = $(this).attr('id');
