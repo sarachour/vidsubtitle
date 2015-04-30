@@ -4,6 +4,45 @@
 .no-click{
    pointer-events: none;
 }
+#title {
+   font-size:32px;
+   font-style:sans-serif;
+   font-weight:bold;
+   text-align:left;
+   padding-left:1em;
+}
+#prompt,#content {
+   font-size:18px;
+   font-style:sans-serif;
+}
+#content{
+   text-align:center;
+   height:90%;
+
+}
+#command{
+   position:relative;
+   bottom:0;
+   background-color:lightyellow;
+   height:3em;
+}
+#prev,#next{
+   background-color:lightblue;
+}
+#prev:disabled,#next:disabled{
+   background-color:#eeeeee;
+}
+#prev:hover,#next:hover{
+   border-color:orange;
+   border-width:2px;
+   border-style:solid;
+}
+.fill-height{
+    height:100%;
+}
+.half-height{
+   height:50%;
+}
 
 #video-container{
    height:400px;

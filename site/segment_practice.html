@@ -36,84 +36,277 @@
 
 <body>
 
+<div class="container">
 
-<div class="container segment">
-
-<div id="welcome" class="row step">
-   <div>Welcome to Hidden Subtext!</div>
-   <div>
-   Using the following program, 
-   you will be breaking up videos into small chunks by marking where speech starts and ends.
+<div id="demonstration">
+   <div id="title" class="row fill-parent-width med">
+      TITLE HERE
    </div>
-   <div>Here are some examples of segments:</div>
-   <audio src="media/click.mp3"></audio>
-   <audio src="media/click.mp3"></audio>
-   <button id="continue">Continue</button>
-</div>
-
-<div id="starting" class="row step">
-   <div>To begin breaking up the video, you press the Start button</div>
-   <div class="mock"></div>
-   <div id="success" class="dummy">
-   Good!
-   <button id="continue">Continue</button>
+   <div class="row screen-height">
+   <div id="prev" class="one column fill-height">
+   PREV
    </div>
-</div>
-
-<div id="starting-key" class="row step">
-   <div>You may also press the spacebar key instead of pressing the start button.</div>
-   <div class="mock"></div>
-   <div id="success" class="dummy">
-   Good!
-   <button id="continue">Continue</button>
+   <div class="ten columns fill-height">
+      <div class="half-height">
+         <div id="prompt">PROMPT</div>
+      </div>
+      <div id="content" class="half-height">
+         CONTENT
+      </div>
+   </div>
+   <div id="next" class="one column fill-height">
+   NEXT
+   </div>
+   </div>
+   <div class="row">
+      <div class="one column" id="skip-card">SKIP</div>
+      <div class="ten columns" id="command">STATUS</div>
+      <div class="one column" id="stop-demo">STOP</div>
    </div>
 </div>
-
-
-<div id="breaking" class="row step">
-   <div>
-   When you press Start, the video begins to play and the Start button turns into a Break button.
-   You may press Break or spacebar to mark the beginnings and ends of speech. </div>
-   <div>
-   Try adding at least ten marks to the following video. Use the key combination for Break at least once.
-   Try to mark the start or end of speech.
+<div id="welcome" class="card">
+   <div id="title">Welcome to Hidden Subtext!</div>
+   <div id="prompt">
+   In this tutorial, we will walk you through how to complete a segmentation task.
+   <br>
+   <br>
+   In the segmentation task you mark the beginnings and ends of speech in a video.
    </div>
-   <div class="mock"></div>
-   <div id="success" class="dummy">
-   Good!
-   <button id="continue">Continue</button>
+   <div id="content">
+   Here are some examples of segments:
+   
    </div>
+   <div id="command">
+      Listen to the segments. Press next when you're ready to continue.
+   </div>  
 </div>
 
-
-<div id="aboutbar" class="row step">
-   <div>The segment bar visually displays the segments underneath the video.</div>
-   <div> The blue markers are where you marked the beginning or end of speech.</div>
-   <div>The black blocks represent the actual segments.</div>
-   <div>The grey block is the segment that is currently playing.</div>
-   <div>The yellow marker is your cursor.</div>
-   <div>When you click on a segment, the segment is selected and is highlighted in green.<div>
-   <div>Dragging on a segment shrinks or grows the segment by adjusting the end</div>
-   <div>right clicking within a segment creates a new marker</div>
-   <div id="segmentbar"></div>
-   <div class="mock"></div>
-   <div id="success" class="dummy">
-   Good!
-   <button id="continue">Continue</button>
+<div id="start" class="card">
+   <div id="title">Beginning The Segmentation Process</div>
+   <div id="prompt">
+   To begin breaking up the video, you press the <div class="hint button">Start</div> button
+   </div>
+   <div id="content">
+      <div class="mock"></div>
+   </div>
+   <div id="command">
+    Press <div class="hint button">Start</div> to begin breaking up the video.
    </div>
 </div>
 
-<div id="other_buttons" class="row step">
-   <div>
-      There are other controls that you can use to navigate through and edit segments. Hover over each of the controls to read a description of what they do. Invoke each control using both the button and the hotkey.
+<div id="hotkeys" class="card">
+   <div id="title">Hotkeys</div>
+   <div id="prompt">
+   You can do everything in this task by pressing a sequence of keys on the keyboard.<br>
+   For example, you may press <div class="hint key">spacebar</div> instead of the 
+   the <div class="hint button">Start</div> button to begin breaking up the video.
    </div>
-   <div>
-      If you're ever not sure of what a control does or wish to know the keyboard combination, hover over it to see a description.
+   <div id="content">
+      <div class="mock"></div>
+   </div>
+   <div id="command">
+    Press <div class="hint key">spacebar</div> to begin breaking up the video.
    </div>
 </div>
 
-<div id="alltogether" class="row step">
-   Now that you are primed on the controls, review the following properly segmented video.
+
+<div id="breaking" class="card">
+   <div id="title">Marking Breaks in the Video</div>
+   <div id="prompt">
+      You make press <div class="hint button">Break</div> or press <div class="hint key">spacebar</div>
+      to mark the beginnings and ends of speech.<br>
+      Don't worry too much about getting the breaks correct the first time
+   </div>
+   <div id="content">
+      <div class="mock"></div>
+   </div>
+   <div id="command">
+    Start the segmentation process and mark ten breaks in the video. Use <div class="hint key">spacebar</div> at least once.
+   </div>
+</div>
+
+<div id="aboutbar" class="card">
+   <div id="title">The Segment Bar I </div>
+   <div id="prompt">
+      The segment bar how far you are in the video as well as any markers you added.<br>
+      The segment bar is located underneath the video.<br>
+      The segment bar is comprised of a regional view and global view. 
+      Below, the regional view is outlined in red, and the global view is outlined in green.<br>
+   </div>
+   <div id="content">
+      <div class="mock"></div>
+   </div>
+   <div id="command" >
+      Click next to continue.
+   </div>
+</div>
+
+<div id="aboutbar2" class="card">
+   <div id="title">The Segment Bar II: The Global View </div>
+   <div id="prompt"><br>
+      The global segment bar displays your progress over the entire video.<br>
+      The blue area is the region you're focused on.<br>
+      You may focus on different regions of the video by clicking on the global view.
+   </div>
+   <div id="content">
+      <div class="mock"></div>
+   </div>
+   <div id="command" >
+      Focus on three different regions using the global segment bar.
+   </div>
+</div>
+
+<div id="aboutbar3" class="card">
+   <div id="title">The Segment Bar III: The Region Segment Bar </div>
+   <div id="prompt">
+      The region you're focused on displayed in the regional view.<br>
+      You may use the regional view to edit the segments you've created or add new segments<br>
+      <table><tr><td>
+      <img class="hint icon" src="res/demo/break.png"></img></td>
+      <td> A break you marked in the video.</td></tr>
+      <tr><td>
+      <img class="hint icon" src="res/demo/cursor.png"></img></td>
+      <td> Your mouse cursor.</td></tr>
+      <tr><td>
+      <img class="hint icon" src="res/demo/black-block.png"></img></td>
+      <td> A segment. Defined by two breaks.</td></tr>
+      <tr><td>
+      <img class="hint icon" src="res/demo/hover-block.png"></img></td>
+      <td> he segment you're hovering over.</td></tr>
+      <tr><td>
+      <img class="hint icon" src="res/demo/green-block.png"></img></td>
+      <td> The selected segment</td></tr>
+      <tr><td>
+      <img class="hint icon" src="res/demo/grey-block.png"></img></td>
+      <td> The segment that is playing</td></tr>
+      </table>
+   </div>
+   <div id="content">
+      <div class="mock"></div>
+   </div>
+   <div id="command" >
+      Click next to continue
+   </div>
+</div>
+
+
+<div id="navigating" class="card">
+   <div id="title">Selecting and Navigating Through Segments</div>
+   <div id="prompt">
+      You may select a segment in the regional view by clicking on a segment.<br> 
+      Once a segment is selected, you may move to the neighboring segments using the
+      <div class="hint key">left</div> and <div class="hint key">right</div> arrow keys<br>
+      When a segment is selected, the video corresponding to that segment automatically plays.<br>
+      You may replay the selected segment using the <div class="hint key">up</div> or <div class="hint key">down</div> 
+      keys.<br>
+   </div>
+   <div id="content">
+      <div class="mock"></div>
+   </div>
+   <div id="command" >
+      Select a segment. Move to other segments using the left and right arrow keys. Replay a segment using the <div class="hint key">up</div> or <div class="hint key">down</div> keys.
+   </div>
+</div>
+
+<div id="addbreak" class="card">
+   <div id="title">Adding A Break</div>
+   <div id="prompt">
+      You may mark a break by right-clicking on the regional view or pressing the
+      <div class="hint key">spacebar</div> key when a segment is playing.
+   </div>
+   <div id="content">
+      <div class="mock"></div>
+   </div>
+   <div id="command" >
+      Insert two breaks, one using the mouse and one using the keyboard.
+   </div>
+</div>
+
+<div id="removebreak" class="card">
+   <div id="title">Removing a Break</div>
+   <div id="prompt">
+      You may remove a break at the end of the segment by selecting the segment and pressing the
+      <div class="hint key">v</div> or <div class="hint key">delete</div> keys.
+   </div>
+   <div id="content">
+      <div class="mock"></div>
+   </div>
+   <div id="command" >
+      Remove two breaks: one using the <div class="hint key">v</div> key and the other using the
+      <div class="hint key">delete</div> key. 
+   </div>
+</div>
+
+<div id="shortenseg" class="card">
+   <div id="title">Shortening a Segment</div>
+   <div id="prompt">
+      You may shorten a segment by dragging your mouse to the left over a segment or selecting a segment and pressing the <div class="hint key">x</div> key.
+   </div>
+   <div id="content">
+      <div class="mock"></div>
+   </div>
+   <div id="command" >
+      Shorten a segment by using the <div class="hint key">x</div> key and dragging your mouse left.
+   </div>
+</div>
+
+<div id="lengthenseg" class="card">
+   <div id="title">Lengthening a Segment</div>
+   <div id="prompt">
+      You may lengthen a segment by dragging your mouse to the right over a segment or selecting a segment and pressing the <div class="hint key">c</div> key.
+   </div>
+   <div id="content">
+      <div class="mock"></div>
+   </div>
+   <div id="command" >
+      Lengthen a segment by using the <div class="hint key">c</div> key and dragging your mouse right.
+   </div>
+</div>
+
+<div id="undo" class="card">
+   <div id="title">Undoing and Redoing an Action</div>
+   <div id="prompt">
+      You may undo any delete, shift or add action at any point by pressinng <div class="hint key">control</div>+<div class="hint key">z</div><br>
+      You may redo an action you reversed using undo by pressing <div class="hint key">control</div>+<div class="hint key">y</div><br>
+   </div>
+   <div id="content">
+      <div class="mock"></div>
+   </div>
+   <div id="command" >
+      Add a segment, undo adding a segment, then redo adding a segment.
+   </div>
+</div>
+
+<div id="buttons" class="card">
+   <div id="title">Hints and Buttons</div>
+   <div id="prompt">
+      All of the described actions have corresponding buttons under the segment bar.<br>
+      If you ever forget the key combination to an action, or what an action does, hover over the button
+      to view a hint<br>
+   </div>
+   <div id="content">
+      <div class="mock"></div>
+   </div>
+   <div id="command" >
+      Hover over the buttons to see what they are for. Press next to continue.
+   </div>
+</div>
+
+<div id="alltogether" class="card">
+   <div id="title">Putting it all together</div>
+   <div id="prompt">
+      That covers just about everything. If you ever wish to view this tutorial again, 
+      press on the <div class="hint button">Demonstration</div> button on the segmentation page.<br>
+       What would you like to do next?
+   </div>
+   <div id="content">
+      <div class="button" id="ready">I'm Ready!</div>
+      <div class="button" id="practice">I Want to Practice</div>
+      <div class="button" id="practice">Take me Home</div>
+   </div>
+   <div id="command" >
+      Hover over the buttons to see what they are for. Press next to continue.
+   </div>
 </div>
 
 
@@ -184,4 +377,5 @@
    </div>
    </div>
    </div></div>
+</div>
 </div>

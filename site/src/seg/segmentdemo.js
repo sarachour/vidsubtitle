@@ -1,212 +1,277 @@
 
-var MEDIA = "media/movie1.mp4";
 
-var Welcome = function(s){
+var DummySegmentationInterface = function(){
    this.init = function(){
-      this.root = $("#welcome");
-      this.steps = s;
-   }
-   this.go = function(){
-      var that = this;
-      $(".continue.welcome").click(function(){
-         that.steps.next();
-      })
-      this.root.fadeIn();
-   }
-   this.destroy = function(){};
-   this.init();
-}
-
-var PressStart = function(s){
-   this.init = function(){
-      this.root = $("#starting");
-      this.steps = s;
-   }
-   this.go = function(){
-      var that = this;
-
-      $(".continue.starting").click(function(){that.steps.next();});
-
-      $(".break.starting").click(function(){
-         $(".success.starting").removeClass('dummy');
-      })
-      .pulse({'background-color':'#96E6B8'},{pulses:-1,duration:1000});
-      
-      this.root.fadeIn();
-   }
-   this.destroy = function(){};
-   this.init();
-}
-
-
-var PressStartKey = function(s){
-   this.init = function(){
-      this.root = $("#starting-key");
-      this.steps = s;
-   }
-   this.go = function(){
-      var that = this;
-
-      $(".continue.starting-key").click(function(){that.steps.next();});
-
-      $(".break.starting-key")
-      .pulse({'background-color':'#96E6B8'},{pulses:-1,duration:1000});
-      
-      this.key = jwerty.key('space', function(){
-         $(".success.starting-key").removeClass('dummy');
-         return false;
-      })
-      this.root.fadeIn();
-   }
-   this.destroy = function(){
-      this.key.unbind();
-   };
-   this.init();
-}
-
-var InsertThreeBreaks = function(s){
-   this.init = function(){
-      this.root = $("#breaking");
-      this.steps = s;
-      this.init_video();
-   }
-   this.init_video = function(){
-      var that = this;
-
-      this.video = new YoutubeVideo($('.player1.breaking'));
+      this.url = "media/movie1.mp4";
+      this.data = "";
+      this.video = new YoutubeVideo("#player1",$("#view"));
       this.model = new SegmentModel();
-      this.bar = new SegmentBar($('.segmentbar.breaking'), this.model);
-
-      this.video.listen('update', function(t,u){
-         that.model.duration(that.video.duration());
-         that.model.time(that.video.time());
-      })
-      this.video.load(MEDIA);
+      this.bar = new SegmentBar();
+      this.video.load(this.url);
    }
-   this.go = function(){
-      var that = this;
-      this.is_start = true;
-      var count = 0;
-      var key_count = 0;
-      
-      $(".continue.breaking").click(function(){that.steps.next();});
-      $(".break.breaking")
-         .click(function(){
-            if(that.is_start){
-               $(this).pulse("destroy").html("Break");
-               that.video.play();
-            }
-            else {
-               $(this).pulse({'background-color':'#d33434',color:'white'},{pulses:1,duration:200});
-               that.model.add_segment(that.video.time());
-               count++;
-               if(count > 10 && key_count > 1){
-                  $(".success.breaking").removeClass('dummy');
-               }
-            }
-            that.is_start = false;
-
-         })
-         .pulse({'background-color':'#96E6B8'},{pulses:-1,duration:1000});
-      
-      //if spacebar is pressed.
-      this.key = jwerty.key('space', function(){
-         key_count ++;
-         $(".break.breaking").click();
-         return false;
-      })
-      this.root.fadeIn();
-   }
-   this.destroy = function(){
-      this.video.pause();
-      if(this.key != undefined) this.key.unbind();
-   }
-   this.init();
 }
-/*
-Walks through all the nuances of the bar
-*/
-var AboutBar = function(s, step){
+
+var Welcome = function(){
    this.init = function(){
-      this.root = $("#aboutbar");
-      this.steps = s;
-      this.idx = step;
-      this.model = new SegmentModel();
-      this.model.listen('update',function(e){
-         console.log(e);
-      })
-      this.bar = new SegmentBar($('.segmentbar.aboutbar'), this.model);
+      this.id = "welcome";
+   }
+   this.load = function(demo){
 
    }
-   this.substep_text = function(){
-      
-   }
-   this.go = function(){
-      this.model.duration(30);
-      this.model.add_segment(3);
-      this.model.add_segment(7);
-      this.model.add_segment(13);
-      this.model.time(15);
-      $("#macro",this.root).hide();
-      this.root.fadeIn();
-   }
 
-   this.destroy = function(){};
    this.init();
 }
 
-var Steps = function(){
+var Start = function(){
    this.init = function(){
-      $(".step").hide();
-      this.steps = {};
-      this.steps.welcome = new Welcome(this);
-      this.steps.press_start = new PressStart(this);
-      this.steps.press_start_key = new PressStartKey(this);
-      this.steps.insert_three_breaks = new InsertThreeBreaks(this);
-      this.steps.about_bar1 = new AboutBar(this,1);
-      this.steps.about_bar2 = new AboutBar(this,2);
-      this.steps.about_bar3 = new AboutBar(this,3);
-      this.index = -1; //-1
-      this.order = ['welcome','press_start','press_start_key','insert_three_breaks',
-      'about_bar1','about_bar2','about_bar3'];
+      this.id = "start";
+   }
+   this.load = function(demo){
 
+   }
+
+   this.init();
+}
+
+var Hotkey = function(){
+   this.init = function(){
+      this.id = "hotkeys";
+   }
+   this.load = function(demo){
+
+   }
+
+   this.init();
+}
+
+var Breaking = function(){
+   this.init = function(){
+      this.id = "breaking";
+   }
+   this.load = function(demo){
+
+   }
+
+   this.init();
+}
+
+var AboutBar = function(){
+   this.init = function(){
+      this.id = "aboutbar";
+   }
+   this.load = function(demo){
+
+   }
+
+   this.init();
+}
+
+
+var AboutBar2 = function(){
+   this.init = function(){
+      this.id = "aboutbar2";
+   }
+   this.load = function(demo){
+
+   }
+
+   this.init();
+}
+
+var AboutBar3 = function(){
+   this.init = function(){
+      this.id = "aboutbar3";
+   }
+   this.load = function(demo){
+
+   }
+
+   this.init();
+}
+var Navigating = function(){
+   this.init = function(){
+      this.id = "navigating";
+   }
+   this.load = function(demo){
+
+   }
+
+   this.init();
+}
+
+var AddBreak = function(){
+   this.init = function(){
+      this.id = "addbreak";
+   }
+   this.load = function(demo){
+
+   }
+
+   this.init();
+}
+
+var RemoveBreak = function(){
+   this.init = function(){
+      this.id = "removebreak";
+   }
+   this.load = function(demo){
+
+   }
+
+   this.init();
+}
+
+var ShortenSeg = function(){
+   this.init = function(){
+      this.id = "shortenseg";
+   }
+   this.load = function(demo){
+
+   }
+
+   this.init();
+}
+var LengthenSeg = function(){
+   this.init = function(){
+      this.id = "lengthenseg";
+   }
+   this.load = function(demo){
+
+   }
+
+   this.init();
+}
+var Undo = function(){
+   this.init = function(){
+      this.id = "undo";
+   }
+   this.load = function(demo){
+
+   }
+
+   this.init();
+}
+
+var Buttons = function(){
+   this.init = function(){
+      this.id = "buttons";
+   }
+   this.load = function(demo){
+
+   }
+
+   this.init();
+}
+
+var AllTogether = function(){
+   this.init = function(){
+      this.id = "alltogether";
+   }
+   this.load = function(demo){
+
+   }
+
+   this.init();
+}
+
+var Demonstration = function(){
+   this.init = function(){
       var that = this;
-      $(".step").hide();
-      setTimeout(function(){
+
+      this.ds = new DummySegmentationInterface();
+      this.root = $("#demonstration");
+
+      this.stages = {};
+      this.stages.welcome = new Welcome();
+      this.stages.start = new Start();
+      this.stages.hotkey = new Hotkey();
+      this.stages.breaking = new Breaking();
+      this.stages.aboutbar = new AboutBar();
+      this.stages.aboutbar2 = new AboutBar2();
+      this.stages.aboutbar2 = new AboutBar2();
+      this.stages.aboutbar3 = new AboutBar3();
+      this.stages.navigating = new Navigating();
+      this.stages.addbreak = new AddBreak();
+      this.stages.removebreak = new RemoveBreak();
+      this.stages.shortenseg = new ShortenSeg();
+      this.stages.lengthenseg = new LengthenSeg();
+      this.stages.undo = new Undo();
+      this.stages.buttons = new Buttons();
+      this.stages.alltogether = new AllTogether();
+
+      this.order = [
+         'welcome',
+         'start',
+         'hotkey',
+         'breaking',
+         'aboutbar',
+         'aboutbar2',
+         'aboutbar3',
+         'navigating',
+         'addbreak',
+         'removebreak',
+         'shortenseg',
+         'lengthenseg',
+         'undo',
+         'buttons',
+         'alltogether'
+      ]
+      this.idx = 0;
+      //load initial step
+      this.load(this.stages[this.order[this.idx]]);
+
+      $("#next",this.root).click(function(){
          that.next();
-      },500)
+      })
+      $("#prev",this.root).click(function(){
+         that.prev(); 
+      })
+      $(".card").hide();
+   }
+   this.get_view = function(){
+      return this.root;
+   }
+   this.get_iface = function(){
+      return this.ds;
    }
    this.next = function(){
-
-      $(".step").hide();
-      if(this.index >= 0 && this.index < this.order.length)
-         this.steps[this.order[this.index]].destroy();
-
-      if(this.index < this.order.length-1){
-         this.index++;
+      if(this.idx < this.order.length-1){
+         this.idx ++;
+         this.load(this.stages[this.order[this.idx]]);
       }
-      this.steps[this.order[this.index]].go();
+
    }
    this.prev = function(){
-      $(".step").hide();
-
-      if(this.index >= 0 && this.index < this.order.length)
-         this.steps[this.order[this.index]].destroy();
-
-      if(this.index > 0){
-         this.index--;
+      if(this.idx > 0){
+         this.idx --;
+         console.log(this.idx, this.stages[this.order[this.idx]])
+         this.load(this.stages[this.order[this.idx]]);
       }
-      this.steps[this.order[this.index]].go();
+
+   }
+   this.load = function(stage){
+      var par = $("#"+stage.id);
+      var title = $("#title",par).clone();
+      var cmd = $("#command",par).clone();
+      var prompt = $("#prompt",par).clone();
+      var content = $("#content",par).clone();
+
+      //set fields
+      $("#title",this.root).html(title);
+      $("#prompt",this.root).html(prompt);
+      $("#command",this.root).html(cmd);
+      $("#content",this.root).html(content);
+
+      stage.load(this);
+      
    }
 
    this.init();
-
 }
-
-
 $(document).ready(function(){
-   var steps = new Steps();
-   $(".step").each(function(){
+   var demo = new Demonstration();
+   /*
+   $(".card").each(function(){
       var name = $(this).attr('id');
       //copy view in each mock object in the step
       $(".mock", $(this)).each(function(){
@@ -219,6 +284,7 @@ $(document).ready(function(){
             $(this).addClass(uname);
          }
       });
-   })
+   }) 
+   */
    
 })

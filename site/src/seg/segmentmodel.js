@@ -181,6 +181,9 @@ var SegmentModel  = function(){
       selections.push({time:(last+this.data.duration)/2, start:last, end:this.data.duration,type:'segment', sid:last_id, eid:-1, subtype:"continue"});
       return selections;
    }
+   this.clear_segments = function(){
+      this.data.segments.clear();
+   }
    this.add_segment = function(time){
       var s = {};
       s.time = time;
