@@ -2,7 +2,12 @@
 var SegmentBar = function(id, model){
    this.init = function(id, model){
       var that = this;
-      this._id = id;
+      if(typeof(id) == "string"){
+         this._root = $("#"+id);
+      }
+      else{
+         this._root = id;
+      }
       this._model = model;
       this._view = {};
       this._view.canv = $("<canvas/>").attr('id','micro');
@@ -18,7 +23,7 @@ var SegmentBar = function(id, model){
       that._state.viewport.width = 30;
 
       this._model.listen('update',function(){that._draw();})
-      $("#"+id).html("");
+      this._root.html("");
 
       this._view.canv
          .css('width',"100%")
@@ -114,7 +119,7 @@ var SegmentBar = function(id, model){
       this._view.end = $("<span/>").css('float','right').html("End Time");
       this._view.times.append(this._view.start,this._view.end)
 
-      $("#"+id).html("").append(this._view.gcanv,this._view.canv);
+      this._root.html("").append(this._view.gcanv,this._view.canv);
       this._draw();
    }
    this._resize = function(){

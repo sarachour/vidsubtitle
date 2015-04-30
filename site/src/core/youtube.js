@@ -4,7 +4,13 @@ var YoutubeVideo = function(id) {
       var that = this;
       this.loaded = false;
       this.events = new Observer();
-      this.id = id;
+
+      if(typeof(id) == "string"){
+         this.root = $("#"+id);
+      }
+      else{
+         this.root = id;
+      }
 
       var args = {};    
       args.seekable = true;
@@ -41,7 +47,7 @@ var YoutubeVideo = function(id) {
       args.enableKeyboard = false;
       //args.mode = "auto"
       args.mode = "native"
-      this.player = $("#"+that.id).mediaelementplayer(args);
+      this.player = this.root.mediaelementplayer(args);
 
       this.dummy = $("<div/>").attr('id','video-dummy').css({
          position:'absolute',
@@ -53,7 +59,7 @@ var YoutubeVideo = function(id) {
       });
       this.dummy.click(function(){return false;})
       console.log(this.id);
-      $("#"+this.id).parent().css('position','relative').append(this.dummy);
+      this.root.parent().css('position','relative').append(this.dummy);
    }
    this.rate = function(e){
       this.media.playbackRate = e;

@@ -42,6 +42,7 @@ $(document).ready(function(){
    var is_redirect = handle_redirects(s);
    // clicking button
    $("#begin").click(function() {
+      console.log("t");
       var input_url = $("#input_url").val();
       if(!is_redirect){
          s.start(input_url,function(vid_url){

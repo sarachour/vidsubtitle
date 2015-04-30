@@ -8,11 +8,12 @@ var Welcome = function(s){
    }
    this.go = function(){
       var that = this;
-      $("#continue",this.root).click(function(){
+      $(".continue.welcome").click(function(){
          that.steps.next();
       })
       this.root.fadeIn();
    }
+   this.destroy = function(){};
    this.init();
 }
 
@@ -23,14 +24,14 @@ var PressStart = function(s){
    }
    this.go = function(){
       var that = this;
-      console.log($("#break",this.root));
-      $("#break",this.root).click(function(){
+      $(".break.starting").click(function(){
          that.steps.next();
       })
       .pulse({'background-color':'#96E6B8'},{pulses:-1,duration:1000});
       
       this.root.fadeIn();
    }
+   this.destroy = function(){};
    this.init();
 }
 
@@ -42,17 +43,19 @@ var PressStartKey = function(s){
    }
    this.go = function(){
       var that = this;
-      console.log($("#break",this.root));
-      $("#break",this.root)
+      $(".break.starting-key")
       .pulse({'background-color':'#96E6B8'},{pulses:-1,duration:1000});
       
-      jwerty.key('space', function(){
+      this.key = jwerty.key('space', function(){
          console.log("spacebar");
          that.steps.next();
          return false;
       })
       this.root.fadeIn();
    }
+   this.destroy = function(){
+      this.key.unbind();
+   };
    this.init();
 }
 
@@ -63,12 +66,10 @@ var InsertThreeBreaks = function(s){
    }
    this.init_video = function(){
       var that = this;
-      $("#player1", this.root).attr('id', "player1-breaking")
-      $("#segmentbar", this.root).attr('id', "segmentbar-breaking")
 
-      this.video = new YoutubeVideo('player1-breaking');
+      this.video = new YoutubeVideo($('.player1.breaking'));
       this.model = new SegmentModel();
-      this.bar = new SegmentBar('segmentbar-breaking', this.model);
+      this.bar = new SegmentBar($('.segmentbar.breaking'), this.model);
 
       this.video.listen('update', function(t,u){
          that.model.duration(that.video.duration());
@@ -81,19 +82,21 @@ var InsertThreeBreaks = function(s){
       this.is_start = true;
       var count = 0;
       var key_count = 0;
-      $("#break",this.root)
+      
+      that.init_video();
+
+      $(".break.breaking")
          .click(function(){
             if(that.is_start){
                $(this).pulse("destroy").html("Break");
-               that.init_video();
                that.video.play();
             }
             else {
                $(this).pulse({'background-color':'#d33434',color:'white'},{pulses:1,duration:200});
                that.model.add_segment(that.video.time());
                count++;
-               if(count > 3 && key_count > 1){
-                  setTimeout(function(){that.steps.next()},200);
+               if(count > 10 && key_count > 1){
+                  that.steps.next();
                }
             }
             that.is_start = false;
@@ -102,12 +105,16 @@ var InsertThreeBreaks = function(s){
          .pulse({'background-color':'#96E6B8'},{pulses:-1,duration:1000});
       
       //if spacebar is pressed.
-      jwerty.key('space', function(){
+      this.key = jwerty.key('space', function(){
          key_count ++;
-         $("#break",that.root).click();
+         $(".break.breaking").click();
          return false;
       })
       this.root.fadeIn();
+   }
+   this.destroy = function(){
+      this.video.pause();
+      this.key.unbind();
    }
    this.init();
 }
@@ -118,12 +125,11 @@ var AboutBar = function(s){
    this.init = function(){
       this.root = $("#aboutbar");
       this.steps = s;
-      $("#segmentbar",this.root).attr('id','segmentbar-aboutbar');
       this.model = new SegmentModel();
       this.model.listen('update',function(e){
          console.log(e);
       })
-      this.bar = new SegmentBar('segmentbar-aboutbar', this.model);
+      this.bar = new SegmentBar($('.segmentbar.aboutbar'), this.model);
 
    }
    this.substep_text = function(){
@@ -138,6 +144,8 @@ var AboutBar = function(s){
       $("#macro",this.root).hide();
       this.root.fadeIn();
    }
+
+   this.destroy = function(){};
    this.init();
 }
 
@@ -160,7 +168,11 @@ var Steps = function(){
       },500)
    }
    this.next = function(){
+
       $(".step").hide();
+      if(this.index >= 0 && this.index < this.order.length)
+         this.steps[this.order[this.index]].destroy();
+
       if(this.index < this.order.length-1){
          this.index++;
       }
@@ -168,6 +180,10 @@ var Steps = function(){
    }
    this.prev = function(){
       $(".step").hide();
+
+      if(this.index >= 0 && this.index < this.order.length)
+         this.steps[this.order[this.index]].destroy();
+
       if(this.index > 0){
          this.index--;
       }
@@ -181,9 +197,19 @@ var Steps = function(){
 
 $(document).ready(function(){
    var steps = new Steps();
-   
-   //copy view in each mock object
-   $(".mock").each(function(){
-      $(this).html($("#view").clone().removeClass('dummy'));
+   $(".step").each(function(){
+      var name = $(this).attr('id');
+      //copy view in each mock object in the step
+      $(".mock", $(this)).each(function(){
+         var view = $("#view.dummy").clone().removeClass('dummy');
+         $(this).append(view);
+      })
+      $("*",$(this)).addClass(name).each(function(){
+         var uname = $(this).attr('id');
+         if(uname != undefined){
+            $(this).addClass(uname);
+         }
+      });
    })
+   
 })
