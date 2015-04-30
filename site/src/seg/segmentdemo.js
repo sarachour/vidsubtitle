@@ -36,7 +36,7 @@ var DummySegmentationInterface = function(){
          var handle_break = function(){
             $("#break",v).pulse({'background-color':'#d33434',color:'white'},{pulses:1,duration:200});
             that.model.add_segment(that.video.time());
-            obs.trigger('break');
+            that.obs.trigger('break');
          }
          var handle_start = function(){
             if(is_started){
@@ -123,7 +123,23 @@ var Breaking = function(){
       this.id = "breaking";
    }
    this.load = function(demo){
+      var that = this;
+      var iface = demo.get_iface();
+      demo.disable_next();
+      iface.load(this.id, "start", ['start_key','start_button','break_key','break_button']);
+      this.tcount = 0;
+      this.keycount = 0;
+      iface.listen('break', function(){
+         that.tcount++;
+         if(that.tcount > 10 && that.keycount > 1){
+            demo.success();
+            demo.enable_next();
+         }
 
+      },'1');
+      iface.listen('start-key', function(){
+         that.keycount++; 
+      },'1');
    }
 
    this.init();
@@ -290,7 +306,7 @@ var Demonstration = function(){
          'buttons',
          'alltogether'
       ]
-      this.idx = 1;
+      this.idx = 4;
       //this.idx = 0;
       //load initial step
       this.load(this.stages[this.order[this.idx]]);
