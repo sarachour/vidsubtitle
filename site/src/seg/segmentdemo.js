@@ -4,11 +4,73 @@ var DummySegmentationInterface = function(){
    this.init = function(){
       this.url = "media/movie1.mp4";
       this.data = "";
-      this.video = new YoutubeVideo("#player1",$("#view"));
+      this.video = new YoutubeVideo("player1",$("#view"));
       this.model = new SegmentModel();
-      this.bar = new SegmentBar();
+      this.bar = new SegmentBar($("#segmentbar"), this.model);
+      this.obs = new Observer();
+
+      var that = this;
+      this.video.listen('update',function(){
+         that.model.duration(that.video.duration());
+         that.model.time(that.video.time());
+      })
+      this.enabled = {};
+
       this.video.load(this.url);
    }
+   this.listen = function(t,c,n){
+      this.obs.listen(t,c,n);
+   }
+   this.load = function(parent, phase, enabled){
+      var that = this;
+      var v = $("#view").removeClass('dummy').detach().appendTo('.mock.active');
+      //only enable pertinent elements
+      for(var key in this.enabled) this.enabled[key] = false;
+      for(var i=0; i < enabled.length; i++){
+         this.enabled[enabled[i]] = true;
+      }
+
+      if(phase == "start"){
+         this.video.time(0);
+         var is_started = false;
+         var handle_break = function(){
+            $("#break",v).pulse({'background-color':'#d33434',color:'white'},{pulses:1,duration:200});
+            that.model.add_segment(that.video.time());
+            obs.trigger('break');
+         }
+         var handle_start = function(){
+            if(is_started){
+               handle_break(); return;
+            }
+            $("#break",v).pulse('destroy').html('Break');
+            $("#segmentbar",v).fadeIn();
+            that.video.play();
+            that.obs.trigger('start');
+            is_started = true;
+         }
+         $("#segmentbar",v).hide();
+         $("#break",v).pulse({'background-color':'#96E6B8'},{pulses:-1,duration:1000}).click(function(){
+            if(that.enabled.start_button){
+               that.obs.trigger('start-button');
+               handle_start();
+            }
+         });
+         jwerty.key('space', function(){
+            if(that.enabled.start_key){
+               that.obs.trigger('start-key');
+               handle_start();
+            }
+            return false;
+         })
+      }
+      if(phase == "edit"){
+
+      }
+   }
+   this.unload = function(){
+      var v = $("#view").addClass('dummy').detach().appendTo('body');  
+   }
+   this.init();
 }
 
 var Welcome = function(){
@@ -27,7 +89,13 @@ var Start = function(){
       this.id = "start";
    }
    this.load = function(demo){
-
+      var iface = demo.get_iface();
+      demo.disable_next();
+      iface.load(this.id, "start", ['start_button']);
+      iface.listen('start', function(){
+         demo.success();
+         demo.enable_next();
+      },'1');
    }
 
    this.init();
@@ -38,7 +106,13 @@ var Hotkey = function(){
       this.id = "hotkeys";
    }
    this.load = function(demo){
-
+      var iface = demo.get_iface();
+      demo.disable_next();
+      iface.load(this.id, "start", ['start_key']);
+      iface.listen('start', function(){
+         demo.success();
+         demo.enable_next();
+      },'1');
    }
 
    this.init();
@@ -216,14 +290,15 @@ var Demonstration = function(){
          'buttons',
          'alltogether'
       ]
-      this.idx = 0;
+      this.idx = 1;
+      //this.idx = 0;
       //load initial step
       this.load(this.stages[this.order[this.idx]]);
 
-      $("#next",this.root).click(function(){
+      $("#next-step",this.root).addClass('button-enabled').click(function(){
          that.next();
       })
-      $("#prev",this.root).click(function(){
+      $("#prev-step",this.root).addClass('button-enabled').click(function(){
          that.prev(); 
       })
       $(".card").hide();
@@ -234,8 +309,21 @@ var Demonstration = function(){
    this.get_iface = function(){
       return this.ds;
    }
+   this.success = function(){
+      $("#command",this.root).removeClass('command').addClass('success');
+   }
+   this.disable_next = function(){
+      console.log("disabling");
+      this.stall = true;
+      $("#next-step",this.root).addClass('button-disabled').removeClass('button-enabled');
+   }
+   this.enable_next = function(){
+      console.log("enabling");
+      this.stall = false;
+      $("#next-step",this.root).addClass('button-enabled').removeClass('button-disabled');
+   }
    this.next = function(){
-      if(this.idx < this.order.length-1){
+      if(this.idx < this.order.length-1 && !this.stall){
          this.idx ++;
          this.load(this.stages[this.order[this.idx]]);
       }
@@ -250,6 +338,8 @@ var Demonstration = function(){
 
    }
    this.load = function(stage){
+      this.ds.unload();
+      this.enable_next();
       var par = $("#"+stage.id);
       var title = $("#title",par).clone();
       var cmd = $("#command",par).clone();
@@ -257,11 +347,11 @@ var Demonstration = function(){
       var content = $("#content",par).clone();
 
       //set fields
-      $("#title",this.root).html(title);
-      $("#prompt",this.root).html(prompt);
-      $("#command",this.root).html(cmd);
-      $("#content",this.root).html(content);
-
+      $("#title",this.root).html("").append(title);
+      $("#prompt",this.root).html("").append(prompt);
+      $("#command",this.root).html("").append(cmd).removeClass('success').addClass('command');
+      $("#content",this.root).html("").append(content);
+      $("*",this.root).addClass('active');
       stage.load(this);
       
    }

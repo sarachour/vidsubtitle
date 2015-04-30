@@ -15,7 +15,11 @@
    font-size:18px;
    font-style:sans-serif;
 }
+#prompt{
+}
 #content{
+}
+#main{
    text-align:center;
    height:90%;
 
@@ -23,25 +27,37 @@
 #command{
    position:relative;
    bottom:0;
-   background-color:lightyellow;
    height:3em;
 }
-#prev,#next{
+.command {
+   background-color:lightyellow;
+}
+.success {
+   background-color:lightgreen;
+}
+#view {
+    width: 50%;
+    margin: 0 auto;
+}
+
+.button-enabled{
    background-color:lightblue;
 }
-#prev:disabled,#next:disabled{
+.button-disabled {
    background-color:#eeeeee;
 }
-#prev:hover,#next:hover{
+.button-disabled:hover{
+   border-color:orange;
+   border-width:0px;
+   border-style:none;
+}
+.button-enabled:hover{
    border-color:orange;
    border-width:2px;
    border-style:solid;
 }
 .fill-height{
     height:100%;
-}
-.half-height{
-   height:50%;
 }
 
 #video-container{

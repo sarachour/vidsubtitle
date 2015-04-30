@@ -352,7 +352,10 @@ var SegmentBar = function(id, model){
       }
 
       var hovered = false;
-      var hover_t = this._view.canv.data('coord').t;
+      var hover_t = null;
+      if(this._view.canv.data('coord') != undefined){
+         var hover_t = this._view.canv.data('coord').t;
+      }
 
       
 

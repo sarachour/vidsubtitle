@@ -64,7 +64,10 @@ var YoutubeVideo = function(id) {
    this.rate = function(e){
       this.media.playbackRate = e;
    }
-   this.time = function(){
+   this.time = function(t){
+      if(t != undefined){
+         this.media.currentTime = t;
+      }
       return this.media.currentTime;
    }
    this.duration = function(){
