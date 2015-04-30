@@ -24,8 +24,11 @@ var PressStart = function(s){
    }
    this.go = function(){
       var that = this;
+
+      $(".continue.starting").click(function(){that.steps.next();});
+
       $(".break.starting").click(function(){
-         that.steps.next();
+         $(".success.starting").removeClass('dummy');
       })
       .pulse({'background-color':'#96E6B8'},{pulses:-1,duration:1000});
       
@@ -43,12 +46,14 @@ var PressStartKey = function(s){
    }
    this.go = function(){
       var that = this;
+
+      $(".continue.starting-key").click(function(){that.steps.next();});
+
       $(".break.starting-key")
       .pulse({'background-color':'#96E6B8'},{pulses:-1,duration:1000});
       
       this.key = jwerty.key('space', function(){
-         console.log("spacebar");
-         that.steps.next();
+         $(".success.starting-key").removeClass('dummy');
          return false;
       })
       this.root.fadeIn();
@@ -63,6 +68,7 @@ var InsertThreeBreaks = function(s){
    this.init = function(){
       this.root = $("#breaking");
       this.steps = s;
+      this.init_video();
    }
    this.init_video = function(){
       var that = this;
@@ -83,8 +89,7 @@ var InsertThreeBreaks = function(s){
       var count = 0;
       var key_count = 0;
       
-      that.init_video();
-
+      $(".continue.breaking").click(function(){that.steps.next();});
       $(".break.breaking")
          .click(function(){
             if(that.is_start){
@@ -96,7 +101,7 @@ var InsertThreeBreaks = function(s){
                that.model.add_segment(that.video.time());
                count++;
                if(count > 10 && key_count > 1){
-                  that.steps.next();
+                  $(".success.breaking").removeClass('dummy');
                }
             }
             that.is_start = false;
@@ -114,7 +119,7 @@ var InsertThreeBreaks = function(s){
    }
    this.destroy = function(){
       this.video.pause();
-      this.key.unbind();
+      if(this.key != undefined) this.key.unbind();
    }
    this.init();
 }
@@ -158,9 +163,12 @@ var Steps = function(){
       this.steps.press_start = new PressStart(this);
       this.steps.press_start_key = new PressStartKey(this);
       this.steps.insert_three_breaks = new InsertThreeBreaks(this);
-      this.steps.about_bar = new AboutBar(this,1);
+      this.steps.about_bar1 = new AboutBar(this,1);
+      this.steps.about_bar2 = new AboutBar(this,2);
+      this.steps.about_bar3 = new AboutBar(this,3);
       this.index = -1; //-1
-      this.order = ['welcome','press_start','press_start_key','insert_three_breaks','about_bar'];
+      this.order = ['welcome','press_start','press_start_key','insert_three_breaks',
+      'about_bar1','about_bar2','about_bar3'];
 
       var that = this;
       $(".step").hide();
