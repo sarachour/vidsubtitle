@@ -2,20 +2,71 @@
 scribe specific rules
 */
 
-.scribe#video-container{
+.container {
+  max-width: 1400px;
+}
+
+.video-container{
    height: 200px;
 }
 
-.scribe.hotkey.button {
-   white-space: normal;
-   height: 100px;
-   margin-bottom:23px;
-   border-width:5px;
-   border-style:solid;
-   border-radius:7px;
-   visibility: hidden;
+.prev {
+   background-color: #D4876A;
+   border-color: #803215;
 }
-.scribe .hotkey.title {
+
+.current {
+   background-color: #D4C66A;
+   border-color: #807115;
+}
+
+.next {
+   background-color: #64B058;
+   border-color: #1E6912;
+}
+
+.display {
+   margin-top: 35px;
+   font-size:30px;
+   text-align:middle;
+   border-width:1px;
+   border-style:solid;
+   border-radius:5px;
+   height: 120px;
+}
+
+.label {
+   padding-top:5px;
+   font-size:18px;
+   text-align:center;
+   height: 90px;
+   margin-top:20px;
+   border-width:3px;
+   border-style:solid;
+   border-radius:10px;
+}
+
+.current.label {
+   font-size:25px;
+}
+
+.entry {
+   resize:none;
+   text-align:center;
+   height:190px;
+   font-size: 32px;
+   line-height: 1.5;
+   font-weight: 500;
+   font-family: "Raleway", "HelveticaNeue", "Helvetica Neue", Helvetica, Arial, sans-serif;
+   color: #222;
+   margin-top: 35px;
+}
+
+#dev {
+   margin-top:40px;
+}
+
+/*.scribe .hotkey.title {
    color: #333333;
    padding-top:10px;
    font-size:45px;
@@ -26,12 +77,12 @@ scribe specific rules
    padding-top: 17px;
 }
 
-.scribe.prev {
+.scribe.container.prev {
    background-color: #D4876A;
    border-color: #803215;
 }
 
-.scribe.next {
+.scribe.container.next {
    background-color: #64B058;
    border-color: #1E6912;
 }
@@ -50,14 +101,13 @@ scribe specific rules
 
 .scribe.entry.label {
    font-size:36px;
-   margin-left:20px;
    text-align:left;
    border-width:2px;
    border-style:solid;
    vertical-align: middle;
 }
 
-.scribe.entry#entry {
+.entry {
    resize:none;
    border:none;
    text-align:center;
@@ -71,7 +121,6 @@ scribe specific rules
 
 .scribe.entry.text {
    font-size:28px;
-   margin-left:22px;
    padding-left:32px;
    padding-right:32px;
    border: 2px solid #777777;
@@ -80,3 +129,4 @@ scribe specific rules
 .scribe.entry.label .container {
    padding-top: 50px;
 }
+*/

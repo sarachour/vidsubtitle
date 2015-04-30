@@ -7,95 +7,88 @@
 
 <script src="lib/jquery-2.1.3.js"></script>
 <script src="lib/jquery-ui-1.11.3.js"></script>
+<script src="lib/jquery-pulse.js"></script>
 <script src="lib/jwerty.js"></script>
 <script src="lib/mejs/mediaelementplayer.min.js"></script>
 
+<script src="src/core/nav.js"></script>
 <script src="src/core/util.js"></script>
 <script src="src/core/hotkey.js"></script>
 <script src="src/core/observer.js"></script>
 <script src="src/core/stack.js"></script>
 <script src="src/core/undo.js"></script>
 <script src="src/core/status.js"></script>
-<script src="src/core/youtube_static.js"></script>
+<script src="src/core/youtube.js"></script>
 <script src="src/core/sorted_array.js"></script>
 <script src="src/core/audio.js"></script>
-<script src="src/core/nav.js"></script>
+<script src="src/core/demo.js"></script>
 
-
-<script src="src/scribe/segment_model.js"></script>
-<script src="src/scribe/segmentbar.js"></script>
-<script src="src/scribe/scribe.js"></script>
+<script src="src/seg/data.js"></script>
+<script src="src/seg/segmentmodel.js"></script>
+<script src="src/seg/segmentbar.js"></script>
+<script src="src/seg/segment.js"></script>
 
 <link rel="stylesheet" href="css/jquery-ui-1.11.3.css" />
 <link rel="stylesheet" href="css/skeleton.css" />
 <link rel="stylesheet" href="lib/mejs/mediaelementplayer.min.css" />
 <link rel="stylesheet" href="css/scribe.css" />
 <link rel="stylesheet" href="css/base.css" />
-<link rel="stylesheet" href="css/segment.css" />
 
 </head>
 
 
 <body>
 
-<div class="container segment">
-
-<div class="row" id="header">
-   <!-- TO DO: add link to a demo, add progress bar here -->
-   <div id="Status" class="column one-fourth text-label"></div>
-   <div class="column one-half text-label"></div>
-   <div id="Progress" class="column one-fourth text-label"></div>
-</div>
 <div class="row">
-<h5 class="text-label">
+<h4 class="text-label">
 INSTRUCTIONS: Caption the video, segment by segment.
-<h5>
+<h4>
 </div>
+
 <!-- content pane -->
-<div class="scribe" id="content">
+<div class="container scribe">
 <!-- video and controls -->
 
-   <div id="left_pane" class="column one-third">
+   <div id="previous_pane" class="column one-fourth">
 
       <div class="row black-bg">
-         <div class="fill-parent-width" id="video-container">
-            <video class="fill-parent" id="player1" preload="none" width="100%" height="200px" controls="none">
+         <div class="fill-parent-width video-container">
+            <canvas id="prevShot"></canvas>
+         </div>
+      </div>
+
+      <div id="prevDisplay" class="fill-parent-width prev display"></div>
+      <div id="prevLabel" class="offset-by-one-fourth one-half column prev label">Previous Segment</div>
+      
+   </div>
+
+   <div id="current_pane" class="column one-half">
+
+      <div class="row black-bg">
+         <div class="fill-parent-width video-container">
+            <video class="fill-parent" id="player" preload="none" width="100%" controls="none">
                <source src="media/movie1.mp4" type="video/mp4">
             </video>
          </div>
       </div>
 
-<!-- progress bar -->
-      <div id="segmentbar" class="row vspace">
-         <div id="controls" class="fill-parent-width text-label">PROGRESS BAR HERE</div>
-      </div>
-
-      <div id="controlButtons" class="row vspace">
-   <!-- break button crarr : use this http://www.amp-what.com/unicode/search/arrow to find unicode characters-->
-          <div id="prev" visibility="hidden" button-title="Back" hotkey-name="left arrow" hotkey-code="left" class="fill-parent-width scribe prev hotkey button"></div>
-         <div id="replay" button-title="Replay" hotkey-name="up arrow" hotkey-code="up/down" class="fill-parent-width scribe replay hotkey button"></div>
-         <div id="next" button-title="Next" hotkey-name="right arrow" hotkey-code="right" class="fill-parent-width scribe next hotkey button"></div>
-      </div>
-   </div>
-
-<div class="column two-thirds">
-   <div class="column one-fourth text-label">
-      <div id="textDisplay" class = "row vspace">
-         <div id="prevDisplay" class="fill-parent-width scribe entry prev label"><div class="container"><h5>Previous Segment<h5></div></div>
-         <div id="curDisplay" class="fill-parent-width scribe entry replay label"><div class="container"><h5>Current Segment<h5></div></div>
-         <div id="nextDisplay" class="fill-parent-width scribe entry next label"><div class="container"><h5>Next Segment<h5></div></div>
-      </div>
-   </div>
-   <div class="column three-fourths text-label">
-      <div id="textDisplay" class = "row vspace">
-         <div id="prevText" class="fill-parent-width scribe entry text"></div>
-         <div id="curText" class="fill-parent-width scribe entry text">
-            <textarea autofocus rows="12" id="entry" class="fill-parent-width scribe entry" placeholder="type captions here"></textarea>
+     <div id="curText" class="fill-parent-width text">
+      <textarea autofocus rows="12" id="entry" class="fill-parent-width entry" placeholder="type captions here"></textarea>
          </div>
-         <div id="nextText" class="fill-parent-width scribe entry text"></div>
-      </div>
+      <div id="curLabel" class="offset-by-one-fourth one-half column current label">Current Segment</div>
    </div>
-</div>
+
+   <div id="next_pane" class="column one-fourth">
+
+      <div class="row black-bg">
+         <div class="fill-parent-width video-container">
+            <canvas id="nextShot"></canvas>
+         </div>
+      </div>
+
+      <div id="nextText" class="fill-parent-width next display"></div>
+      <div id="nextLabel" class="offset-by-one-fourth one-half column next label">Next Segment</div>
+   </div>
 
 </div>
 
@@ -109,10 +102,6 @@ INSTRUCTIONS: Caption the video, segment by segment.
 <button class="columns two" id="next_step">Next</button>
 </div>
 
-<!-- end of content -->
-</div>
-
 <!-- end of window -->
-</div>
 </body>
 </html>
