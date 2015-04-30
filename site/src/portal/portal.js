@@ -40,22 +40,21 @@ $(document).ready(function(){
    console.log("ready");
    var s = new Navigator();
    var is_redirect = handle_redirects(s);
-   //var input_url = document.getElementById("input_url").value;
-
-
+   // clicking button
    $("#begin").click(function() {
-      /*
-      Hey - i found the bug, you need to get the input value during the click
-      otherwise it's just empty
-      */
-      //var input_url = document.getElementById("input_url").value;
-      // This is shorthand for the line you had above :)
       var input_url = $("#input_url").val();
       if(!is_redirect){
          s.start(input_url,function(vid_url){
+            console.log("here");
             var seg_url = s.segment(vid_url);
             s.redirect(seg_url);
          });
+      }
+   });
+   // pressing enter
+   $("#input_url").keyup(function(event){
+      if(event.keyCode == 13){
+         $("#begin").click();
       }
    });
 });

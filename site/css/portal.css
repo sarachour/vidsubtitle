@@ -1,3 +1,6 @@
+body {
+	margin-top: 5%;
+}
 #row {
 	position: absolute;
 	text-align: center;
@@ -16,6 +19,5 @@ button {
 	position: relative;
 	display: block;
 	margin: 0 auto;
-	background-color: gray;
-	color: white;
+
 }
