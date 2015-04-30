@@ -121,10 +121,11 @@ var InsertThreeBreaks = function(s){
 /*
 Walks through all the nuances of the bar
 */
-var AboutBar = function(s){
+var AboutBar = function(s, step){
    this.init = function(){
       this.root = $("#aboutbar");
       this.steps = s;
+      this.idx = step;
       this.model = new SegmentModel();
       this.model.listen('update',function(e){
          console.log(e);
@@ -157,7 +158,7 @@ var Steps = function(){
       this.steps.press_start = new PressStart(this);
       this.steps.press_start_key = new PressStartKey(this);
       this.steps.insert_three_breaks = new InsertThreeBreaks(this);
-      this.steps.about_bar = new AboutBar(this);
+      this.steps.about_bar = new AboutBar(this,1);
       this.index = -1; //-1
       this.order = ['welcome','press_start','press_start_key','insert_three_breaks','about_bar'];
 
