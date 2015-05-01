@@ -23,6 +23,8 @@ var SegmentBar = function(id, model){
       that._state.viewport.width = 30;
 
       this._model.listen('update',function(){that._draw();})
+      this._model.listen('select',function(){that._draw();})
+      this._model.listen('time',function(){that._draw();})
       this._root.html("");
 
       this._view.canv
@@ -172,7 +174,6 @@ var SegmentBar = function(id, model){
 
       var gx = function(v){return v*gwidth/d.duration}
       var gy = function(v){return v*gheight/1.0}
-
       var fixed = {};
       fixed.block_pad = 5;
 

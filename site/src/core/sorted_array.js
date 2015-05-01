@@ -20,6 +20,23 @@ var SortedArray = function(cmp){
    this.clear = function(){
       this.arr = [];
    }
+   this.after = function(selector){
+      var matches = this.match(selector);
+      if(matches.length() == 0) return null;
+
+      var m = matches.get(0);
+      var idx = Math.min(m.index+1,this.arr.length-1);
+      return this.arr[idx];
+   }
+   this.before = function(selector){
+      var matches = this.match(selector);
+      if(matches.length() == 0) return null;
+      
+      var m = matches.get(0);
+      var idx = Math.max(m.index-1,0);
+      console.log(this.arr[idx], m.elem)
+      return this.arr[idx];
+   }
    this.min = function(){
       if(this.arr.length > 0)
          return this.arr[0];
@@ -62,6 +79,7 @@ var SortedArray = function(cmp){
    this.remove_at = function(i){
       this.arr.splice(i,1);
    }
+
    this.match = function(e){
       var idx_srt = function(a,b){return a.index - b.index;}
       var matches = new SortedArray(idx_srt);

@@ -4,7 +4,7 @@ var DummySegmentationInterface = function(){
    this.init = function(){
       this.url = "media/movie1.mp4";
       this.data = JSON.parse(
-         '[{"time":0,"id":0,"type":"break"},{"time":0.996876,"id":2,"type":"break"},{"time":0.996876,"id":1,"type":"break"},{"time":1.995293,"id":3,"type":"break"},{"time":1.995293,"id":4,"type":"break"},{"time":3.550966,"id":5,"type":"break"},{"time":3.550966,"id":6,"type":"break"},{"time":4.549383,"id":7,"type":"break"},{"time":4.549383,"id":8,"type":"break"},{"time":6.70875,"id":9,"type":"break"},{"time":6.70875,"id":10,"type":"break"},{"time":8.960994,"id":11,"type":"break"},{"time":8.960994,"id":12,"type":"break"},{"time":10.121944,"id":13,"type":"break"},{"time":10.121944,"id":14,"type":"break"},{"time":12.885005,"id":15,"type":"break"},{"time":12.885005,"id":16,"type":"break"},{"time":13.604794,"id":17,"type":"break"},{"time":13.604794,"id":18,"type":"break"},{"time":18.248594,"id":19,"type":"break"},{"time":18.248594,"id":20,"type":"break"},{"time":20.175771,"id":21,"type":"break"},{"time":20.175771,"id":22,"type":"break"},{"time":22.381576,"id":23,"type":"break"},{"time":22.381576,"id":24,"type":"break"}]'
+         '[{"time":0.522496,"id":0,"type":"break"},{"time":1.044992,"id":1,"type":"break"},{"time":1.741562,"id":2,"type":"break"},{"time":3.204359,"id":3,"type":"break"},{"time":4.249214,"id":4,"type":"break"},{"time":4.945784,"id":5,"type":"break"},{"time":6.083515,"id":6,"type":"break"},{"time":7.821782178217822,"id":8,"type":"break"},{"time":9.643675,"id":7,"type":"break"},{"time":11.18811881188119,"id":9,"type":"break"},{"time":12.252475247524751,"id":10,"type":"break"}]'   
       );
       this.video = new YoutubeVideo("player1",$("#view"));
       this.model = new SegmentModel();
@@ -19,6 +19,7 @@ var DummySegmentationInterface = function(){
       this.enabled = {};
 
       this.video.load(this.url);
+      this.video.time(1);
    }
    this.listen = function(t,c,n){
       this.obs.listen(t,c,n);
@@ -32,6 +33,24 @@ var DummySegmentationInterface = function(){
          this.enabled[enabled[i]] = true;
       }
 
+      var bind_canvas = function(elem,prop){
+         if(that.enabled[prop]){
+            elem
+               .removeClass('no-click')
+               .css('opacity',1);
+         }
+         else{
+            elem
+               .addClass('no-click')
+               .css('opacity',0.3);
+         }
+      }
+
+      bind_canvas($("#macro",v), 'segmentbar-macro');
+      bind_canvas($("#micro",v), 'segmentbar-micro');
+
+      this.model.duration(300);
+
       if(phase == "start"){
          $("#segmentbar",v).hide();
          $("#break",v).pulse({'background-color':'#96E6B8'},{pulses:-1,duration:1000}).html('Start');
@@ -42,13 +61,13 @@ var DummySegmentationInterface = function(){
          $("#break",v).pulse('destroy').html('Break');
          var is_started = true;
          this.model.from_json(this.data);
-         this.video.play();
       }
+      //start video at time=0
       this.video.time(0);
+
       var handle_break = function(){
          $("#break",v).pulse({'background-color':'#d33434',color:'white'},{pulses:1,duration:200});
          that.model.add_segment(that.video.time());
-         that.obs.trigger('break');
       }
       var handle_start = function(){
          if(is_started){
@@ -60,6 +79,20 @@ var DummySegmentationInterface = function(){
          that.obs.trigger('start');
          is_started = true;
       }
+
+      this.model.listen('select', function(){
+         that.video.time(that.model.time());
+         that.obs.trigger('select');
+      },"sel1");
+
+      this.model.listen('update', function(e){
+         console.log(e);
+         if(e.type == "add")
+               that.obs.trigger('break');
+         if(e.type == "shift")
+               that.obs.trigger('shift',e);
+      },"sel1");
+
       $("#break",v).click(function(){
          if(that.enabled.start_button){
             that.obs.trigger('start-button');
@@ -73,7 +106,57 @@ var DummySegmentationInterface = function(){
          }
          return false;
       })
-      
+      jwerty.key('left', function(){
+         if(that.enabled.prev_key){
+            that.model.prev();
+            var sel = that.model.select();
+            that.video.segment(sel.start, sel.end);
+            that.video.play();
+            that.obs.trigger('prev');
+
+         }
+         return false;
+      })
+      jwerty.key('right', function(){
+         if(that.enabled.next_key){
+            that.model.next();
+            var sel = that.model.select();
+            that.video.segment(sel.start, sel.end);
+            that.video.play();
+            that.obs.trigger('next');
+         }
+         return false;
+      })
+      jwerty.key('up/down', function(){
+         if(that.enabled.repeat_key){
+            var sel = that.model.select();
+            that.video.segment(sel.start, sel.end);
+            that.video.play();
+            that.obs.trigger('repeat');
+         }
+         return false;
+      })
+      jwerty.key('z/delete', function(){
+         if(that.enabled.remove_key){
+            that.model.remove();
+            that.obs.trigger('remove');
+         }
+         return false;
+      })
+      jwerty.key('x', function(){
+         if(that.enabled.lshift_key){
+            that.model.shift(0,-0.25);
+            that.obs.trigger('lshift_key');
+         }
+         return false;
+      });
+      jwerty.key('c', function(){
+         if(that.enabled.rshift_key){
+            that.model.shift(0,0.25);
+            that.obs.trigger('rshift_key');
+         }
+         return false;
+      })
    }
    this.unload = function(){
       var v = $("#view").addClass('dummy').detach().appendTo('body');  
@@ -160,7 +243,7 @@ var AboutBar = function(){
    this.load = function(demo){
       var that = this;
       var iface = demo.get_iface();
-      iface.load(this.id, "edit", []);
+      iface.load(this.id, "edit", ['segmentbar-micro','segmentbar-macro']);
       
    }
 
@@ -175,7 +258,17 @@ var AboutBar2 = function(){
    this.load = function(demo){
       var that = this;
       var iface = demo.get_iface();
-      iface.load(this.id, "edit", []);
+
+      demo.disable_next();
+      iface.load(this.id, "edit", ['segmentbar-macro']);
+      var count = 0;
+      iface.obs.listen('select', function(){
+         count++;
+         if(count>=3){
+            demo.success();
+            demo.enable_next();
+         }
+      },'1');
 
    }
 
@@ -187,6 +280,9 @@ var AboutBar3 = function(){
       this.id = "aboutbar3";
    }
    this.load = function(demo){
+      var that = this;
+      var iface = demo.get_iface();
+      iface.load(this.id, "edit", ['segmentbar-micro','segmentbar-macro']);
 
    }
 
@@ -197,6 +293,39 @@ var Navigating = function(){
       this.id = "navigating";
    }
    this.load = function(demo){
+      var that = this;
+      var iface = demo.get_iface();
+
+      demo.disable_next();
+      iface.load(this.id, "edit", ['segmentbar-micro', 'prev_key', 'next_key','repeat_key']);
+      var sel_item = false;
+      var move_left = false;
+      var move_right = false;
+      var repeat = false;
+      iface.obs.listen('select', function(){
+         sel_item = true;
+      },'1');
+      iface.obs.listen('prev', function(){
+         if(sel_item) move_left = true;
+         if(sel_item && move_right && move_left && repeat){
+            demo.success();
+            demo.enable_next();
+         }
+      },'1');
+      iface.obs.listen('next', function(){
+         if(sel_item) move_right = true;
+         if(sel_item && move_right && move_left && repeat){
+            demo.success();
+            demo.enable_next();
+         }
+      },'1');
+      iface.obs.listen('repeat', function(){
+         if(sel_item) repeat = true;
+         if(sel_item && move_right && move_left && repeat){
+            demo.success();
+            demo.enable_next();
+         }
+      })
 
    }
 
@@ -208,6 +337,32 @@ var AddBreak = function(){
       this.id = "addbreak";
    }
    this.load = function(demo){
+      var that = this;
+      var iface = demo.get_iface();
+
+      demo.disable_next();
+      iface.load(this.id, "edit", ['segmentbar-micro', 'start_key','start_button']);
+      
+
+      this.tcount = 0;
+      this.keycount = 0;
+      this.buttoncount = 0;
+      iface.listen('break', function(){
+         that.tcount++;
+         console.log(that.tcount, that.keycount)
+         if(that.tcount > that.keycount + that.buttoncount && 
+            that.tcount > 0 && that.keycount>0 && that.buttoncount > 0){
+            demo.success();
+            demo.enable_next();
+         }
+
+      },'1');
+      iface.listen('start-key', function(){
+         that.keycount++; 
+      },'1');
+      iface.listen('start-button', function(){
+         that.buttoncount++; 
+      },'1');
 
    }
 
@@ -219,7 +374,15 @@ var RemoveBreak = function(){
       this.id = "removebreak";
    }
    this.load = function(demo){
+      demo.disable_next();
+      var that = this;
+      var iface = demo.get_iface();
 
+      demo.disable_next();
+      iface.load(this.id, "edit", ['segmentbar-micro', 'remove_key']);
+      iface.listen('remove', function(){
+         demo.enable_next();
+      },'1');
    }
 
    this.init();
@@ -230,6 +393,26 @@ var ShortenSeg = function(){
       this.id = "shortenseg";
    }
    this.load = function(demo){
+      demo.disable_next();
+      var that = this;
+      var iface = demo.get_iface();
+
+      demo.disable_next();
+      iface.load(this.id, "edit", ['segmentbar-micro', 'lshift_key']);
+      var shifts = 0;
+      var keyshifts=0;
+      iface.listen('shift', function(e){
+         if(e.right < 0){
+            shifts++;
+         }
+         if(keyshifts > 0 && shifts > 4 && shifts > keyshifts){
+            demo.success();
+            demo.enable_next();
+         }
+      },'1');
+      iface.listen('lshift_key', function(){
+         keyshifts++;
+      },'1');
 
    }
 
@@ -240,7 +423,26 @@ var LengthenSeg = function(){
       this.id = "lengthenseg";
    }
    this.load = function(demo){
+      demo.disable_next();
+      var that = this;
+      var iface = demo.get_iface();
 
+      demo.disable_next();
+      iface.load(this.id, "edit", ['segmentbar-micro', 'rshift_key']);
+      var shifts = 0;
+      var keyshifts=0;
+      iface.listen('shift', function(e){
+         if(e.right > 0){
+            shifts++;
+         }
+         if(keyshifts > 0 && shifts > 4 && shifts > keyshifts){
+            demo.success();
+            demo.enable_next();
+         }
+      },'1');
+      iface.listen('rshift_key', function(){
+         keyshifts++;
+      },'1');
    }
 
    this.init();
@@ -320,7 +522,7 @@ var Demonstration = function(){
          'buttons',
          'alltogether'
       ]
-      this.idx = 5;
+      this.idx = 11;
       //this.idx = 0;
       //load initial step
       this.load(this.stages[this.order[this.idx]]);

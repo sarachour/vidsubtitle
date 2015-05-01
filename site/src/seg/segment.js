@@ -33,16 +33,19 @@ var ProgramState = function(vp_name, vb_name, hnt_name){
     var hint = HINTS["default"];
     that._hint.set(hint.title,hint.desc);
 
+
     this._history.listen('undo', function(e){
-      console.log(e);
       if(e.type == "shift"){
         that.select(e.selection);
         that.video_bar().shift(-e.left, -e.right);
       }
       else if(e.type == "remove"){
-        that.video_bar().model.add_segment(e.start,e.end);
-        that.select(e.selection);
+        that.video_bar().model.add(e.time);
       }
+      else if(e.type == "add") 
+        that.select(e.time);
+        that.video_bar().model.remove();
+
     });
     this._history.listen('redo', function(e){
       if(e.type == "shift"){
@@ -50,12 +53,25 @@ var ProgramState = function(vp_name, vb_name, hnt_name){
         that.video_bar().shift(e.left, e.right);
       }
       else if(e.type == "remove"){
-        that.select(e.selection);
+        that.select(e.time);
         that.video_bar().model.remove();
       }
+      else if(e.type == "add") 
+        that.video_bar().model.add(e.time);
     });
-    this.video_bar().model.listen('select', function(e){
+
+    this.video_bar().model
+    .listen('select', function(e){
       that._player.play(e.time);
+      that._history.add({type:'select', time:e.time});
+    })
+    .listen('update', function(e){
+      if(e.type == "add" || e.type == "remove")
+        that._history.add({type:e.type, time:e.time})
+      else if(e.type == "shift"){
+        console.log(e);
+        that._history.add({type:'shift', time:e.time, left:e.left, right:e.right})
+      }
     })
     //if a marker changes the state
     this.obs.listen('state-change', function(e){
@@ -81,7 +97,6 @@ var ProgramState = function(vp_name, vb_name, hnt_name){
       return function(){
         var key = callback();
         var hint = HINTS[key];
-        console.log(key);
         that._hint.set(hint.name,hint.desc);
       }
     })(cbk));
@@ -92,16 +107,18 @@ var ProgramState = function(vp_name, vb_name, hnt_name){
   this.redo = function(){
     this._history.redo();
   }
-  this.select = function(time, direction){
+  this.select = function(time, dir){
+    if(dir == undefined && time != undefined){
+      dir = time; 
+    }
     if(isValue(time)){ //update selection
-      if(direction != undefined){
-        var filter = time;
-        this.video_bar().model.select_nearby(filter,direction);
+      if(dir == "prev") this.video_bar().model.prev();
+      else if(dir == "next") this.video_bar().model.next();
+      else if(dir == "goto"){
+        time = Math.max(0,time);
+        this.video_bar().model.select(time);
       }
-      else{
-        if(time < 0) this.video_bar().model.select_nearby(function(){return true;},true);
-        else this.video_bar().model.select(time);
-      }
+      this._player.play(this.video_bar().model.time(), 'both');
       this.obs.trigger('select');
     }
     return this.video_bar().model.select();;
@@ -109,18 +126,13 @@ var ProgramState = function(vp_name, vb_name, hnt_name){
   this.shift = function(lamt,ramt){
     this.video_bar().shift(lamt,ramt);
     var d=this.select();
-    this._history.add({type:"shift",left:lamt,right:ramt,selection:(d.start+d.end)/2});
+    //this._history.add({type:"shift",left:lamt,right:ramt,selection:this.video_bar().model.time()});
     this.obs.trigger('shift');
   }
   this.remove = function(){
     var e=this.video_bar().remove();
     if(e == null) return;
-    if(e.type == "silence"){
-      this._history.add({type:"remove",start:e.start,end:e.end,selection:(e.start+e.end)/2});
-    }
-    else{
-      this._history.add({type:"remove",start:e.end,end:e.end,selection:(e.start+e.end)/2});
-    }
+    //this._history.add({type:"remove",time:e.time, sel:this.video_bar().model.time()});
     this.select();
     this.obs.trigger('remove');
   }
@@ -161,34 +173,30 @@ var HintManager = function(id){
   this.init();
 }
 
-var SelectionPlayer = function(state){
+var SelectionPlayer = function(state, side){
   this.init = function(){
     this.state = state;
     this.sfx = new AudioFile('media/click.mp3');
     this.timer = null;
-    this.side = "both";
-  }
-  this.set_side = function(s){
-    this.side = s;
+    this.eps = 2;
+    if(side == undefined) this.side = "both";
+    else this.side = side;
   }
   this.play = function(time){
     var sel = this.state.select();
     if(sel == null) return;
-    var type = sel.type;
-    if(type == 'segment' || type == "silence"){
-      var s = time;
-      var e = sel.end;
-      console.log(s,e);
-      if(time == undefined) s = sel.start;
-      if(this.side == "left"){
-        e = s+Math.min(e-s,2);
-      }
-      else if(this.side == "right"){
-        s = e-Math.min(e-s,2);
-      }
-      this.state.video_player().segment(s,e);
-      this.state.video_player().play();
+    var s = time;
+    var e = sel.end;
+    if(time == undefined) s = sel.start;
+    if(this.side == "left"){
+      e = s+Math.min(e-s,this.eps);
     }
+    else if(this.side == "right"){
+      s = e-Math.min(e-s,this.eps);
+    }
+    this.state.video_player().segment(s,e);
+    this.state.video_player().play();
+  
 
   }
   this.init();
@@ -268,7 +276,7 @@ var HistoryButton = function(button_name, world, is_undo){
   this.init();
 }
 
-var NavigateButton = function(button_name, state, is_rev){
+var NavigateButton = function(button_name, state, type){
   this.init = function(){
     var that = this;
     this.view = $("#"+button_name).addClass('disabled');
@@ -276,14 +284,11 @@ var NavigateButton = function(button_name, state, is_rev){
 
     this.state.listen('play',function(){that.view.removeClass('disabled')});
 
-    this.state.bind_hint(this.view, function(){if(is_rev) return 'prev'; else return 'next'});
+    this.state.bind_hint(this.view, function(){return type});
 
     this.view.click(function(){
       src_pulse($("img",$(this)), 200);
-      var sels = that.state.selections();
-      var tmp = that.state.select(function(e){
-        return e.type == "silence" || e.type == "segment";
-      }, is_rev);
+      var tmp = that.state.select(type);
     })
   }
   
@@ -327,26 +332,24 @@ var DeleteButton = function(button_name, state){
 
   this.init();
 }
-var ShiftButton = function(button_name, state, is_start, is_left, amt){
+var ShiftButton = function(button_name, state, type, amt){
   this.init =function(){
     var that = this;
     this.view = $("#"+button_name).addClass('disabled');
     this.state = state;
-    this.player = new SelectionPlayer(state);
-
+    this.player = new SelectionPlayer(state,'right');
+    this.type = type;
+    console.log(this.type);
     this.state.listen('play',function(){that.view.removeClass('disabled')});
-    this.state.bind_hint(this.view, function(){if(is_left) return 'lshift'; else return 'rshift'});
+    this.state.bind_hint(this.view, function(){return that.type;});
 
-    if(is_start) this.player.set_side('left');
-    else this.player.set_side('right');
     this.amount = amt;
     
     this.view.click(function(){
       src_pulse($("img",$(this)), 200);
       var amt = that.amount;
-      if(is_left) amt *= -1;
-      if(is_start) that.state.shift(amt,0);
-      else  that.state.shift(0,amt);
+      if(that.type == 'lshift') amt *= -1;
+      that.state.shift(0,amt);
       that.player.play();
     })
   }
@@ -552,12 +555,12 @@ var SegmentController = function(){
     this.buttons = {};
     this.buttons.mark = new MarkButton("break", this.prog);
     this.buttons.replay = new ReplayButton("replay", this.prog);
-    this.buttons.next = new NavigateButton("next", this.prog,false);
-    this.buttons.prev = new NavigateButton("prev", this.prog,true);
+    this.buttons.next = new NavigateButton("next", this.prog,'next');
+    this.buttons.prev = new NavigateButton("prev", this.prog,'prev');
     this.buttons.remove = new DeleteButton("delete", this.prog);
     var amt = 0.20;
-    this.buttons.ensl = new ShiftButton("en_sl", this.prog, false, true,amt);
-    this.buttons.ensr = new ShiftButton("en_sr", this.prog, false,false,amt);
+    this.buttons.ensl = new ShiftButton("en_sl", this.prog, "lshift",amt);
+    this.buttons.ensr = new ShiftButton("en_sr", this.prog,"rshift",amt);
     this.buttons.undo = new HistoryButton("undo",this.prog, true);
     this.buttons.redo = new HistoryButton("redo",this.prog, false);
 

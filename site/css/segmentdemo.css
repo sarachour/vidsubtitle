@@ -4,6 +4,7 @@
 .no-click{
    pointer-events: none;
 }
+
 #title {
    font-size:32px;
    font-style:sans-serif;
