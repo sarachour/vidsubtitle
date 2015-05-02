@@ -522,8 +522,13 @@ var Demonstration = function(){
          'buttons',
          'alltogether'
       ]
+<<<<<<< Updated upstream
       this.idx = 11;
       //this.idx = 0;
+=======
+      ///this.idx = 5;
+      this.idx = 0;
+>>>>>>> Stashed changes
       //load initial step
       this.load(this.stages[this.order[this.idx]]);
 

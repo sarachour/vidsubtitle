@@ -6,8 +6,61 @@ scribe specific rules
   max-width: 1400px;
 }
 
-.video-container{
-   height: 200px;
+.video-container {
+   height: 190px;
+}
+
+.shot {
+   height: 80px;
+   margin-bottom: 15px;
+   visibility:hidden;
+   position:absolute;
+   left:0;
+   top:0;
+}
+
+.display {
+   height: 80px;
+   margin-bottom: 15px;
+   font-size:20px;
+   text-align:middle;
+   border-width:1px;
+   border-style:solid;
+   border-radius:5px;
+   visibility:hidden;
+}
+
+.nav {
+   height:80px;
+   width:160px;
+   margin-bottom:15px;
+   font-size:22px;
+   border-width:3px;
+   border-style:solid;
+   border-radius:10px;
+}
+
+#current_pane {
+   height:160px;
+   margin-top:30px;
+}
+
+#segmentbar {
+   margin-top:5px;
+   margin-bottom:45px;
+}
+
+#replayButton {
+   height:160px;
+   width:200px;
+   font-size:50px;
+   margin-top:30px;
+   margin-bottom:45px;
+   background-color: white;
+   border-color: #807115;
+   border-width:3px;
+   border-style:solid;
+   border-radius:10px;
 }
 
 .prev {
@@ -15,39 +68,9 @@ scribe specific rules
    border-color: #803215;
 }
 
-.current {
-   background-color: #D4C66A;
-   border-color: #807115;
-}
-
 .next {
    background-color: #64B058;
    border-color: #1E6912;
-}
-
-.display {
-   margin-top: 35px;
-   font-size:30px;
-   text-align:middle;
-   border-width:1px;
-   border-style:solid;
-   border-radius:5px;
-   height: 120px;
-}
-
-.label {
-   padding-top:5px;
-   font-size:18px;
-   text-align:center;
-   height: 90px;
-   margin-top:20px;
-   border-width:3px;
-   border-style:solid;
-   border-radius:10px;
-}
-
-.current.label {
-   font-size:25px;
 }
 
 .entry {
@@ -59,11 +82,7 @@ scribe specific rules
    font-weight: 500;
    font-family: "Raleway", "HelveticaNeue", "Helvetica Neue", Helvetica, Arial, sans-serif;
    color: #222;
-   margin-top: 35px;
-}
-
-#dev {
-   margin-top:40px;
+   margin-top: 10px;
 }
 
 /*.scribe .hotkey.title {
