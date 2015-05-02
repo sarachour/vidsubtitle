@@ -71,11 +71,21 @@ var SegmentModel  = function(){
       }
       
    }
+   //select by time code or segment id
    this.select = function(time){
       if(time != undefined){
-         this.data.selection = this._get_enclosing_selection(time);
-         this.data.time = time;
-         this._evt.trigger('select',{obj:this, sel:this.data.selection, time:this.data.time});
+         if(typeof time == "string"){
+            var id = time;
+            var matches = this.get_selections().match(function(e){return e.id == id});
+            if(matches.length == 0) return;
+            this.data.selection = matches.get(0).elem;
+            this._evt.trigger('select',{obj:this, sel:this.data.selection, id:id});
+         }
+         else{
+            this.data.selection = this._get_enclosing_selection(time);
+            this.data.time = time;
+            this._evt.trigger('select',{obj:this, sel:this.data.selection, time:this.data.time});
+         }
       }
       else {
          this.data.selection = this._get_enclosing_selection(this.data.time);

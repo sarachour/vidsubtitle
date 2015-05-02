@@ -45,7 +45,6 @@ var ProgramState = function(vp_name, vb_name, hnt_name){
       else if(e.type == "add"){
         that.video_bar().model.remove(e.id);
       }
-      console.log("UNDO",e)
       disable_record = false;
     });
     this._history.listen('redo', function(e){
@@ -58,8 +57,6 @@ var ProgramState = function(vp_name, vb_name, hnt_name){
       }
       else if(e.type == "add") 
         that.video_bar().model.add(e.time,e.id);
-
-      console.log("REDO",e)
       disable_record = false;
     });
 
@@ -76,7 +73,6 @@ var ProgramState = function(vp_name, vb_name, hnt_name){
       else if(e.type == "shift"){
         that._history.add({type:'shift', select:ctime, id:e.id, amt:e.amt})
       }
-      console.log("HISTORY",e);
     })
     //if a marker changes the state
     this.obs.listen('state-change', function(e){

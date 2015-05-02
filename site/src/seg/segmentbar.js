@@ -63,9 +63,9 @@ var SegmentBar = function(id, model){
             var c = norm(e);
             if($(this).data('drag')){
                var del = delta(this,c);
-               var sel = $(this).data('selection'); 
-               console.log(sel);
-               that._model.shift(0,del.t);
+               var sel = $(this).data('selection');
+               that._model.select(sel.id);
+               that._model.shift(del.t,0,sel.eid);
             }
             $(this).data('coord',c);
             that._draw();
