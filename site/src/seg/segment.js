@@ -126,24 +126,28 @@ var ProgramState = function(vp_name, vb_name, hnt_name){
   }
   this.shift = function(lamt,ramt){
     this.video_bar().shift(lamt,ramt);
-    //var d=this.select();
-    this.obs.trigger('shift');
   }
   this.remove = function(){
     var e=this.video_bar().remove();
     if(e == null) return;
-    //this.select();
-    this.obs.trigger('remove');
   }
-  this.play = function(){
-    this.obs.trigger('play')
-    this._video_player.play();
+  this.mark = function(){
+    this.video_bar().mark();
+  }
+  this.pause = function(){
+    this.video_player().pause();
+  }
+  this.play = function(s,e){
+    if(s != undefined && e != undefined){
+      this.video_player().segment(s,e);
+    }
+    this.video_player().play();
   }
   this.selections = function(){
     return this.video_bar().model.get_selections();
   }
-  this.statemgr = function(){
-    return this.obs;
+  this.trigger = function(e,o){
+    return this.obs.trigger(e,o);
   }
   this.get_state = function(){
     return this.state;
@@ -175,11 +179,14 @@ var HintManager = function(id){
 var SelectionPlayer = function(state, side){
   this.init = function(){
     this.state = state;
-    this.sfx = new AudioFile('media/click.mp3');
+    //this.sfx = new AudioFile('media/click.mp3');
     this.timer = null;
     this.eps = 2;
     if(side == undefined) this.side = "both";
     else this.side = side;
+  }
+  this.pause = function(){
+    this.state.pause();
   }
   this.play = function(time){
     var sel = this.state.select();
@@ -193,8 +200,7 @@ var SelectionPlayer = function(state, side){
     else if(this.side == "right"){
       s = e-Math.min(e-s,this.eps);
     }
-    this.state.video_player().segment(s,e);
-    this.state.video_player().play();
+    this.state.play(s,e);
   
 
   }
@@ -212,13 +218,13 @@ var MarkButton = function(button_name, state){
     this.init();
 
     this.view.prop('disabled', true);
-    this.state.statemgr().listen('ready', function(){
+    this.state.listen('ready', function(){
       that.view.prop('disabled',false);
     })
-    this.state.statemgr().listen('playing', function(){
+    this.state.listen('playing', function(){
       that.playing = true;
     })
-    this.state.statemgr().listen('paused', function(){
+    this.state.listen('paused', function(){
       that.playing = false;
       that.init();
     })
@@ -246,7 +252,7 @@ var MarkButton = function(button_name, state){
     this.view.unbind('click')
       .pulse('destroy');
     this.view.click(function(){
-        if(that.playing) that.state.statemgr().trigger('state-change',{state:'mark'});
+        if(that.playing) that.state.mark();
         that.is_down = true;
         $(this)
           .pulse({'background-color':'#d33434',color:'white'},{pulses:1,duration:200});
@@ -260,7 +266,7 @@ var HistoryButton = function(button_name, world, is_undo){
     this.state = world;
     var that = this;
 
-    this.state.listen('play',function(){that.view.removeClass('disabled')});
+    this.state.listen('playing',function(){that.view.removeClass('disabled')});
     this.state.bind_hint(this.view, function(){if(is_undo) return 'undo'; else return 'redo'});
     this.view.click(function(){
       src_pulse($("img",$(this)), 200);
@@ -281,7 +287,7 @@ var NavigateButton = function(button_name, state, type){
     this.view = $("#"+button_name).addClass('disabled');
     this.state = state;
 
-    this.state.listen('play',function(){that.view.removeClass('disabled')});
+    this.state.listen('playing',function(){that.view.removeClass('disabled')});
 
     this.state.bind_hint(this.view, function(){return type});
 
@@ -302,7 +308,7 @@ var ReplayButton = function(button_name, state){
     this.player = new SelectionPlayer(state);
 
     this.state.bind_hint(this.view, "replay");
-    this.state.listen('play',function(){that.view.removeClass('disabled')});
+    this.state.listen('playing',function(){that.view.removeClass('disabled')});
 
     this.view.click(function(){
       src_pulse($("img",$(this)), 200);
@@ -320,7 +326,7 @@ var DeleteButton = function(button_name, state){
     this.player = new SelectionPlayer(state);
 
     this.state.bind_hint(this.view, "delete");
-    this.state.listen('play',function(){that.view.removeClass('disabled')});
+    this.state.listen('playing',function(){that.view.removeClass('disabled')});
 
     this.view.click(function(){
       src_pulse($("img",$(this)), 200);
@@ -338,8 +344,7 @@ var ShiftButton = function(button_name, state, type, amt){
     this.state = state;
     this.player = new SelectionPlayer(state,'right');
     this.type = type;
-    console.log(this.type);
-    this.state.listen('play',function(){that.view.removeClass('disabled')});
+    this.state.listen('playing',function(){that.view.removeClass('disabled')});
     this.state.bind_hint(this.view, function(){return that.type;});
 
     this.amount = amt;
@@ -348,6 +353,7 @@ var ShiftButton = function(button_name, state, type, amt){
       src_pulse($("img",$(this)), 200);
       var amt = that.amount;
       if(that.type == 'lshift') amt *= -1;
+      that.player.pause();
       that.state.shift(0,amt);
       if(that.state.video_bar().model.select().subtype != "continue")
         that.player.play();
@@ -365,25 +371,25 @@ var VideoPane = function(video_name, state){
     this.state = state;
     //initialize video
     this.video.listen('load', function(evt){
-      that.state.statemgr().trigger('state-change',{state:'load'});
+      that.state.trigger('state-change',{state:'load'});
     }, "vp-load");
 
     this.video.listen('ready', function(e){
-      that.state.statemgr().trigger('state-change',{state:'ready'});
+      that.state.trigger('state-change',{state:'ready'});
     }, "vp-ready");
 
     this.video.listen('play', function(e){
       //e.obj.rate(0.75);
-      that.state.statemgr().trigger('state-change',{state:'playing'});
+      that.state.trigger('state-change',{state:'playing'});
     }, 'vp-play');
 
     this.video.listen('done', function(e){
       //e.obj.rate(0.75);
-      that.state.statemgr().trigger('state-change',{state:'ended'});
+      that.state.trigger('state-change',{state:'ended'});
     }, 'vp-end');
     
     this.video.listen('update', function(){
-      that.state.statemgr().trigger('state-change',{state:'tick'});
+      that.state.trigger('state-change',{state:'tick'});
     }, 'vp-update');
   }
   this.get_model = function(){
@@ -413,19 +419,15 @@ var VideoBar  =function(bar_name, state){
     this.state = state;
     this.start_time = null;
     this.root.hide();
-    this.state.statemgr().listen('ready', function(){
+    this.state.listen('ready', function(){
       that._update_duration();
     })
-    this.state.statemgr().listen('play', function(){
+    this.state.listen('playing', function(){
       that._update_duration();
       that.root.show();
     })
-    this.state.statemgr().listen('tick', function(){
+    this.state.listen('tick', function(){
       that._update_time();
-    })
-    //update bar for hold and unhold situations
-    this.state.statemgr().listen('mark', function(){
-      that.mark();
     })
   }
   this._update_time = function(){
@@ -445,7 +447,7 @@ var VideoBar  =function(bar_name, state){
   this.mark = function(){
       var t = this.state.video_player().get_model().time();
       this.model.add(t);
-      this.state.video_player().segment(t,this.model.duration(), function(){console.log("done")});
+      this.state.video_player().segment(t,this.model.duration());
       this.state.video_player().play();
   }
   this._init();
@@ -460,7 +462,6 @@ var RedirectButton = function(id,to,state){
 
 
   this.root = $("#"+id).click(function(){
-    console.log("ttt");
       that.redirect();
   });
 

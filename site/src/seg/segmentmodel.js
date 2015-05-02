@@ -28,7 +28,7 @@ var SegmentModel  = function(){
    //gets normalized data for plotting, as well as scale
    this.export = function(){
       var data = [];
-      this.data.get_selections().for_each(function(e){
+      this.get_selections().for_each(function(e){
          data.push({start:e.start, end:e.end, caption:{}});
       })
       return data;
@@ -64,7 +64,6 @@ var SegmentModel  = function(){
       var sel = this.select();
       if(sel != null){
          var res = sels.before(function(e){return e.id == sel.id});
-         console.log((res.start+res.end)/2);
          if(res != null){
             this.time(res.start);
          }
@@ -174,7 +173,7 @@ var SegmentModel  = function(){
             sid:last_id, eid:e.id, id:last_id + "/"+e.id
          });
          last_id = e.id;
-         last = e.time+0.0001;
+         last = e.time+0.01;
       });
       var dur = this.data.duration;
       selections.push({
