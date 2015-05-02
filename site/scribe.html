@@ -19,14 +19,12 @@
 <script src="src/core/undo.js"></script>
 <script src="src/core/status.js"></script>
 <script src="src/core/youtube.js"></script>
-<script src="src/core/sorted_array.js"></script>
 <script src="src/core/audio.js"></script>
 <script src="src/core/demo.js"></script>
 
-<script src="src/seg/data.js"></script>
-<script src="src/seg/segmentmodel.js"></script>
-<script src="src/seg/segmentbar.js"></script>
-<script src="src/seg/segment.js"></script>
+<script src="src/scribe/scribe.js"></script>
+<script src="src/scribe/scribemodel.js"></script>
+<script src="src/scribe/scribebar.js"></script>
 
 <link rel="stylesheet" href="css/jquery-ui-1.11.3.css" />
 <link rel="stylesheet" href="css/skeleton.css" />
@@ -49,57 +47,53 @@ INSTRUCTIONS: Caption the video, segment by segment.
 <div class="container scribe">
 <!-- video and controls -->
 
-   <div id="previous_pane" class="column one-fourth">
+   <div id="video_pane" class="column one-fourth">
 
-      <div class="row black-bg">
-         <div class="fill-parent-width video-container">
-            <canvas id="prevShot"></canvas>
+      <div class="fill-parent-width shot"><canvas id="prevShot2" height="100px" width="75px"></canvas></div>
+      <div class="fill-parent-width shot"><canvas id="prevShot" height="100px" width="75px"></canvas></div>
+
+      <div id="current_pane">
+         <div class="row black-bg">
+            <div class="fill-video-container">
+               <video class="fill-parent-width" id="player" preload="none" height="150px" width="100%" controls="none">
+                  <source src="media/movie1.mp4" type="video/mp4">
+               </video>
+            </div>
          </div>
+
+         <div id="segmentbar" class="row vspace">
+            <div id="controls" class="fill-parent-width text-label">PROGRESS BAR HERE</div>
+         </div>
+
       </div>
 
-      <div id="prevDisplay" class="fill-parent-width prev display"></div>
-      <div id="prevLabel" class="offset-by-one-fourth one-half column prev label">Previous Segment</div>
-      
+      <div class="fill-parent-width shot"><canvas id="nextShot" height="100px" width="75px"></canvas></div>
+      <div class="fill-parent-width shot"><canvas id="nextShot2" height="100px" width="75px"></canvas></div>
+
    </div>
 
-   <div id="current_pane" class="column one-half">
+   <div id="text_pane" class="column one-half">
 
-      <div class="row black-bg">
-         <div class="fill-parent-width video-container">
-            <video class="fill-parent" id="player" preload="none" width="100%" controls="none">
-               <source src="media/movie1.mp4" type="video/mp4">
-            </video>
-         </div>
+      <div id="prev2Text" class="fill-parent-width prev display">dummy</div>
+      <div id="prevText" class="fill-parent-width prev display">dummy</div>
+
+      <div id="curText" class="fill-parent-width text">
+         <textarea autofocus rows="12" id="entry" class="fill-parent-width entry" placeholder="type captions here"></textarea>
       </div>
 
-     <div id="curText" class="fill-parent-width text">
-      <textarea autofocus rows="12" id="entry" class="fill-parent-width entry" placeholder="type captions here"></textarea>
-         </div>
-      <div id="curLabel" class="offset-by-one-fourth one-half column current label">Current Segment</div>
+       <div id="nextText" class="fill-parent-width next display">dummy</div>
+       <div id="next2Text" class="fill-parent-width next display">dummy</div>
+
    </div>
 
-   <div id="next_pane" class="column one-fourth">
-
-      <div class="row black-bg">
-         <div class="fill-parent-width video-container">
-            <canvas id="nextShot"></canvas>
-         </div>
-      </div>
-
-      <div id="nextText" class="fill-parent-width next display"></div>
-      <div id="nextLabel" class="offset-by-one-fourth one-half column next label">Next Segment</div>
+   <div id="button_pane" class="column one-fourth">
+      <button type="button" id="prev2Button" class="row vspace prev nav">go to previous segment</button>
+      <button type="button" id="prevButton" class="row vspace prev nav">go to previous segment</button>
+      <button type="button" id="replayButton" class="row vspace">START</button>
+      <button type="button" id="nextButton" class="row vspace next nav">go to next segment</button>
+      <button type="button" id="next2Button" class="row vspace next nav">go to next segment</button>
    </div>
 
-</div>
-
-<div class="row vspace" id="dev">
-<span class="columns two">Dev Tools: </span>
-<input id="output" type="text" class="columns six" placeholder="JSON Structure">
-   
-</input>
-<button class="columns two" id="save">Save</button>
-<button class="columns two" id="load">Load</button>
-<button class="columns two" id="next_step">Next</button>
 </div>
 
 <!-- end of window -->
