@@ -92,35 +92,13 @@ var ScribeBar = function(id, model){
       this._draw();
    }
    this._resize = function(){
-
       this._view.gcanv.attr("width",this._view.gcanv[0].offsetWidth);
       this._view.gcanv.attr("height",this._view.gcanv[0].offsetHeight);
-   }
-   this._get_viewport = function(d){
-
-      var t = d.time;
-      var range =  this._state.viewport.width/2; //10 seconds
-      var sel = d.selection;
-
-      if(sel != null && sel.type == "segment" && sel.subtype != "continue"){
-         if(this._state.viewport.start <= sel.start && 
-            this._state.viewport.end >= sel.end)
-         return this._state.viewport;
-
-         this._state.viewport.start = Math.max(sel.start-range,0);
-         this._state.viewport.end = Math.max(Math.min(sel.start + range,d.duration),range*2);
-      }
-      else{
-         this._state.viewport.start = Math.max(d.time-range,0);
-         this._state.viewport.end = Math.max(Math.min(d.time+range,d.duration),range*2); 
-      }
-      return this._state.viewport;
    }
    this._draw = function(){
       this._resize();
 
       var that = this;
-      var ctx = this._view.ctx;
       var gctx = this._view.gctx;
 
       var d = this._model.get_data();
@@ -128,15 +106,14 @@ var ScribeBar = function(id, model){
       var gwidth = this._view.gcanv.width();
       var gheight = this._view.gcanv.height();
 
-      var viewport = this._get_viewport(d);
-
-      var x = function(v){return (v-viewport.start)*gwidth/(viewport.end - viewport.start);}
-      var y = function(v){return v*gheight/1;}
-      var w = function(v){return (v)*gwidth/(viewport.end - viewport.start);}
-      var h = function(v){return v*gheight/1;}
+      var viewport = {};
+      viewport.start=0;
+      viewport.end=d.duration;
 
       var gx = function(v){return v*gwidth/d.duration}
-      var gy = function(v){return v*gheight/1.0}
+      var gy = function(v){return v*gheight}
+      var gw = function(v){return v*gwidth/d.duration}
+      var gh = function(v){return v*gheight}
 
       var fixed = {};
       fixed.block_pad = 5;
@@ -153,10 +130,6 @@ var ScribeBar = function(id, model){
       prop.prog = {};
       prop.prog.start = 0.25;
       prop.prog.end = 0.80;
-      
-      prop.footer = {};
-      prop.footer.start = 0.90;
-      prop.footer.end = 1.0;
 
       prop.global = {};
       prop.global.start = 0;
@@ -229,7 +202,12 @@ var ScribeBar = function(id, model){
       
       var gmark_draw = function(x,c){
          gctx.fillStyle = c.marker;
-         gctx.fillRect(gx(x),y(prop.global.start),1.5,h(prop.global.end - prop.global.start));
+         gctx.fillRect(
+            gx(x),
+            gy(prop.global.start),
+            1.5,
+            gh(prop.global.end - prop.global.start)
+            );
       }
       /*
       var prog_block_draw = function(o,t,c){
@@ -263,42 +241,26 @@ var ScribeBar = function(id, model){
             h((prop.prog.end - prop.prog.start)*0.5));
       }
       */
-      var sel_draw = function(o,color){
-         var s = o.start;
-         var e = o.end;
-         if(o.type == "segment"){
-            ctx.fillStyle = color;
-            ctx.fillRect(x(s), 
-               y(prop.footer.start), 
-               w(e-s)+fixed.plumbob.stem_width,
-               h(prop.footer.end - prop.footer.start));
-         }
-         else if(o.type == "break"){
-            ctx.fillStyle = color;
-            ctx.arc(
-               x(o.time), 
-               y((prop.footer.end + prop.footer.start)/2), 
-               h((prop.footer.end - prop.footer.start)/2),
-               0,
-               Math.PI);
-            ctx.fill();
-         }
+      var sel_draw = function(seg,color){
+         var s = seg.start;
+         var e = seg.end;
+
+         gctx.fillStyle = color;
+         gctx.fillRect(
+            gx(s)+1.5, 
+            gy(0), 
+            gw(e-s)-1.5,
+            gh(1)
+            );
+         gctx.fill();
       }
 
       for (i=0; i < this._model.data.segments.length; i++) {
          gmark_draw(this._model.data.segments[i].end, colors.pause);
       }
 
-      /*
-      this._model.get_segments().for_each(function(e){
-         //check hover
-         if(!hovered && hover_t != null){
-            console.log(hover_t);
-            //hovering over a segment
-            if (hover_t <= e.end && hover_t >= e.start){
-               hovered = true; 
-               sel_draw(e,colors.hovered);
-            }   
+
+         /*
          }else{
             if(d.selection != null && d.selection.sid == e.sid && d.selection.eid == e.eid ){
                //prog_block_draw(e,d.time,{fg:colors.progbar.elapsed,bg:colors.progbar.total});
@@ -312,14 +274,20 @@ var ScribeBar = function(id, model){
                gmark_draw(br.time,colors.pause); 
             }
             return;
+            /
          }
       });
-
 */
+
       var hovered = false;
       var hover_t = null;
       if(this._view.gcanv.data('coord') != undefined){
          var hover_t = this._view.gcanv.data('coord').t;
+      }
+
+      if(!hovered && hover_t != null){
+         hovered = true;
+         sel_draw(this._model.get_enclosing_selection(hover_t), colors.hovered);
       }
 
       if(hover_t != null){

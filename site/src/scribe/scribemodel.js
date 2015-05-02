@@ -7,6 +7,7 @@ var ScribeModel  = function(seg_data){
       this._id = 0;
       this.data = {};
 
+      seg_data.push({start: seg_data[seg_data.length - 1].end, end: 1000, caption: {}});
       this.data.segments = seg_data;
       this._evt = new Observer();
       //this._evt.trigger('update',{obj:this});
@@ -91,7 +92,7 @@ var ScribeModel  = function(seg_data){
    }
    this.get_enclosing_selection = function(time){
       for (i=0; i < this.data.segments.length; i++){
-         if (this.data.segments[i].start <= time){
+         if (this.data.segments[i].end > time){
             return(this.data.segments[i]);
          }
       }
