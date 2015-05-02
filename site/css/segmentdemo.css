@@ -1,5 +1,4 @@
 .view {
-   width:640;
 }
 .no-click{
    pointer-events: none;
@@ -37,10 +36,13 @@
    background-color:lightgreen;
 }
 #view {
-    width: 50%;
+    width: 70%;
     margin: 0 auto;
 }
 
+#hint {
+  font-size:14;
+}
 .button-enabled{
    background-color:lightblue;
 }

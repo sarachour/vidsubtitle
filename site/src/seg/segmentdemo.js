@@ -79,7 +79,14 @@ var DummySegmentationInterface = function(){
          that.obs.trigger('start');
          is_started = true;
       }
-
+      var handle_hover = function(n){
+         if(that.enabled.hint){
+            var text = HINTS[n];
+            console.log(text);
+            $("#hint",v).html("<span class='emph'>"+text.name + "</span>:"+text.desc);
+            that.obs.trigger('hint',{name:n});
+         }
+      }
       this.model.listen('select', function(){
          that.video.time(that.model.time());
          that.obs.trigger('select');
@@ -98,7 +105,19 @@ var DummySegmentationInterface = function(){
             that.obs.trigger('start-button');
             handle_start();
          }
-      });
+      })
+      .hover(function(){ handle_hover("break");});
+
+      $("#undo",v).hover(function(){ handle_hover("undo");});
+      $("#redo",v).hover(function(){ handle_hover("redo");});
+      $("#next",v).hover(function(){ handle_hover("next");});
+      $("#prev",v).hover(function(){ handle_hover("prev");});
+      $("#replay",v).hover(function(){ handle_hover("replay");});
+      $("#delete",v).hover(function(){ handle_hover("delete");});
+      $("#en_sr",v).hover(function(){ handle_hover("rshift");});
+      $("#en_sl",v).hover(function(){ handle_hover("lshift");});
+
+
       jwerty.key('space', function(){
          if(that.enabled.start_key){
             that.obs.trigger('start-key');
@@ -452,7 +471,7 @@ var Undo = function(){
       this.id = "undo";
    }
    this.load = function(demo){
-
+      
    }
 
    this.init();
@@ -463,7 +482,23 @@ var Buttons = function(){
       this.id = "buttons";
    }
    this.load = function(demo){
+      demo.disable_next();
+      var that = this;
+      var iface = demo.get_iface();
+      var elems = ['next','prev','replay','break','undo','redo','lshift','rshift','delete'];
+      var hovered = {};
+      elems.forEach(function(e){hovered[e] = false;});
 
+      iface.load(this.id, "edit", ['hint']);
+      iface.listen('hint', function(e){
+         var name = e.name;
+         hovered[name] = true;
+
+         for(var q in hovered){
+            if(!hovered[q]) return;
+         }
+         demo.enable_next();
+      })
    }
 
    this.init();
@@ -522,7 +557,7 @@ var Demonstration = function(){
          'buttons',
          'alltogether'
       ]
-      this.idx = 11;
+      this.idx = 13;
       //this.idx = 0;
       //load initial step
       this.load(this.stages[this.order[this.idx]]);
