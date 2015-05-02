@@ -41,7 +41,7 @@ var SegmentModel  = function(){
       this.data.segments.clear();
       for(var i=0; i < d.length; i++){
          console.log(d[i].time);
-         this.add_segment(d[i].time);
+         this.add(d[i].time);
       }
       this.data.selection = this._get_continuation();
    }
@@ -104,49 +104,39 @@ var SegmentModel  = function(){
       var e = matches.get(0).elem;
       return e;
    }
-   this.shift = function(id, left_amt,right_amt){
-      if(right_amt == undefined){
-         right_amt = left_amt;
-         left_amt = id;
-         id = null;
-         var sel = this.data.selection;
+   this.shift = function(left_amt,right_amt,id){
+      if(id != undefined){
+         var e = this._get_by_id(id);
+         if(e != null){
+            e.time += left_amt;
+            this._evt.trigger('update',{obj:this,type:'shift',id:e.id,amt:left_amt});
+         }
+         return;
       }
-      else{
-         var sel = this._get_by_id(id);
-      }
-      var shift_elem = function(e, left_amt, right_amt, is_left){
-         if(e == null) return;
-         var vamt = right_amt;
-         if(is_left) vamt = left_amt;
-         e.start += vamt;
-         e.end += vamt;  
-         e.time += vamt;
-         
-      }
+      var sel = this.data.selection;
       var that = this;
-      if(sel == null) return;
+      if(sel == null || sel.subtype == "continue") return;
+      var es = this._get_by_id(sel.sid);
+      if(es != null && left_amt != 0){
+         es.time += left_amt;
+         this._evt.trigger('update',{obj:this,type:'shift',id:es.id,amt:left_amt});
+      }
+      var ee= this._get_by_id(sel.eid);
+      if(ee != null && right_amt != 0){
+         ee.time += right_amt;
+         this._evt.trigger('update',{obj:this,type:'shift',id:ee.id,amt:right_amt});
+      }
 
-      if(sel.type == "segment"){
-         var es = this._get_by_id(sel.sid);
-         var ee= this._get_by_id(sel.eid);
-         shift_elem(es, left_amt,right_amt,true);
-         shift_elem(ee, left_amt,right_amt,false);
-      }
-      if(id == null){
-         sel.start += left_amt; 
-         sel.end += right_amt;
-      }
-      this._evt.trigger('update',{obj:this,type:'shift',left:left_amt,right:right_amt});
    }
-   this.remove = function(id,amt){
-      if(amt == undefined){
-         amt = id;
-         var sel = this.data.selection;
-      }
-      else{
-         var sel = this._get_by_id(id);
+   this.remove = function(id){
+      if(id != undefined){
+         var time = this._get_by_id(id).time;
+         this.data.segments.remove_all(function(e){return e.id == id});
+         this._evt.trigger('update',{obj:this,type:'remove', time:time,id:id});
+         return;
       }
       var that = this;
+      var sel = this.data.selection;
       if(sel == null) return;
       if(sel.type == 'segment'){
          if(sel.eid < 0) return;
@@ -154,7 +144,7 @@ var SegmentModel  = function(){
       }
       var enc = this._get_enclosing_selection(sel.end);
       this.data.selection = enc;
-      this._evt.trigger('update',{obj:this,type:'remove', time:sel.end});
+      this._evt.trigger('update',{obj:this,type:'remove', time:sel.end, id:sel.eid});
       if(e.length() > 0)
          return e.get(0).elem;
       else
@@ -185,16 +175,21 @@ var SegmentModel  = function(){
       });
       return selections;
    }
-   this.clear_segments = function(){
+   this.clear = function(){
       this.data.segments.clear();
    }
-   this.add_segment = function(time){
+   this.add = function(time,id){
+      if(id == undefined){
+         var nid = this._id;
+         this._id+=1;
+      }
+      else{
+         var nid = id;
+      }
       var s = {};
       s.time = time;
-      s.id = this._id;
+      s.id = nid;
       s.type = "break";
-      this._id+=1;
-      console.log(s);
       this.data.segments.push(s);
 
       //update selection if we're tracking the continuation
@@ -202,7 +197,7 @@ var SegmentModel  = function(){
       if (this.data.selection.subtype == "continue"){
          this.data.selection = this._get_continuation();
       }
-      this._evt.trigger('update',{obj:this, type:'add', time:time});
+      this._evt.trigger('update',{obj:this, type:'add',id:s.id, time:time});
    }
    this.time = function(t){
       var that = this;

@@ -33,45 +33,50 @@ var ProgramState = function(vp_name, vb_name, hnt_name){
     var hint = HINTS["default"];
     that._hint.set(hint.title,hint.desc);
 
-
+    var disable_record = false;
     this._history.listen('undo', function(e){
+      disable_record = true;
       if(e.type == "shift"){
-        that.select(e.selection);
-        that.video_bar().shift(-e.left, -e.right);
+        that.video_bar().model.shift(-e.amt, 0, e.id);
       }
       else if(e.type == "remove"){
-        that.video_bar().model.add(e.time);
+        that.video_bar().model.add(e.time,e.id);
       }
-      else if(e.type == "add") 
-        that.select(e.time);
-        that.video_bar().model.remove();
-
+      else if(e.type == "add"){
+        that.video_bar().model.remove(e.id);
+      }
+      console.log("UNDO",e)
+      disable_record = false;
     });
     this._history.listen('redo', function(e){
+      disable_record = true;
       if(e.type == "shift"){
-        that.select(e.selection);
-        that.video_bar().shift(e.left, e.right);
+        that.video_bar().shift(e.amt, 0,e.id);
       }
       else if(e.type == "remove"){
-        that.select(e.time);
-        that.video_bar().model.remove();
+        that.video_bar().model.remove(e.id);
       }
       else if(e.type == "add") 
-        that.video_bar().model.add(e.time);
+        that.video_bar().model.add(e.time,e.id);
+
+      console.log("REDO",e)
+      disable_record = false;
     });
 
     this.video_bar().model
     .listen('select', function(e){
       that._player.play(e.time);
-      that._history.add({type:'select', time:e.time});
     })
     .listen('update', function(e){
-      if(e.type == "add" || e.type == "remove")
-        that._history.add({type:e.type, time:e.time})
-      else if(e.type == "shift"){
-        console.log(e);
-        that._history.add({type:'shift', time:e.time, left:e.left, right:e.right})
+      if(disable_record) return;
+      var ctime = that.video_bar().model.time();
+      if(e.type == "add" || e.type == "remove"){
+        that._history.add({type:e.type, select:ctime, id:e.id, time:e.time})
       }
+      else if(e.type == "shift"){
+        that._history.add({type:'shift', select:ctime, id:e.id, amt:e.amt})
+      }
+      console.log("HISTORY",e);
     })
     //if a marker changes the state
     this.obs.listen('state-change', function(e){
@@ -125,15 +130,13 @@ var ProgramState = function(vp_name, vb_name, hnt_name){
   }
   this.shift = function(lamt,ramt){
     this.video_bar().shift(lamt,ramt);
-    var d=this.select();
-    //this._history.add({type:"shift",left:lamt,right:ramt,selection:this.video_bar().model.time()});
+    //var d=this.select();
     this.obs.trigger('shift');
   }
   this.remove = function(){
     var e=this.video_bar().remove();
     if(e == null) return;
-    //this._history.add({type:"remove",time:e.time, sel:this.video_bar().model.time()});
-    this.select();
+    //this.select();
     this.obs.trigger('remove');
   }
   this.play = function(){
@@ -350,7 +353,8 @@ var ShiftButton = function(button_name, state, type, amt){
       var amt = that.amount;
       if(that.type == 'lshift') amt *= -1;
       that.state.shift(0,amt);
-      that.player.play();
+      if(that.state.video_bar().model.select().subtype != "continue")
+        that.player.play();
     })
   }
 
@@ -444,7 +448,7 @@ var VideoBar  =function(bar_name, state){
   }
   this.mark = function(){
       var t = this.state.video_player().get_model().time();
-      this.model.add_segment(t);
+      this.model.add(t);
       this.state.video_player().segment(t,this.model.duration(), function(){console.log("done")});
       this.state.video_player().play();
   }

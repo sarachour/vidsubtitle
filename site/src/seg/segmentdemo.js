@@ -67,7 +67,7 @@ var DummySegmentationInterface = function(){
 
       var handle_break = function(){
          $("#break",v).pulse({'background-color':'#d33434',color:'white'},{pulses:1,duration:200});
-         that.model.add_segment(that.video.time());
+         that.model.add(that.video.time());
       }
       var handle_start = function(){
          if(is_started){

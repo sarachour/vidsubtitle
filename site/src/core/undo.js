@@ -5,6 +5,7 @@ var History = function(){
       this.undos = new Stack();
       this.redos = new Stack();
       this.evt = new Observer();
+
    }
    this.listen = function(evt, cbk){
       this.evt.listen(evt, cbk);

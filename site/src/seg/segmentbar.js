@@ -62,7 +62,9 @@ var SegmentBar = function(id, model){
          .mousemove(function(e){
             var c = norm(e);
             if($(this).data('drag')){
-               var del = delta(this,c); 
+               var del = delta(this,c);
+               var sel = $(this).data('selection'); 
+               console.log(sel);
                that._model.shift(0,del.t);
             }
             $(this).data('coord',c);
@@ -77,7 +79,7 @@ var SegmentBar = function(id, model){
          })
          .mousedown(function(e){
             var c = norm(e);
-            that._model.select(c.t);
+            $(this).data('selection',that._model.select(c.t));
             $(this).data('coord',c).data('drag',true);
          })
          .mouseup(function(e){
@@ -86,7 +88,7 @@ var SegmentBar = function(id, model){
          })
          .bind("contextmenu",function(e){
             var c = norm(e);
-            that._model.add_segment(c.t);
+            that._model.add(c.t);
             that._model.select(c.t);
            return false;
          });
