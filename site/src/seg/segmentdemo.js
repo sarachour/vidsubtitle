@@ -188,6 +188,7 @@ var Welcome = function(){
       this.id = "welcome";
    }
    this.load = function(demo){
+      demo.success();
 
    }
 
@@ -276,7 +277,8 @@ var AboutBar = function(){
       var that = this;
       var iface = demo.get_iface();
       iface.load(this.id, "edit", ['segmentbar-micro','segmentbar-macro']);
-      
+      demo.success();
+
    }
 
    this.init();
@@ -317,6 +319,7 @@ var AboutBar3 = function(){
       var that = this;
       var iface = demo.get_iface();
       iface.load(this.id, "edit", ['segmentbar-micro','segmentbar-macro']);
+      demo.success();
 
    }
 
@@ -338,15 +341,18 @@ var Navigating = function(){
       var repeat = false;
       iface.obs.listen('select', function(){
          sel_item = true;
+         $("#select_counter").removeClass('dummy').addClass('success').html(KEYS['check']);
       },'1');
       iface.obs.listen('prev', function(){
          if(sel_item) move_left = true;
+         $("#left_counter").removeClass('dummy').addClass('success').html(KEYS['check']);
          if(sel_item && move_right && move_left && repeat){
             demo.success();
             demo.enable_next();
          }
       },'1');
       iface.obs.listen('next', function(){
+         $("#right_counter").removeClass('dummy').addClass('success').html(KEYS['check']);
          if(sel_item) move_right = true;
          if(sel_item && move_right && move_left && repeat){
             demo.success();
@@ -354,6 +360,7 @@ var Navigating = function(){
          }
       },'1');
       iface.obs.listen('repeat', function(){
+         $("#repeat_counter").removeClass('dummy').addClass('success').html(KEYS['check']);
          if(sel_item) repeat = true;
          if(sel_item && move_right && move_left && repeat){
             demo.success();
@@ -384,6 +391,9 @@ var AddBreak = function(){
       iface.listen('break', function(){
          that.tcount++;
          console.log(that.tcount, that.keycount)
+         if(that.tcount > that.keycount + that.buttoncount){
+            $("#break_region_counter").removeClass('dummy').addClass('success').html(KEYS['check']);
+         }
          if(that.tcount > that.keycount + that.buttoncount && 
             that.tcount > 0 && that.keycount>0 && that.buttoncount > 0){
             demo.success();
@@ -392,9 +402,11 @@ var AddBreak = function(){
 
       },'1');
       iface.listen('start-key', function(){
+         $("#break_key_counter").removeClass('dummy').addClass('success').html(KEYS['check']);
          that.keycount++; 
       },'1');
       iface.listen('start-button', function(){
+         $("#break_mouse_counter").removeClass('dummy').addClass('success').html(KEYS['check']);
          that.buttoncount++; 
       },'1');
 
@@ -408,13 +420,14 @@ var RemoveBreak = function(){
       this.id = "removebreak";
    }
    this.load = function(demo){
-      demo.disable_next();
       var that = this;
       var iface = demo.get_iface();
 
       demo.disable_next();
       iface.load(this.id, "edit", ['segmentbar-micro', 'remove_key']);
       iface.listen('remove', function(){
+         demo.success();
+         $("#remove_counter").removeClass('dummy').addClass('success').html(KEYS['check']);
          demo.enable_next();
       },'1');
    }
@@ -436,16 +449,25 @@ var ShortenSeg = function(){
       var shifts = 0;
       var keyshifts=0;
       iface.listen('shift', function(e){
-         if(e.right < 0){
+         console.log(e);
+         if(e.amt < 0){
             shifts++;
+         }
+         if(shifts > 0){
+            $("#shorten_counter").removeClass('dummy').html(shifts);
+         }
+         if(shifts > keyshifts){
+            $("#shorten_mouse_counter").removeClass('dummy').addClass('success').html(KEYS['check']);
          }
          if(keyshifts > 0 && shifts > 4 && shifts > keyshifts){
             demo.success();
+            $("#shorten_counter").addClass('success');
             demo.enable_next();
          }
       },'1');
       iface.listen('lshift_key', function(){
          keyshifts++;
+         $("#shorten_key_counter").removeClass('dummy').addClass('success').html(KEYS['check']);
       },'1');
 
    }
@@ -466,16 +488,25 @@ var LengthenSeg = function(){
       var shifts = 0;
       var keyshifts=0;
       iface.listen('shift', function(e){
-         if(e.right > 0){
+         if(e.amt > 0){
             shifts++;
+         }
+         console.log(shifts, keyshifts);
+         if(shifts > 0){
+            $("#lengthen_counter").removeClass('dummy').html(shifts);
+         }
+         if(shifts > keyshifts){
+            $("#lengthen_mouse_counter").removeClass('dummy').addClass('success').html(KEYS['check']);
          }
          if(keyshifts > 0 && shifts > 4 && shifts > keyshifts){
             demo.success();
+            $("#lengthen_counter").addClass('success');
             demo.enable_next();
          }
       },'1');
       iface.listen('rshift_key', function(){
          keyshifts++;
+         $("#lengthen_key_counter").removeClass('dummy').addClass('success').html(KEYS['check']);
       },'1');
    }
 
@@ -486,7 +517,7 @@ var Undo = function(){
       this.id = "undo";
    }
    this.load = function(demo){
-      
+      demo.success();
    }
 
    this.init();
@@ -501,6 +532,7 @@ var Buttons = function(){
       var that = this;
       var iface = demo.get_iface();
       var elems = ['next','prev','replay','break','undo','redo','lshift','rshift','delete'];
+      var n = elems.length;
       var hovered = {};
       elems.forEach(function(e){hovered[e] = false;});
 
@@ -508,11 +540,17 @@ var Buttons = function(){
       iface.listen('hint', function(e){
          var name = e.name;
          hovered[name] = true;
-
+         var cnt = 0;
          for(var q in hovered){
-            if(!hovered[q]) return;
+            if(hovered[q]) cnt++;
          }
-         demo.enable_next();
+         $("#hints_counter").removeClass('dummy').html(cnt+"/"+n);
+         if(cnt == n){
+            demo.success();
+            $("#hints_counter").addClass('success');
+            demo.enable_next();
+         }
+         
       })
    }
 
@@ -572,16 +610,20 @@ var Demonstration = function(){
          'buttons',
          'alltogether'
       ]
-      this.idx = 7;
+      this.idx = 13;
       //load initial step
       this.load(this.stages[this.order[this.idx]]);
 
       $("#next-step",this.root).click(function(){
          that.next();
       }).mouseenter(function(){
-         $(this).attr('src','res/dright-active.png');
+         if($(this).attr('src') != "res/dright-disable.png"){
+            $(this).attr('src','res/dright-active.png');
+         }
       }).mouseleave(function(){
-         $(this).attr('src','res/dright.png');
+         if($(this).attr('src') != "res/dright-disable.png"){
+            $(this).attr('src','res/dright.png');
+         }
       })
       $("#prev-step",this.root).click(function(){
          that.prev(); 
@@ -627,6 +669,8 @@ var Demonstration = function(){
 
    }
    this.load = function(stage){
+      $("#command",this.root).removeClass('success').addClass('command');
+      $(".bubble",this.root).removeClass('success').addClass('dummy');
       this.ds.unload();
       this.enable_next();
       var par = $("#"+stage.id);
@@ -650,6 +694,12 @@ var Demonstration = function(){
 var demo
 $(document).ready(function(){
    demo = new Demonstration();
+   $(".key").each(function(){
+      var newk = KEYS[$(this).html()];
+      if(newk != undefined){
+         $(this).html(newk);
+      }
+   })
    /*
    $(".card").each(function(){
       var name = $(this).attr('id');

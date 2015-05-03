@@ -10,7 +10,8 @@ var KEYS = {
   control:'ctrl',
   spacebar:'space',
   delete:'del',
-  backspace:'bksp'
+  backspace:'bksp',
+  check:'&#10004;'
 }
 
 var _RES = function(){
