@@ -1,7 +1,21 @@
 .view {
 }
+.container{
+  min-width:400px;
+}
 .no-click{
    pointer-events: none;
+}
+.bubble {
+  border-radius:1em;
+  background-color:#f1c40f;
+  color:#444444;
+  padding-left:0.3em;
+  padding-right:0.3em;
+  font-size:14;
+}
+.bubble.success{
+  background-color:lightgreen;
 }
 
 body{
@@ -16,6 +30,10 @@ body{
    margin-top:0.2em;
    margin-bottom:0.3em;
    color:white;
+}
+.prev-next-div {
+  margin-left:1em;
+  margin-right:1em;
 }
 #prompt,#content {
    font-size:18px;
@@ -37,6 +55,8 @@ body{
 #main{
    text-align:center;
    height:80%;
+   margin-left:1em;
+   margin-right:1em;
 
 }
 #command{
@@ -50,7 +70,6 @@ body{
 .command {
   background-color:#e74c3c;
 }
-
 
 .success {
    background-color:#27ae60;
@@ -74,22 +93,7 @@ body{
   font-size:14;
 }
 
-.button-enabled{
-   background-color:lightblue;
-}
-.button-disabled {
-   background-color:#eeeeee;
-}
-.button-disabled:hover{
-   border-color:orange;
-   border-width:0px;
-   border-style:none;
-}
-.button-enabled:hover{
-   border-color:orange;
-   border-width:2px;
-   border-style:solid;
-}
+
 .fill-height{
     height:100%;
 }

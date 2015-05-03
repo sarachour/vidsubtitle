@@ -49,20 +49,21 @@
       <button id="stop">Stop</button>
    </div>
 </div>
+
 <div class="row screen-height">
-   <div id="prev-step" class="one column fill-height">
-   PREV
+   <div class="one column prev-next-div">
+      <img id="prev-step" src="res/dleft.png" class="fill-parent-width"/>
    </div>
+
+
    <div id="main" class="ten columns fill-height">
-      <div id="prompt">
-      </div>
+      <div id="prompt"></div>
       <div id="command">STATUS</div>
-      <div id="content">
-         CONTENT
-      </div>
+      <div id="content">CONTENT</div>
    </div>
-   <div id="next-step" class="one column fill-height">
-   NEXT
+
+   <div class="one column prev-next-div">
+      <img id="next-step" src="res/dright.png" class='fill-parent-width'/>
    </div>
 </div>
    
@@ -71,14 +72,27 @@
 <div id="welcome" class="card">
    <div id="title">Welcome to Hidden Subtext!</div>
    <div id="prompt">
-   In this tutorial, we will walk you through how to complete a segmentation task.
-   <br>
-   <br>
+   In this tutorial, we will walk you through how to complete a segmentation task.<br>
    In the segmentation task you mark the beginnings and ends of speech in a video.
    </div>
    <div id="content">
-   Here are some examples of segments:
-   
+      <div >
+      <audio controls>
+         
+      </audio>
+      </div>
+      <br>
+      <div>
+      <audio controls>
+         
+      </audio>
+      </div>
+      <br>
+      <div>
+      <audio controls>
+         
+      </audio>
+      </div>
    </div>
    <div id="command">
       Listen to the segments. Press next when you're ready to continue.
@@ -125,7 +139,7 @@
       <div class="mock"></div>
    </div>
    <div id="command">
-    Start the segmentation process and mark ten breaks in the video. Use <div class="hint key">spacebar</div> at least once.
+    Mark ten breaks <sup id="break_counter" class="bubble dummy">C</sup> in the video. Use <div class="hint key">spacebar</div><sup id="break_key_counter" class="bubble dummy">C</sup> at least once.
    </div>
 </div>
 
@@ -156,7 +170,7 @@
       <div class="mock"></div>
    </div>
    <div id="command" >
-      Focus on three different regions using the global segment bar.
+      Focus on three different regions<sup id="region_counter" class="bubble dummy">C</sup> using the global segment bar.
    </div>
 </div>
 

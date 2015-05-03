@@ -238,10 +238,17 @@ var Breaking = function(){
       demo.disable_next();
       iface.load(this.id, "start", ['start_key','start_button','break_key','break_button']);
       this.tcount = 0;
-      this.keycount = 0;
+      this.keycount = -1;
+      var nbreaks = 10;
+      var nkeys = 1;
+
       iface.listen('break', function(){
          that.tcount++;
-         if(that.tcount > 10 && that.keycount > 1){
+         $("#break_counter").removeClass("dummy").html(that.tcount);
+         if(that.tcount >= nbreaks){
+            $("#break_counter").addClass('success');
+         }
+         if(that.tcount >= nbreaks && that.keycount >= nkeys){
             demo.success();
             demo.enable_next();
          }
@@ -249,6 +256,12 @@ var Breaking = function(){
       },'1');
       iface.listen('start-key', function(){
          that.keycount++; 
+         if(that.keycount > 0){
+            $("#break_key_counter").removeClass("dummy").html(that.keycount);
+         }
+         if(that.keycount >= nkeys){
+            $("#break_key_counter").addClass('success');
+         }
       },'1');
    }
 
@@ -283,7 +296,9 @@ var AboutBar2 = function(){
       var count = 0;
       iface.obs.listen('select', function(){
          count++;
+         $("#region_counter").removeClass('dummy').html(count);
          if(count>=3){
+            $("#region_counter").addClass('success')
             demo.success();
             demo.enable_next();
          }
@@ -557,15 +572,23 @@ var Demonstration = function(){
          'buttons',
          'alltogether'
       ]
-      this.idx = 0;
+      this.idx = 7;
       //load initial step
       this.load(this.stages[this.order[this.idx]]);
 
-      $("#next-step",this.root).addClass('button-enabled').click(function(){
+      $("#next-step",this.root).click(function(){
          that.next();
+      }).mouseenter(function(){
+         $(this).attr('src','res/dright-active.png');
+      }).mouseleave(function(){
+         $(this).attr('src','res/dright.png');
       })
-      $("#prev-step",this.root).addClass('button-enabled').click(function(){
+      $("#prev-step",this.root).click(function(){
          that.prev(); 
+      }).mouseenter(function(){
+         $(this).attr('src','res/dleft-active.png');
+      }).mouseleave(function(){
+         $(this).attr('src','res/dleft.png');
       })
       $(".card").hide();
    }
@@ -581,12 +604,12 @@ var Demonstration = function(){
    this.disable_next = function(){
       console.log("disabling");
       this.stall = true;
-      $("#next-step",this.root).addClass('button-disabled').removeClass('button-enabled');
+      $("#next-step",this.root).attr('src','res/dright-disable.png');
    }
    this.enable_next = function(){
       console.log("enabling");
       this.stall = false;
-      $("#next-step",this.root).addClass('button-enabled').removeClass('button-disabled');
+      $("#next-step",this.root).attr('src','res/dright.png');
    }
    this.next = function(){
       if(this.idx < this.order.length-1 && !this.stall){
