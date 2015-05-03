@@ -4,12 +4,12 @@ stages: segment, scribe, edit
 var handle_redirects = function(s){
    var par_args = s.get();
    if(par_args.data == undefined) return false;
-   var args = JSON.parse(par_args.data);
+   var args = par_args.data;
 
    var go = args.go;
    if(args.go != undefined && args.data != undefined){
       var g_url = "";
-      var data = JSON.stringify(args.data);
+      var data = args.data;
       switch(args.go){
          case "preview":
             g_url = s.preview(data);
