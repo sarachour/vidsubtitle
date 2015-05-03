@@ -26,6 +26,7 @@ var ProgramState = function(vp_name, vb_name, seg_data){
     this._video_bar = new VideoBar(vb_name,this);
     this._player = new SelectionPlayer(this);
 
+  
     this.video_bar().model.listen('select', function(e){
       that._player.play(e.time);
       that.obs.trigger("update");
@@ -248,6 +249,9 @@ var VideoBar = function(bar_name, state){
       that._update_duration();
       that.root.show();
     })
+    this.state.statemgr().listen('tick', function(){
+      that._update_time();
+    })
   }
   this._update_time = function(){
     var dur = this.state.video_player().get_model().time();
@@ -348,9 +352,7 @@ var SegmentController = function(){
     
     this.queryResolver = new Navigator();
     var args = this.queryResolver.get();
-
-    var san_data = args.data.substring(1,args.data.length-1).replace(/\\"/g, "\"");
-    var data = JSON.parse(san_data);
+    var data = args.data;
     var seg_data = data['data'];
 
     for(i=0; i < seg_data.length; i++){

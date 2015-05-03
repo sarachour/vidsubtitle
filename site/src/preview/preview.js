@@ -35,7 +35,7 @@ var PreviewController = function(){
    this.load_from_query = function(){
       var data = this.resolver.get();
       if(data.data == undefined) return;
-      var d = JSON.parse(JSON.parse(data.data));
+      var d = data.data;
       this.data = d;
       this.url = d.url;
       console.log(d.data);

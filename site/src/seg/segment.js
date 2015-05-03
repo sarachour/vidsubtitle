@@ -458,7 +458,7 @@ var RedirectButton = function(id,to,state){
   this.resolver = new Navigator();
   this.state = state;
   this.dest = to;
-  this.src = "segment;";
+  this.src = "segment";
 
 
   this.root = $("#"+id).click(function(){
