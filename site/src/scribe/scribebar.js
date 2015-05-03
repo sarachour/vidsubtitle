@@ -46,7 +46,7 @@ var ScribeBar = function(id, model){
          })
          .click(function(e){
             var c = gnorm(e);
-            that._model.selectTime(c.t);
+            that._model.select(c.t);
          })
          .mouseleave(function(e){
             $(this).data('coord',{x:null,y:null}).data('drag',false);
@@ -75,7 +75,6 @@ var ScribeBar = function(id, model){
       var sel_draw = function(seg,color){
          var s = seg.start;
          var e = seg.end;
-
          gctx.fillStyle = color;
          gctx.fillRect(
             gx(s)+1.5, 
@@ -202,13 +201,20 @@ var ScribeBar = function(id, model){
 
       var hovered = false;
       var hover_t = null;
+      //show hovered segment
       if(this._view.gcanv.data('coord') != undefined){
          var hover_t = this._view.gcanv.data('coord').t;
+         var matches = d.segments.match(function(e){
+            return (hover_t >= e.start && hover_t <= e.end);
+         });
+         if(matches.length() > 0){
+            sel_draw(matches.get(0).elem, colors.hovered);
+         }
       }
 
       if(!hovered && hover_t != null){
          hovered = true;
-         sel_draw(this._model.get_enclosing_selection(hover_t), colors.hovered);
+         sel_draw(d.select, colors.hovered);
       }
 
       if(hover_t != null){
@@ -218,9 +224,9 @@ var ScribeBar = function(id, model){
          gmark_draw(d.time,colors.cursor);
       }
 
-      for (i=0; i < this._model.data.segments.length; i++) {
-         gmark_draw(this._model.data.segments[i].end, colors.pause);
-      }
+      d.segments.for_each(function(e){
+         gmark_draw(e.end, colors.pause);
+      });
 
    }
 

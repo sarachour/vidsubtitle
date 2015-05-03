@@ -21,7 +21,9 @@ var ProgramState = function(vp_name, vb_name, seg_data){
     var that = this;
     this.state = "";
     this.obs = new Observer();
-    this._model = new ScribeModel(seg_data);
+    this._model = new ScribeModel();
+    this._model.from_json(seg_data);
+
     this._video_player = new VideoPane(vp_name,this);
     this._video_bar = new VideoBar(vb_name,this);
     this._player = new SelectionPlayer(this);
@@ -43,8 +45,23 @@ var ProgramState = function(vp_name, vb_name, seg_data){
     this.obs.trigger('play')
     this._video_player.play();
   }
-  this.selections = function(){
-    return this.video_bar().model.get_selections();
+  this.segment = function(){
+    this._player.play();
+  }
+  this.caption = function(text){
+    return this.video_bar().model.caption(text);
+  }
+  this.selected = function(){
+    return this.video_bar().model.selected();
+  }
+  this.next = function(){
+    return this.video_bar().model.next();
+  }
+  this.prev = function(){
+    return this.video_bar().model.prev();
+  }
+  this.peek = function(offset){
+    return this.video_bar().model.peek(offset);
   }
   this.statemgr = function(){
     return this.obs;
@@ -64,13 +81,13 @@ var ProgramState = function(vp_name, vb_name, seg_data){
 var SelectionPlayer = function(state){
   this.init = function(){
     this.state = state;
-    this.sfx = new AudioFile('media/click.mp3');
     this.timer = null;
   }
-  this.play = function(time){
-    var sel = this.state._model.get_enclosing_selection(time);
-    var s = time;
+  this.play = function(){
+    var sel = this.state.selected();
+    var s = sel.start;
     var e = sel.end;
+    console.log(sel);
     if(time == undefined) s = sel.start;
     this.state.video_player().segment(s,e);
     this.state.video_player().play();
@@ -80,44 +97,55 @@ var SelectionPlayer = function(state){
 
 // mark a pause with this button
 
-var DisplayField = function(field_name, relIndex){
+var DisplayField = function(field_name, relIndex, state){
   this.init = function(){
     var that = this;
     this.relIndex = relIndex;
     this.view = $("#"+field_name);
+    this.state = state;
+    this.state.video_bar().model.listen('update', function(){
+      that.update_text();
+    });
   }
 
-  this.update_text = function(state){
-    this.view.html(state.prog._model.get_caption(this.relIndex));
+  this.update_text = function(){
+    var entry = this.state.peek(this.relIndex);
+    console.log(entry);
+    if(entry != null)
+      this.view.html(entry.caption);
   }
 
   this.init(field_name, relIndex);
 }
 
-var EntryField = function(entry_name){
+var EntryField = function(entry_name,state){
   this.init = function(){
     var that = this;
     this.view = $("#"+entry_name);
+    this.state = state;
+    this.state.statemgr().listen('caption-change', function(){
+      that.update_text();
+    });
+    this.view.on('input propertychange paste', function(){
+      console.log("set",$(this).val())
+      that.state.caption($(this).val());
+    })
   }
 
-  this.update_text = function(state){
-    this.view.html(state.prog._model.get_caption(0));
+  this.update_text = function(){
+    var entry = this.state.peek(0);
+    if(entry != null)
+      this.view.val(entry.caption);
   }
   this.get_text = function(){
     return this.view.value;
   }
 
-  this.init(entry_name);
+  this.init();
 }
 
-var updateText = function(state){
-  for(var key in state.fields) {
-    state.fields[key].update_text(state);
-  }
-  state.entry.update_text(state);
-}
 
-var NavigateButton = function(button_name, state, is_rev){
+var NavigateButton = function(button_name, state, type){
   this.init = function(){
     var that = this;
     this.view = $("#"+button_name).addClass('disabled');
@@ -125,11 +153,14 @@ var NavigateButton = function(button_name, state, is_rev){
     this.state.listen('play',function(){that.view.removeClass('disabled')});
 
     this.view.click(function(){
-      src_pulse($("img",$(this)), 200);
-      var sels = that.state.selections();
-      var tmp = that.state.select(function(e){
-        return e.type == "silence" || e.type == "segment";
-      }, is_rev);
+      if(type == "next"){
+        that.state.next();
+      }
+      else{
+        that.state.prev();
+      }
+      that.state.play();
+      that.state.statemgr().trigger('state-change',{state:'caption-change'});
     })
   }
   
@@ -137,55 +168,44 @@ var NavigateButton = function(button_name, state, is_rev){
 }
 
 var MainButton = function(button_name, state){
-  this._init = function(){
+  this.init = function(){
     var that = this;
     this.view = $("#"+button_name);
     this.state = state;
     this.playing = false;
-    this.init();
 
     this.view
       .data("button-title","Start")
       .pulse({'background-color':'#96E6B8'},{pulses:-1,duration:1000});
-
+      .click(function(){
+        that.start();
+      })
     this.view.prop('disabled', true);
     this.state.statemgr().listen('ready', function(){
       that.view.prop('disabled',false);
-    })
-    this.state.statemgr().listen('playing', function(){
-      that.playing = true;
-    })
-    this.state.statemgr().listen('paused', function(){
-      that.playing = false;
-      that.init();
-    })
+    });
 
-    this.started = false;
-  }
-  this.init = function(){
-    var that = this;
-    that.view.unbind('click');
-    this.view.click(function(){
-      that.start();
-    })
     this.started = false;
   }
   this.start = function(){
     var that = this;
-    this.started = true;
+
+    var sel = this.state.selected();
     this.state.play();
+
+    this.started = true;
     this.is_down = false;
     this.view.unbind('click')
       .pulse('destroy');
 
     this.view.click(function(){
-      src_pulse($("img",$(this)), 200);
-      that.player.play();
+      var sel = that.state.selected();
+      that.state.play();
       state.prog._model.add_caption(state.entry.get_text());
       state.prog._model.curIndex++;
     })
   }
-  this._init();
+  this.init();
 }
 
 var VideoPane = function(video_name, state){
@@ -194,6 +214,10 @@ var VideoPane = function(video_name, state){
     this.video = new YoutubeVideo(video_name);
     this.state = state;
     //initialize video
+    this.state.statemgr().listen('scrub', function(e){
+      console.log('testing');
+      that.video.time(that.state.video_bar().model.time());
+    })
     this.video.listen('load', function(evt){
       that.state.statemgr().trigger('state-change',{state:'load'});
     }, "vp-load");
@@ -251,6 +275,9 @@ var VideoBar = function(bar_name, state){
     })
     this.state.statemgr().listen('tick', function(){
       that._update_time();
+    })
+    this.model.listen('select', function(){
+      that.state.statemgr().trigger('state-change', {'state':'scrub'})
     })
   }
   this._update_time = function(){
@@ -368,24 +395,24 @@ var SegmentController = function(){
 
     this.buttons = {};
     this.buttons.replay = new MainButton("mainButton", this.prog);
-    this.buttons.next = new NavigateButton("nextButton", this.prog, false);
-    this.buttons.prev = new NavigateButton("prevButton", this.prog, true);
+    this.buttons.next = new NavigateButton("nextButton", this.prog, 'next');
+    this.buttons.prev = new NavigateButton("prevButton", this.prog, 'prev');
+
+    //handline done
     this.buttons.done = new RedirectButton('done',"scribe",this.prog);
-    this.buttons.done_to_edit = new RedirectButton('done_to_edit',"edit",this.prog);
     this.buttons.preview = new RedirectButton('preview','preview',this.prog);
     this.done_prompt = new DonePrompt(this.prog,'completed-controls',"done","preview");
 
     this.fields = {};
-    this.fields.prevText2 = new DisplayField('prevText2', -2);
-    this.fields.prevText = new DisplayField('prevText', -1);
-    this.fields.nextText = new DisplayField('nextText', 1);
-    this.fields.nextText2 = new DisplayField('nextText2', 2);
+    this.fields.prevText2 = new DisplayField('prevText2', -2,this.prog);
+    this.fields.prevText = new DisplayField('prevText', -1,this.prog);
+    this.fields.nextText = new DisplayField('nextText', 1,this.prog);
+    this.fields.nextText2 = new DisplayField('nextText2', 2,this.prog);
 
-    this.entry = new EntryField('entryArea');
+    this.entry = new EntryField('entryArea',this.prog);
 
     this.status = new Status("progress", "status", 1);
 
-    updateText(this);
   }
   
   this.load = function(v){

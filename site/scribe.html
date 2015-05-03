@@ -21,6 +21,8 @@
 <script src="src/core/youtube.js"></script>
 <script src="src/core/audio.js"></script>
 <script src="src/core/demo.js"></script>
+<script src="src/core/sorted_array.js"></script>
+
 
 <script src="src/scribe/scribe.js"></script>
 <script src="src/scribe/scribemodel.js"></script>
@@ -88,9 +90,9 @@ INSTRUCTIONS: Caption the video, segment by segment.
 
    <div id="button_pane" class="column one-fourth">
       <button type="button" id="prev2Button" class="row vspace prev nav">go to previous segment</button>
-      <button type="button" id="prevButton" class="row vspace prev nav">go to previous segment</button>
+      <button type="button" id="prevButton" hotkey-name="up key" hotkey-code="up" class="hotkey node row vspace prev nav">go to previous segment</button>
       <button type="button" id="mainButton" class="row vspace">START</button>
-      <button type="button" id="nextButton" class="row vspace next nav">go to next segment</button>
+      <button type="button" id="nextButton" hotkey-name="enter" hotkey-code="enter" class="hotkey node row vspace next nav">go to next segment</button>
       <button type="button" id="next2Button" class="row vspace next nav">go to next segment</button>
    </div>
 
