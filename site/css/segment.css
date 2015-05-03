@@ -151,12 +151,7 @@ chunk specific rules
    padding:10px;
    height: 20em;
 }
-.demo-highlight{
-   border-radius:5px;
-   border-color:#eeee55;
-   background-color:rgba(200,200,100,0.3);
-   border-style:solid;
-}
+
 .small.text{
    font-size:10pt;
    color:#303030;
@@ -168,9 +163,12 @@ chunk specific rules
 .text.centered {
    text-align: center;
 }
-#start_demo{
+#demo{
    background-color:#e74c3c;
    color:#ecf0f1;
+}
+#demo-row{
+   margin-top:4em;
 }
 
 #hint {

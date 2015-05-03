@@ -181,7 +181,7 @@ var SelectionPlayer = function(state, side){
     this.state = state;
     //this.sfx = new AudioFile('media/click.mp3');
     this.timer = null;
-    this.eps = 2;
+    this.eps = 1;
     if(side == undefined) this.side = "both";
     else this.side = side;
   }
@@ -542,10 +542,9 @@ var SegmentController = function(){
     var args = this.queryResolver.get();
     //load request
     if(args.practice != undefined && args.practice){
-      this.queryResolver.redirect('segment_practice.html');
+      console.log("NOT IMPLEMENTED")
     }
     if(isValue(args.data)){
-      console.log(args.data);
       var url = args.data.url;
       this.prog.video_bar().model.from_json(args.data.data);
       that.load(url);
@@ -554,7 +553,10 @@ var SegmentController = function(){
     this.prog.listen('ended', function(){
       that.done_prompt.show();
     });
-
+    $("#demo").click(function(){
+      var url = that.queryResolver.demo('segment',args.url);
+      that.queryResolver.redirect(url);
+    })
     this.buttons = {};
     this.buttons.mark = new MarkButton("break", this.prog);
     this.buttons.replay = new ReplayButton("replay", this.prog);
