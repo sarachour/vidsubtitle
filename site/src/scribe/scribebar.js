@@ -15,10 +15,6 @@ var ScribeBar = function(id, model){
       this._view.gctx = this._view.gcanv[0].getContext('2d');
 
       that._state = {};
-      this._state.viewport = {};
-      that._state.viewport.force_slide = false;
-      that._state.viewport.width = 30;
-
       this._model.listen('update',function(){that._draw();})
       this._root.html("");
 
@@ -37,7 +33,6 @@ var ScribeBar = function(id, model){
          var delta = {};
          delta.t = c.t - oc.t;
          return delta;
-
       }
 
       //global canvas
@@ -46,35 +41,15 @@ var ScribeBar = function(id, model){
          .data('coord', {x:null,y:null})
          .mousemove(function(e){
             var c = gnorm(e);
-            if($(this).data('drag')){
-               var del = delta(this,c); 
-               that._model.shift(0,del.t);
-            }
             $(this).data('coord',c);
             that._draw();
-
          })
          .click(function(e){
             var c = gnorm(e);
-            that._model.select(c.t);
-
+            that._model.selectTime(c.t);
          })
          .mouseleave(function(e){
             $(this).data('coord',{x:null,y:null}).data('drag',false);
-         })
-         .mousedown(function(e){
-            var c = gnorm(e);
-            that._model.select(c.t);
-            $(this).data('coord',c).data('drag',true);
-         })
-         .mouseup(function(e){
-            $(this).data('drag',false);
-            return false;
-         })
-         .bind("contextmenu",function(e){
-            var c = gnorm(e);
-            that._model.select(c.t);
-            return false;
          })
          .css({
             'margin-bottom':'5px'
@@ -96,6 +71,21 @@ var ScribeBar = function(id, model){
       this._view.gcanv.attr("height",this._view.gcanv[0].offsetHeight);
    }
    this._draw = function(){
+
+      var sel_draw = function(seg,color){
+         var s = seg.start;
+         var e = seg.end;
+
+         gctx.fillStyle = color;
+         gctx.fillRect(
+            gx(s)+1.5, 
+            gy(0), 
+            gw(e-s)-1.5,
+            gh(1)
+            );
+         gctx.fill();
+      }
+
       this._resize();
 
       var that = this;
@@ -241,23 +231,6 @@ var ScribeBar = function(id, model){
             h((prop.prog.end - prop.prog.start)*0.5));
       }
       */
-      var sel_draw = function(seg,color){
-         var s = seg.start;
-         var e = seg.end;
-
-         gctx.fillStyle = color;
-         gctx.fillRect(
-            gx(s)+1.5, 
-            gy(0), 
-            gw(e-s)-1.5,
-            gh(1)
-            );
-         gctx.fill();
-      }
-
-      for (i=0; i < this._model.data.segments.length; i++) {
-         gmark_draw(this._model.data.segments[i].end, colors.pause);
-      }
 
 
          /*
@@ -295,6 +268,10 @@ var ScribeBar = function(id, model){
       }
       else{
          gmark_draw(d.time,colors.cursor);
+      }
+
+      for (i=0; i < this._model.data.segments.length; i++) {
+         gmark_draw(this._model.data.segments[i].end, colors.pause);
       }
 
    }

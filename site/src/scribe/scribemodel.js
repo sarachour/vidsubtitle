@@ -4,10 +4,10 @@ selections are identified by (location, not id)
 */
 var ScribeModel  = function(seg_data){
    this.init = function(){
-      this._id = 0;
+      this.curIndex = 0;
       this.data = {};
+      this.data.time = 0;
 
-      seg_data.push({start: seg_data[seg_data.length - 1].end, end: 1000, caption: {}});
       this.data.segments = seg_data;
       this._evt = new Observer();
       //this._evt.trigger('update',{obj:this});
@@ -17,6 +17,9 @@ var ScribeModel  = function(seg_data){
    }
    this.get_data = function(){
       return this.data;
+   }
+   this.get_caption = function(relIndex){
+      return(this.data.segments[curIndex + relIndex].caption);
    }
    this._get_by_id = function(id){
       var matches = this.data.segments.match(function(e){return e.id==id});
@@ -46,54 +49,31 @@ var ScribeModel  = function(seg_data){
          that.add_segment(seg.time);
       }
    }
-   this.select_nearby = function(filter, reverse){
-      var s = this.select();
-      var found = false;
-      if(s == null) return;
-      var matches = this.get_selections().match(function(e){
-         if(e.id == s.id && e.sid == s.sid && e.eid == s.eid){
-            found = true; 
-            return false;
-         }
-         if(((reverse && found == false) || (!reverse && found == true)) 
-            && filter(e)) return true;
-         return false;
-      });
-      if(matches.length() == 0) return;
-      if(reverse){
-         var e = matches.get(matches.length() - 1).elem;
-      }
-      else{
-         var e = matches.get(0).elem;
-      }
-      this.select((e.end+e.start)/2,false);
-   }
    this.get = function(id){
       return this._get_by_id(id);
    }
-   this.select = function(time,start_at){
-      if(time != undefined){
-         this.data.selection = this.get_enclosing_selection(time);
-         if(start_at == undefined || start_at == true)
-            this._evt.trigger('select',{obj:this, time:time});
-         else
-            this._evt.trigger('select',{obj:this});
-      }
-      else {
-         var sel = this.data.selection;
-         if(sel != null){
-            this.data.selection = this.get_enclosing_selection(sel.time);
-         }
-         else
-            this.data.selection = this.get_enclosing_selection(0);
-      }
+   this.selectTime = function(time){
+      console.log(time);
+      this.curIndex = this.get_enclosing_index(time);
+      this.data.time = time;
+      //console.log(this.data.segments);
+      //console.log(this.data.time);
+      this._evt.trigger('select',{obj:this, sel:this.data.segments[this.curIndex], time:this.data.time});
       this._evt.trigger('update',{obj:this});
-      return this.data.selection;
+
+      return this.data.segments[this.curIndex];
    }
    this.get_enclosing_selection = function(time){
       for (i=0; i < this.data.segments.length; i++){
          if (this.data.segments[i].end > time){
             return(this.data.segments[i]);
+         }
+      }
+   }
+   this.get_enclosing_index = function(time){
+      for (i=0; i < this.data.segments.length; i++){
+         if (this.data.segments[i].end > time){
+            return(i);
          }
       }
    }

@@ -21,8 +21,9 @@ var ProgramState = function(vp_name, vb_name, seg_data){
     var that = this;
     this.state = "";
     this.obs = new Observer();
+    this._model = new ScribeModel(seg_data);
     this._video_player = new VideoPane(vp_name,this);
-    this._video_bar = new VideoBar(vb_name,this,seg_data);
+    this._video_bar = new VideoBar(vb_name,this);
     this._player = new SelectionPlayer(this);
 
     this.video_bar().model.listen('select', function(e){
@@ -37,20 +38,14 @@ var ProgramState = function(vp_name, vb_name, seg_data){
   this.listen = function(name,cbk){
     this.obs.listen(name, cbk);
   }
-  this.select = function(time, direction){
-    if(isValue(time)){ //update selection
-      if(direction != undefined){
-        var filter = time;
-        this.video_bar().model.select_nearby(filter,direction);
-      }
-      else{
-        if(time < 0) this.video_bar().model.select_nearby(function(){return true;},true);
-        else this.video_bar().model.select(time);
-      }
-      this.obs.trigger('select');
-    }
-    return this.video_bar().model.select();;
+  /*
+  this.select = function(time){
+    var filter = time;
+    //this.video_bar().model.select_nearby(filter,direction);
+    this.obs.trigger('select');
+    return this.video_bar().model.selectTime();;
   }
+  */
   this.play = function(){
     this.obs.trigger('play')
     this._video_player.play();
@@ -78,35 +73,52 @@ var SelectionPlayer = function(state){
     this.state = state;
     this.sfx = new AudioFile('media/click.mp3');
     this.timer = null;
-    this.side = "both";
-  }
-  this.set_side = function(s){
-    this.side = s;
   }
   this.play = function(time){
-    var sel = this.state.select();
-    if(sel == null) return;
-    var type = sel.type;
-    if(type == 'segment' || type == "silence"){
-      var s = time;
-      var e = sel.end;
-      console.log(s,e);
-      if(time == undefined) s = sel.start;
-      if(this.side == "left"){
-        e = s+Math.min(e-s,2);
-      }
-      else if(this.side == "right"){
-        s = e-Math.min(e-s,2);
-      }
-      this.state.video_player().segment(s,e);
-      this.state.video_player().play();
-    }
-
+    var sel = this.state._model.get_enclosing_selection(time);
+    var s = time;
+    var e = sel.end;
+    console.log(s,e);
+    if(time == undefined) s = sel.start;
+    this.state.video_player().segment(s,e);
+    this.state.video_player().play();
   }
   this.init();
 }
 
 // mark a pause with this button
+
+var DisplayField = function(field_name, state, relIndex){
+  this.init = function(){
+    var that = this;
+    this.view = $("#"+field_name);
+    this.state = state;
+
+    this.state.statemgr().listen('update', function(){
+      that._update_text();
+    });
+  }
+
+  this._update_text = function(relIndex){
+    this.view.innerHTML("<h4>" + this.model.get_caption(relIndex) + "<h4>");
+  }
+}
+
+var EntryField = function(entry_name, state){
+  this.init = function(){
+    var that = this;
+    this.view = $("#"+entry_name);
+    this.state = state;
+
+    this.state.statemgr().listen('update', function(){
+      that._update_text();
+    });
+  }
+
+  this._update_text = function(relIndex){
+    this.view.innerHTML("<h4>" + this.model.get_caption(relIndex) + "<h4>");
+  }
+}
 
 var NavigateButton = function(button_name, state, is_rev){
   this.init = function(){
@@ -155,8 +167,6 @@ var ReplayButton = function(button_name, state){
   }
   this.init = function(){
     var that = this;
-    
-
     that.view.unbind('click');
     this.view.click(function(){
       that.start();
@@ -225,11 +235,11 @@ var VideoPane = function(video_name, state){
   this._init();
 }
 
-var VideoBar = function(bar_name, state, seg_data){
+var VideoBar = function(bar_name, state){
   this._init = function(){
     var that = this;
-    this.model = new ScribeModel(seg_data);
     this.root = $("#"+bar_name);
+    this.model = state._model;
     this.view = new ScribeBar(bar_name, this.model);
     this.state = state;
     this.start_time = null;
@@ -239,13 +249,6 @@ var VideoBar = function(bar_name, state, seg_data){
     this.state.statemgr().listen('play', function(){
       that._update_duration();
       that.root.show();
-    })
-    this.state.statemgr().listen('tick', function(){
-      that._update_time();
-    })
-    //update bar for hold and unhold situations
-    this.state.statemgr().listen('mark', function(){
-      that.mark();
     })
   }
   this._update_time = function(){
@@ -368,6 +371,14 @@ var SegmentController = function(){
     this.buttons.done_to_edit = new RedirectButton('done_to_edit',"edit",this.prog);
     this.buttons.preview = new RedirectButton('preview','preview',this.prog);
     this.done_prompt = new DonePrompt(this.prog,'completed-controls',"done","preview");
+
+    this.fields = {};
+    this.fields.prev2 = new DisplayField(prev2Text);
+    this.fields.prev = new DisplayField(prevText);
+    this.fields.next = new DisplayField(nextText);
+    this.fields.next2 = new DisplayField(next2Text);
+
+    this.entry = new EntryField();
 
     this.status = new Status("progress", "status", 1);
   }
