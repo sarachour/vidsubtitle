@@ -557,7 +557,7 @@ var Demonstration = function(){
          'buttons',
          'alltogether'
       ]
-      this.idx = 13;
+      this.idx = 0;
       //load initial step
       this.load(this.stages[this.order[this.idx]]);
 

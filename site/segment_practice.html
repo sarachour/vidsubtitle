@@ -31,18 +31,25 @@
 <link rel="stylesheet" href="css/base.css" />
 <link rel="stylesheet" href="css/segment.css" />
 <link rel="stylesheet" href="css/segmentdemo.css" />
+<link href='http://fonts.googleapis.com/css?family=Lato&subset=latin,latin-ext' rel='stylesheet' type='text/css'>
 
 </head>
 
 <body>
 
-<div class="container">
-
-<div id="demonstration">
-   <div id="title" class="row fill-parent-width med">
+<div id="demonstration" class="container">
+<div class="row">
+   <div class="one column" id="skip-card">
+      <button id="skip">Skip Step</button>
+   </div>
+   <div class="ten columns" id="title">
       TITLE HERE
    </div>
-   <div class="row screen-height">
+   <div class="one column" id="stop-demo">
+      <button id="stop">Stop</button>
+   </div>
+</div>
+<div class="row screen-height">
    <div id="prev-step" class="one column fill-height">
    PREV
    </div>
@@ -57,13 +64,10 @@
    <div id="next-step" class="one column fill-height">
    NEXT
    </div>
-   </div>
-   <div class="row">
-      <div class="one column" id="skip-card">SKIP</div>
-      <div class="ten columns" id="status">STATUS</div>
-      <div class="one column" id="stop-demo">STOP</div>
-   </div>
 </div>
+   
+</div>
+
 <div id="welcome" class="card">
    <div id="title">Welcome to Hidden Subtext!</div>
    <div id="prompt">
