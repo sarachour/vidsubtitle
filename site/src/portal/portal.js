@@ -52,12 +52,14 @@ $(document).ready(function(){
          });
       }
    });
+
    // pressing enter
    $("#input_url").keyup(function(event){
       if(event.keyCode == 13){
          $("#begin").click();
       }
    });
+   
 });
 
 

@@ -15,9 +15,49 @@ input {
 	display: block;
 	margin: 0 auto;
 }
-button {
-	position: relative;
-	display: block;
-	margin: 0 auto;
 
+
+body {
+	background-color:#41A1E1;
+}
+#input_url {
+	width:100%;
+}
+.red-button{
+	background-color:#EB5D49;
+	border-radius:5px;
+	padding:2px;
+	padding-top:0.3em;
+	padding-bottom:0.3em;
+	text-align:center;
+	color:#ECF0F1;
+	border-color:#ECF0F1;
+	font-size:18px;
+	font-family: 'lato' sans-serif;
+	font-weight:bold;
+}
+/* Sara */
+.title {
+	text-align:center;
+	font-size:81px;
+	font-family: 'lato' sans-serif;
+	margin-bottom:1.5em;
+	color:#eeeeee;
+	font-weight:bold;
+}
+.greeting{
+	text-align:left;
+	font-size:32px;
+	font-family: 'lato' sans-serif;
+	margin-bottom:0.3em;
+	color:#eeeeee;
+	font-weight:italic bold;
+}
+.instructions{
+	text-align:left;
+	padding-left:2em;
+	font-size:24px;
+	font-family: 'lato' sans-serif;
+	margin-bottom:1em;
+	color:#eeeeee;
 }
