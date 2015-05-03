@@ -37,17 +37,20 @@ var handle_redirects = function(s){
 
 
 $(document).ready(function(){
-   console.log("ready");
    var s = new Navigator();
-   var is_redirect = handle_redirects(s);
+   var is_redirect = handle_redirects(s); //spinner option
+   var opt = {lines: 8, length:2, width:2, radius:3};
+
+   //$("#spinner").spin();
    // clicking button
    $("#begin").click(function() {
-      console.log("t");
       var input_url = $("#input_url").val();
       if(!is_redirect){
+         $("#spinner").spin('medium');
+
          s.start(input_url,function(vid_url){
-            console.log("here");
             var seg_url = s.segment(vid_url);
+            $("#spinner").spin(false);
             s.redirect(seg_url);
          });
       }

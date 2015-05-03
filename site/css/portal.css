@@ -20,6 +20,12 @@ input {
 body {
 	background-color:#41A1E1;
 }
+#spinner {
+	position: relative;
+	width: 3em;
+	height:3em;
+	color:white;
+}
 #input_url {
 	width:100%;
 }
