@@ -562,7 +562,19 @@ var AllTogether = function(){
       this.id = "alltogether";
    }
    this.load = function(demo){
+      var resolver = new Navigator();
+      var args = resolver.get();
+      console.log(args);
+      demo.success("Choose what you would like to do next.");
+      $("#ready_segment").click(function(){
+         console.log("I will go through a practice link.")
+      });
+      $("#practice_segment").click(function(){
 
+      });
+      $("#replay_tutorial").click(function(){
+         console.log("Replay tutorial.")
+      })
    }
 
    this.init();
@@ -610,7 +622,7 @@ var Demonstration = function(){
          'buttons',
          'alltogether'
       ]
-      this.idx = 13;
+      this.idx = 14;
       //load initial step
       this.load(this.stages[this.order[this.idx]]);
 
