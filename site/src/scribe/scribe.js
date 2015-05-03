@@ -28,8 +28,8 @@ var ProgramState = function(vp_name, vb_name, seg_data){
 
     this.video_bar().model.listen('select', function(e){
       that._player.play(e.time);
+      that.obs.trigger("update");
     })
-    //if a marker changes the state
     this.obs.listen('state-change', function(e){
       that.state = e.state;
       that.obs.trigger(that.state);
@@ -38,14 +38,6 @@ var ProgramState = function(vp_name, vb_name, seg_data){
   this.listen = function(name,cbk){
     this.obs.listen(name, cbk);
   }
-  /*
-  this.select = function(time){
-    var filter = time;
-    //this.video_bar().model.select_nearby(filter,direction);
-    this.obs.trigger('select');
-    return this.video_bar().model.selectTime();;
-  }
-  */
   this.play = function(){
     this.obs.trigger('play')
     this._video_player.play();
@@ -78,7 +70,6 @@ var SelectionPlayer = function(state){
     var sel = this.state._model.get_enclosing_selection(time);
     var s = time;
     var e = sel.end;
-    console.log(s,e);
     if(time == undefined) s = sel.start;
     this.state.video_player().segment(s,e);
     this.state.video_player().play();
@@ -88,36 +79,41 @@ var SelectionPlayer = function(state){
 
 // mark a pause with this button
 
-var DisplayField = function(field_name, state, relIndex){
+var DisplayField = function(field_name, relIndex){
   this.init = function(){
     var that = this;
+    this.relIndex = relIndex;
     this.view = $("#"+field_name);
-    this.state = state;
-
-    this.state.statemgr().listen('update', function(){
-      that._update_text();
-    });
   }
 
-  this._update_text = function(relIndex){
-    this.view.innerHTML("<h4>" + this.model.get_caption(relIndex) + "<h4>");
+  this.update_text = function(state){
+    this.view.html(state.prog._model.get_caption(this.relIndex));
   }
+
+  this.init(field_name, relIndex);
 }
 
-var EntryField = function(entry_name, state){
+var EntryField = function(entry_name){
   this.init = function(){
     var that = this;
     this.view = $("#"+entry_name);
-    this.state = state;
-
-    this.state.statemgr().listen('update', function(){
-      that._update_text();
-    });
   }
 
-  this._update_text = function(relIndex){
-    this.view.innerHTML("<h4>" + this.model.get_caption(relIndex) + "<h4>");
+  this.update_text = function(state){
+    this.view.html(state.prog._model.get_caption(0));
   }
+  this.get_text = function(){
+    return this.view.value;
+  }
+
+  this.init(entry_name);
+}
+
+var updateText = function(state){
+  for(var key in state.fields) {
+    state.fields[key].update_text(state);
+  }
+  state.entry.update_text(state);
 }
 
 var NavigateButton = function(button_name, state, is_rev){
@@ -139,7 +135,7 @@ var NavigateButton = function(button_name, state, is_rev){
   this.init();
 }
 
-var ReplayButton = function(button_name, state){
+var MainButton = function(button_name, state){
   this._init = function(){
     var that = this;
     this.view = $("#"+button_name);
@@ -176,14 +172,16 @@ var ReplayButton = function(button_name, state){
   this.start = function(){
     var that = this;
     this.started = true;
-    this.view.data("button-title","Break").trigger('changeData');
     this.state.play();
     this.is_down = false;
     this.view.unbind('click')
       .pulse('destroy');
+
     this.view.click(function(){
       src_pulse($("img",$(this)), 200);
       that.player.play();
+      state.prog._model.add_caption(state.entry.get_text());
+      state.prog._model.curIndex++;
     })
   }
   this._init();
@@ -271,8 +269,7 @@ var RedirectButton = function(id,to,state){
 
 
   this.root = $("#"+id).click(function(){
-    console.log("ttt");
-      that.redirect();
+    that.redirect();
   });
 
   this.redirect = function(){
@@ -294,7 +291,7 @@ var RedirectButton = function(id,to,state){
   
 }
 
-var DonePrompt = function(state,other_settings,done_button, preview_button){
+var DonePrompt = function(state,other_settings,done_button,preview_button){
   var that = this;
   this.done = $("#"+done_button);
   this.preview = $("#"+preview_button);
@@ -356,6 +353,10 @@ var SegmentController = function(){
     var data = JSON.parse(san_data);
     var seg_data = data['data'];
 
+    for(i=0; i < seg_data.length; i++){
+      seg_data[i].caption = 'This is text part ' + i;
+    }
+
     this.prog = new ProgramState("player", "controls", seg_data);
     that.load(data['url']);
 
@@ -364,7 +365,7 @@ var SegmentController = function(){
     });
 
     this.buttons = {};
-    this.buttons.replay = new ReplayButton("replayButton", this.prog);
+    this.buttons.replay = new MainButton("mainButton", this.prog);
     this.buttons.next = new NavigateButton("nextButton", this.prog, false);
     this.buttons.prev = new NavigateButton("prevButton", this.prog, true);
     this.buttons.done = new RedirectButton('done',"scribe",this.prog);
@@ -373,14 +374,16 @@ var SegmentController = function(){
     this.done_prompt = new DonePrompt(this.prog,'completed-controls',"done","preview");
 
     this.fields = {};
-    this.fields.prev2 = new DisplayField(prev2Text);
-    this.fields.prev = new DisplayField(prevText);
-    this.fields.next = new DisplayField(nextText);
-    this.fields.next2 = new DisplayField(next2Text);
+    this.fields.prevText2 = new DisplayField('prevText2', -2);
+    this.fields.prevText = new DisplayField('prevText', -1);
+    this.fields.nextText = new DisplayField('nextText', 1);
+    this.fields.nextText2 = new DisplayField('nextText2', 2);
 
-    this.entry = new EntryField();
+    this.entry = new EntryField('entryArea');
 
     this.status = new Status("progress", "status", 1);
+
+    updateText(this);
   }
   
   this.load = function(v){

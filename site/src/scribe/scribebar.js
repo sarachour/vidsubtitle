@@ -199,58 +199,6 @@ var ScribeBar = function(id, model){
             gh(prop.global.end - prop.global.start)
             );
       }
-      /*
-      var prog_block_draw = function(o,t,c){
-         if(o.subtype == "continue") return;
-         var s = o.start;
-         var e = o.end;
-         var f = Math.min(1,Math.max(t-s,0)/(e-s));
-         var pad = fixed.block_pad;
-         ctx.fillStyle = c.bg;
-         ctx.fillRect(x(s)+pad+fixed.plumbob.stem_width, 
-            y(prop.prog.start+(prop.prog.end - prop.prog.start)*0.25), 
-            Math.max(0,w(e-s)-pad*2-fixed.plumbob.stem_width),
-            h((prop.prog.end - prop.prog.start)*0.5));
-
-         ctx.fillStyle = c.fg;
-         ctx.fillRect(x(s)+pad+fixed.plumbob.stem_width, 
-            y(prop.prog.start+(prop.prog.end - prop.prog.start)*0.25), 
-            Math.max(0,(w(e-s)-pad*2-fixed.plumbob.stem_width)*f),
-            h((prop.prog.end - prop.prog.start)*0.5));
-      }
-      */
-      /*
-      var block_draw = function(o,c){
-         var s = o.start;
-         var e = o.end;
-         var pad = fixed.block_pad;
-         ctx.fillStyle = c;
-         ctx.fillRect(x(s)+pad+fixed.plumbob.stem_width, 
-            y(prop.prog.start+(prop.prog.end - prop.prog.start)*0.25), 
-            Math.max(0,w(e-s)-pad*2-fixed.plumbob.stem_width),
-            h((prop.prog.end - prop.prog.start)*0.5));
-      }
-      */
-
-
-         /*
-         }else{
-            if(d.selection != null && d.selection.sid == e.sid && d.selection.eid == e.eid ){
-               //prog_block_draw(e,d.time,{fg:colors.progbar.elapsed,bg:colors.progbar.total});
-               var br = that._model.get(e.eid);
-               //plumbob_draw(br.time,{marker:colors.selected,stem:colors.selected});
-               gmark_draw(br.time,{marker:colors.selected,stem:colors.selected}); 
-            }
-            else {
-               //console.log(e);
-               var br = that._model.get(e.eid);
-               gmark_draw(br.time,colors.pause); 
-            }
-            return;
-            /
-         }
-      });
-*/
 
       var hovered = false;
       var hover_t = null;
