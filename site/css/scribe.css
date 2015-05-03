@@ -27,7 +27,6 @@ scribe specific rules
    border-width:1px;
    border-style:solid;
    border-radius:5px;
-   visibility:hidden;
 }
 
 .nav {
@@ -50,7 +49,7 @@ scribe specific rules
    margin-bottom:45px;
 }
 
-#replayButton {
+#mainButton {
    height:160px;
    width:200px;
    font-size:50px;

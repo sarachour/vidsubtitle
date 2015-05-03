@@ -2,7 +2,7 @@
 selections are identified by (location, not id)
 
 */
-var ScribeModel  = function(seg_data){
+var ScribeModel = function(seg_data){
    this.init = function(){
       this.curIndex = 0;
       this.data = {};
@@ -10,7 +10,7 @@ var ScribeModel  = function(seg_data){
 
       this.data.segments = seg_data;
       this._evt = new Observer();
-      //this._evt.trigger('update',{obj:this});
+      this._evt.trigger('update',{obj:this});
    }
    this.listen = function(ename, cbk){
       this._evt.listen(ename, cbk);
@@ -19,7 +19,16 @@ var ScribeModel  = function(seg_data){
       return this.data;
    }
    this.get_caption = function(relIndex){
-      return(this.data.segments[curIndex + relIndex].caption);
+      indx = this.curIndex + relIndex;
+
+      if (indx < 0 || indx >= this.data.segments.length) {
+         return(null);
+      }else{
+         return(this.data.segments[indx].caption);
+      }
+   }
+   this.add_caption = function(caption){
+      this.data.segments[curIndex].caption = caption;
    }
    this._get_by_id = function(id){
       var matches = this.data.segments.match(function(e){return e.id==id});
@@ -53,11 +62,8 @@ var ScribeModel  = function(seg_data){
       return this._get_by_id(id);
    }
    this.selectTime = function(time){
-      console.log(time);
       this.curIndex = this.get_enclosing_index(time);
       this.data.time = time;
-      //console.log(this.data.segments);
-      //console.log(this.data.time);
       this._evt.trigger('select',{obj:this, sel:this.data.segments[this.curIndex], time:this.data.time});
       this._evt.trigger('update',{obj:this});
 
