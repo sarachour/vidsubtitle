@@ -1,7 +1,6 @@
 var Observer = function(){
    this.init = function(){
       this.events = {};
-      this.enable = true;
    }
    this.listen = function(eventname, callback, nickname){
       var entry = {};
@@ -13,7 +12,6 @@ var Observer = function(){
       this.events[eventname].push(entry);
    }
    this.trigger = function(eventname, args){
-      if(!this.enable) return;
       if(this.events.hasOwnProperty(eventname)){
          for(var i=0; i < this.events[eventname].length; i++){
             this.events[eventname][i].cbk(args);
@@ -33,14 +31,16 @@ var Observer = function(){
       return false;
    }
    this.remove_all = function(e,n){
-      while(this.remove(e,n));
+      if(n == undefined)
+         this.events[eventname] = undefined;
+      else
+         while(this.remove(e,n));
 
    }
-   this.sleep = function(){
-      this.enable = false;
-   }
-   this.wake = function(){
-      this.enable = true;
-   }
+   this.clear = function(){
+      for(e in this.events){
+         this.events[e] = [];
+      }
+   } 
    this.init();
 }

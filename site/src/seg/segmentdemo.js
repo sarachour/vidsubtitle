@@ -16,68 +16,35 @@ var DummySegmentationInterface = function(){
          that.model.duration(that.video.duration());
          that.model.time(that.video.time());
       })
+      this.first_time = true;
       this.enabled = {};
 
       this.video.load(this.url);
       this.video.time(1);
+      this.initialized = false;
    }
    this.listen = function(t,c,n){
       this.obs.listen(t,c,n);
    }
-   this.load = function(parent, phase, enabled){
+   this.setup = function(){
       var that = this;
       var v = $("#view").removeClass('dummy').detach().appendTo('.mock.active');
-      //only enable pertinent elements
-      for(var key in this.enabled) this.enabled[key] = false;
-      for(var i=0; i < enabled.length; i++){
-         this.enabled[enabled[i]] = true;
-      }
-
-      var bind_canvas = function(elem,prop){
-         if(that.enabled[prop]){
-            elem
-               .removeClass('no-click')
-               .css('opacity',1);
-         }
-         else{
-            elem
-               .addClass('no-click')
-               .css('opacity',0.3);
-         }
-      }
-
-      bind_canvas($("#macro",v), 'segmentbar-macro');
-      bind_canvas($("#micro",v), 'segmentbar-micro');
-
       this.model.duration(300);
 
-      if(phase == "start"){
-         $("#segmentbar",v).hide();
-         $("#break",v).pulse({'background-color':'#96E6B8'},{pulses:-1,duration:1000}).html('Start');
-         var is_started = false;
-      }
-      else if(phase == 'edit'){
-         $("#segmentbar",v).show();
-         $("#break",v).pulse('destroy').html('Break');
-         var is_started = true;
-         this.model.from_json(this.data);
-      }
-      //start video at time=0
-      this.video.time(0);
 
       var handle_break = function(){
          $("#break",v).pulse({'background-color':'#d33434',color:'white'},{pulses:1,duration:200});
          that.model.add(that.video.time());
       }
       var handle_start = function(){
-         if(is_started){
+         if(that.is_started){
             handle_break(); return;
          }
          $("#break",v).pulse('destroy').html('Break');
          $("#segmentbar",v).fadeIn();
          that.video.play();
          that.obs.trigger('start');
-         is_started = true;
+         that.is_started = true;
       }
       var handle_hover = function(n){
          if(that.enabled.hint){
@@ -176,12 +143,58 @@ var DummySegmentationInterface = function(){
          }
          return false;
       })
+      this.first_time = false;
+   }
+   this.load = function(parent, phase, enabled){
+      var that = this;
+      var v = $("#view").removeClass('dummy').detach().appendTo('.mock.active');
+      this.obs.clear();
+      //only enable pertinent elements
+      for(var key in this.enabled) this.enabled[key] = false;
+      for(var i=0; i < enabled.length; i++){
+         this.enabled[enabled[i]] = true;
+      }
+
+      if(phase == "start"){
+         $("#segmentbar",v).hide();
+         $("#break",v).pulse({'background-color':'#96E6B8'},{pulses:-1,duration:1000}).html('Start');
+         this.is_started = false;
+      }
+      else if(phase == 'edit'){
+         $("#segmentbar",v).show();
+         $("#break",v).pulse('destroy').html('Break');
+         this.is_started = true;
+         this.model.from_json(this.data);
+      }
+      //start video at time=0
+      this.video.time(0);
+
+      if(this.first_time ){
+         this.setup();
+      }
+      var bind_canvas = function(elem,prop){
+         if(that.enabled[prop]){
+            elem
+               .removeClass('no-click')
+               .css('opacity',1);
+         }
+         else{
+            elem
+               .addClass('no-click')
+               .css('opacity',0.3);
+         }
+      }
+
+      bind_canvas($("#macro",v), 'segmentbar-macro');
+      bind_canvas($("#micro",v), 'segmentbar-micro');
+
    }
    this.unload = function(){
       var v = $("#view").addClass('dummy').detach().appendTo('body');  
    }
    this.init();
 }
+
 
 var Welcome = function(){
    this.init = function(){
@@ -242,7 +255,6 @@ var Breaking = function(){
       this.keycount = -1;
       var nbreaks = 10;
       var nkeys = 1;
-
       iface.listen('break', function(){
          that.tcount++;
          $("#break_counter").removeClass("dummy").html(that.tcount);
@@ -253,7 +265,6 @@ var Breaking = function(){
             demo.success();
             demo.enable_next();
          }
-
       },'1');
       iface.listen('start-key', function(){
          that.keycount++; 
@@ -298,7 +309,7 @@ var AboutBar2 = function(){
       var count = 0;
       iface.obs.listen('select', function(){
          count++;
-         $("#region_counter").removeClass('dummy').html(count);
+         $("#region_counter").removeClass('pending').html(count);
          if(count>=3){
             $("#region_counter").addClass('success')
             demo.success();
@@ -341,18 +352,18 @@ var Navigating = function(){
       var repeat = false;
       iface.obs.listen('select', function(){
          sel_item = true;
-         $("#select_counter").removeClass('dummy').addClass('success').html(KEYS['check']);
+         $("#select_counter").removeClass('pending').addClass('success').html(KEYS['check']);
       },'1');
       iface.obs.listen('prev', function(){
          if(sel_item) move_left = true;
-         $("#left_counter").removeClass('dummy').addClass('success').html(KEYS['check']);
+         $("#left_counter").removeClass('pending').addClass('success').html(KEYS['check']);
          if(sel_item && move_right && move_left && repeat){
             demo.success();
             demo.enable_next();
          }
       },'1');
       iface.obs.listen('next', function(){
-         $("#right_counter").removeClass('dummy').addClass('success').html(KEYS['check']);
+         $("#right_counter").removeClass('pending').addClass('success').html(KEYS['check']);
          if(sel_item) move_right = true;
          if(sel_item && move_right && move_left && repeat){
             demo.success();
@@ -360,7 +371,7 @@ var Navigating = function(){
          }
       },'1');
       iface.obs.listen('repeat', function(){
-         $("#repeat_counter").removeClass('dummy').addClass('success').html(KEYS['check']);
+         $("#repeat_counter").removeClass('pending').addClass('success').html(KEYS['check']);
          if(sel_item) repeat = true;
          if(sel_item && move_right && move_left && repeat){
             demo.success();
@@ -392,7 +403,7 @@ var AddBreak = function(){
          that.tcount++;
          console.log(that.tcount, that.keycount)
          if(that.tcount > that.keycount + that.buttoncount){
-            $("#break_region_counter").removeClass('dummy').addClass('success').html(KEYS['check']);
+            $("#break_region_counter").removeClass('pending').addClass('success').html(KEYS['check']);
          }
          if(that.tcount > that.keycount + that.buttoncount && 
             that.tcount > 0 && that.keycount>0 && that.buttoncount > 0){
@@ -402,11 +413,11 @@ var AddBreak = function(){
 
       },'1');
       iface.listen('start-key', function(){
-         $("#break_key_counter").removeClass('dummy').addClass('success').html(KEYS['check']);
+         $("#break_key_counter").removeClass('pending').addClass('success').html(KEYS['check']);
          that.keycount++; 
       },'1');
       iface.listen('start-button', function(){
-         $("#break_mouse_counter").removeClass('dummy').addClass('success').html(KEYS['check']);
+         $("#break_mouse_counter").removeClass('pending').addClass('success').html(KEYS['check']);
          that.buttoncount++; 
       },'1');
 
@@ -427,7 +438,7 @@ var RemoveBreak = function(){
       iface.load(this.id, "edit", ['segmentbar-micro', 'remove_key']);
       iface.listen('remove', function(){
          demo.success();
-         $("#remove_counter").removeClass('dummy').addClass('success').html(KEYS['check']);
+         $("#remove_counter").removeClass('pending').addClass('success').html(KEYS['check']);
          demo.enable_next();
       },'1');
    }
@@ -454,10 +465,13 @@ var ShortenSeg = function(){
             shifts++;
          }
          if(shifts > 0){
-            $("#shorten_counter").removeClass('dummy').html(shifts);
+            $("#shorten_counter").removeClass('pending').html(shifts);
+         }
+         if(shifts > 4){
+            $("#shorten_counter").addClass('success');
          }
          if(shifts > keyshifts){
-            $("#shorten_mouse_counter").removeClass('dummy').addClass('success').html(KEYS['check']);
+            $("#shorten_mouse_counter").removeClass('pending').addClass('success').html(KEYS['check']);
          }
          if(keyshifts > 0 && shifts > 4 && shifts > keyshifts){
             demo.success();
@@ -467,7 +481,12 @@ var ShortenSeg = function(){
       },'1');
       iface.listen('lshift_key', function(){
          keyshifts++;
-         $("#shorten_key_counter").removeClass('dummy').addClass('success').html(KEYS['check']);
+         $("#shorten_key_counter").removeClass('pending').addClass('success').html(KEYS['check']);
+         if(keyshifts > 0 && shifts > 4 && shifts > keyshifts){
+            demo.success();
+            $("#shorten_counter").addClass('success');
+            demo.enable_next();
+         }
       },'1');
 
    }
@@ -493,10 +512,13 @@ var LengthenSeg = function(){
          }
          console.log(shifts, keyshifts);
          if(shifts > 0){
-            $("#lengthen_counter").removeClass('dummy').html(shifts);
+            $("#lengthen_counter").removeClass('pending').html(shifts);
+         }
+         if(shifts > 4){
+            $("#lengthen_counter").removeClass('pending').html(shifts);
          }
          if(shifts > keyshifts){
-            $("#lengthen_mouse_counter").removeClass('dummy').addClass('success').html(KEYS['check']);
+            $("#lengthen_mouse_counter").removeClass('pending').addClass('success').html(KEYS['check']);
          }
          if(keyshifts > 0 && shifts > 4 && shifts > keyshifts){
             demo.success();
@@ -506,7 +528,12 @@ var LengthenSeg = function(){
       },'1');
       iface.listen('rshift_key', function(){
          keyshifts++;
-         $("#lengthen_key_counter").removeClass('dummy').addClass('success').html(KEYS['check']);
+         $("#lengthen_key_counter").removeClass('pending').addClass('success').html(KEYS['check']);
+         if(keyshifts > 0 && shifts > 4 && shifts > keyshifts){
+            demo.success();
+            $("#lengthen_counter").addClass('success');
+            demo.enable_next();
+         }
       },'1');
    }
 
@@ -544,7 +571,7 @@ var Buttons = function(){
          for(var q in hovered){
             if(hovered[q]) cnt++;
          }
-         $("#hints_counter").removeClass('dummy').html(cnt+"/"+n);
+         $("#hints_counter").removeClass('pending').html(cnt+"/"+n);
          if(cnt == n){
             demo.success();
             $("#hints_counter").addClass('success');
@@ -563,17 +590,24 @@ var AllTogether = function(){
    }
    this.load = function(demo){
       var resolver = new Navigator();
+      var cookies = new UserCookie();
+
       var args = resolver.get();
       console.log(args);
       demo.success("Choose what you would like to do next.");
+      cookies.tutorial('segment', true);
       $("#ready_segment").click(function(){
-         console.log("I will go through a practice link.")
+         var url = resolver.segment(args.data.url,false);
+         resolver.redirect(url);
       });
       $("#practice_segment").click(function(){
-
+         var url = resolver.segment(args.data.url, true);
+         resolver.redirect(url);
       });
       $("#replay_tutorial").click(function(){
-         console.log("Replay tutorial.")
+         var url = resolver.demo("segment",args.data.url);
+         console.log(url);
+         resolver.redirect(url);
       })
    }
 
@@ -582,6 +616,11 @@ var AllTogether = function(){
 
 var Demonstration = function(){
    this.init = function(){
+      var resolver = new Navigator();
+      var cookies = new UserCookie();
+
+      var args = resolver.get();
+
       var that = this;
 
       this.ds = new DummySegmentationInterface();
@@ -622,20 +661,16 @@ var Demonstration = function(){
          'buttons',
          'alltogether'
       ]
-      this.idx = 14;
+      this.idx = 0;
       //load initial step
       this.load(this.stages[this.order[this.idx]]);
 
       $("#next-step",this.root).click(function(){
          that.next();
       }).mouseenter(function(){
-         if($(this).attr('src') != "res/dright-disable.png"){
-            $(this).attr('src','res/dright-active.png');
-         }
+         $(this).attr('src','res/dright-active.png');
       }).mouseleave(function(){
-         if($(this).attr('src') != "res/dright-disable.png"){
-            $(this).attr('src','res/dright.png');
-         }
+         $(this).attr('src','res/dright.png');
       })
       $("#prev-step",this.root).click(function(){
          that.prev(); 
@@ -645,6 +680,17 @@ var Demonstration = function(){
          $(this).attr('src','res/dleft.png');
       })
       $(".card").hide();
+
+      $("#skip-step").click(function(){
+         that.success();
+         that.enable_next();
+         that.next();
+      })
+      $("#exit-tutorial").click(function(){
+         cookies.tutorial('segment', true);
+         var url = resolver.segment(args.data.url,false);
+         resolver.redirect(url);
+      })
    }
    this.get_view = function(){
       return this.root;
@@ -658,12 +704,12 @@ var Demonstration = function(){
    this.disable_next = function(){
       console.log("disabling");
       this.stall = true;
-      $("#next-step",this.root).attr('src','res/dright-disable.png');
+      $("#next-step",this.root).css('display','none')
    }
    this.enable_next = function(){
       console.log("enabling");
       this.stall = false;
-      $("#next-step",this.root).attr('src','res/dright.png');
+      $("#next-step",this.root).css('display','block')
    }
    this.next = function(){
       if(this.idx < this.order.length-1 && !this.stall){
@@ -681,8 +727,6 @@ var Demonstration = function(){
 
    }
    this.load = function(stage){
-      $("#command",this.root).removeClass('success').addClass('command');
-      $(".bubble",this.root).removeClass('success').addClass('dummy');
       this.ds.unload();
       this.enable_next();
       var par = $("#"+stage.id);
@@ -690,13 +734,13 @@ var Demonstration = function(){
       var cmd = $("#command",par).clone();
       var prompt = $("#prompt",par).clone();
       var content = $("#content",par).clone();
-
-      //set fields
+   
       $("#title",this.root).html("").append(title);
       $("#prompt",this.root).html("").append(prompt);
       $("#command",this.root).html("").append(cmd).removeClass('success').addClass('command');
       $("#content",this.root).html("").append(content);
       $("*",this.root).addClass('active');
+      $(".bubble",this.root).removeClass('success').addClass('pending').html('?');
       stage.load(this);
       
    }
@@ -712,21 +756,7 @@ $(document).ready(function(){
          $(this).html(newk);
       }
    })
-   /*
-   $(".card").each(function(){
-      var name = $(this).attr('id');
-      //copy view in each mock object in the step
-      $(".mock", $(this)).each(function(){
-         var view = $("#view.dummy").clone().removeClass('dummy');
-         $(this).append(view);
-      })
-      $("*",$(this)).addClass(name).each(function(){
-         var uname = $(this).attr('id');
-         if(uname != undefined){
-            $(this).addClass(uname);
-         }
-      });
-   }) 
-   */
+   
+  
    
 })

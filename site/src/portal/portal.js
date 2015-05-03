@@ -17,6 +17,9 @@ var handle_redirects = function(s){
          case "segment":
             g_url = s.segment(data);
             break;
+         case "demo":
+            g_url = s.demo(args.demo_type, data);
+            break;
          case "edit":
             g_url = s.edit(data);
             break;
@@ -37,10 +40,15 @@ var handle_redirects = function(s){
 
 
 $(document).ready(function(){
-   var s = new Navigator();
-   var is_redirect = handle_redirects(s); //spinner option
+   var nav = new Navigator();
+   var ck = new UserCookie();
+   var is_redirect = handle_redirects(nav); //spinner option
    var opt = {lines: 8, length:2, width:2, radius:3};
 
+   var user_data = $.cookie('user_data');
+   if(user_data == undefined){
+      
+   }
    //$("#spinner").spin();
    // clicking button
    $("#begin").click(function() {
@@ -48,10 +56,16 @@ $(document).ready(function(){
       if(!is_redirect){
          $("#spinner").spin('medium');
 
-         s.start(input_url,function(vid_url){
-            var seg_url = s.segment(vid_url);
+         nav.start(input_url,function(vid_url){
             $("#spinner").spin(false);
-            s.redirect(seg_url);
+            if(ck.tutorial('segment')){
+               var seg_url = nav.segment(vid_url);
+               nav.redirect(seg_url);
+            }
+            else{
+               var seg_url = nav.demo('segment',vid_url);
+               nav.redirect(seg_url);
+            }
          });
       }
    });

@@ -545,7 +545,9 @@ var SegmentController = function(){
       this.queryResolver.redirect('segment_practice.html');
     }
     if(isValue(args.data)){
-      var url = args.data.replace(/\"/g,"");
+      console.log(args.data);
+      var url = args.data.url;
+      this.prog.video_bar().model.from_json(args.data.data);
       that.load(url);
     }
 

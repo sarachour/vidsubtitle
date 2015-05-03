@@ -1,15 +1,26 @@
 var Navigator = function(){
    this.base_url = "http://localhost:8080";
-
+   this._strip = function(text){
+      text=text.replace(/^["]+/g,"");
+      text=text.replace(/["]+$/g,"");
+      return text;
+   }
    this._parse_query = function(e){
       var qlist = e.split("?")[1];
       if(qlist == undefined) return {};
       var terms =qlist.split("&");
+
       var dict = {};
       for(var i=0; i < terms.length; i++){
          var args=  terms[i].split("=");
-         var n = decodeURIComponent(args[0]);
-         var v = decodeURIComponent(args[1]);
+
+            
+         var n = this._strip(decodeURIComponent(args[0]));
+         var v = this._strip(decodeURIComponent(args[1]));
+         try{
+              v=JSON.parse(v);
+          }
+          catch(e){}
          dict[n] = v;
       }
       return dict;
@@ -19,12 +30,16 @@ var Navigator = function(){
       window.location.href = url;
    }
    this._encode_data = function(url,data){
-      var val = encodeURIComponent(JSON.stringify(data));
+      var text = this._strip(JSON.stringify(data));
+      var val = encodeURIComponent(text);
       url += "?data="+val;
       return url;
    }
-   this.segment = function(url){
-      return this._encode_data(this.base_url + "/segment.html",url);
+   this.segment = function(url, is_practice){
+      return this._encode_data(this.base_url + "/segment.html",{url:url,data:[],practice:is_practice});
+   }
+   this.demo = function(type,url){
+      return this._encode_data(this.base_url + "/"+type+"demo.html",{url:url,data:[]});
    }
    //data to trans
    this.scribe = function(data){
