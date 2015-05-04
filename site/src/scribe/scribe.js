@@ -28,7 +28,6 @@ var ProgramState = function(vp_name, vb_name, seg_data){
     this._video_bar = new VideoBar(vb_name,this);
     this._player = new SelectionPlayer(this);
 
-  
     this.video_bar().model.listen('select', function(e){
       that._player.play(e.time);
       that.obs.trigger("update");
@@ -352,7 +351,7 @@ var RedirectButton = function(id,to,state){
 
   this.export = function(d){
     var data = {};
-    var segdata = this.state.video_bar().model.export();
+    var segdata = this.state.video_player().get_model().data;
     data.data = segdata;
     data.url = this.state.video_player().get_model().get_url();
     return data;
@@ -434,7 +433,6 @@ var SegmentController = function(){
 
     //handline done
     this.buttons.done = new RedirectButton('done',"scribe",this.prog);
-    this.buttons.preview = new RedirectButton('preview','preview',this.prog);
     this.done_prompt = new DonePrompt(this.prog,'completed-controls',"done","preview");
 
     this.fields = {};
@@ -464,27 +462,21 @@ var SegmentController = function(){
 }
 
 
-var ctrl;
-
 $("document").ready(function() {
 
   var data = {};
-  ctrl = new SegmentController();
+  var ctrl = new SegmentController();
 
-/* 
-  //SARA:
   $("#next_step").click(function(){
-    console.log("test");
     var data = ctrl.export();
     console.log(data.data.length, enteredText.length);
+    
     for(var i=0; i < data.data.length; i++){
       data.data[i].caption['speaker'] = enteredText[i];
     }
-    console.log(data);
+
     var url = resolver.portal('edit',data);
-    console.log(url);
     resolver.redirect(url);
   });
-*/
   
 });
