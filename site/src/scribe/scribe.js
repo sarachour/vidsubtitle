@@ -103,9 +103,9 @@ var DisplayField = function(field_name, relIndex, state){
     this.relIndex = relIndex;
     this.view = $("#"+field_name);
     this.state = state;
+    console.log(this.state);
     this.state.statemgr().listen('caption-change', function(){
-      console.log(this.state.peek);
-      var entry = this.state.peek(this.relIndex);
+      var entry = that.state.peek(that.relIndex);
       this.view.html(entry.caption); 
     });
   }
@@ -122,7 +122,7 @@ var EntryField = function(entry_name,state){
       that.update_text();
     });
     this.view.on('input propertychange paste', function(){
-      console.log("set",$(this).val())
+      //console.log("set",$(this).val())
       that.state.caption($(this).val());
     })
   }
