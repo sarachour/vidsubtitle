@@ -61,22 +61,12 @@ chunk specific rules
    height: 28px;
    padding:4px;
 }
-#compact-controls{
-   margin-top:3em;
-   margin-bottom:20px;
-   padding: 2px;
-}
+
 .dark-bg {
    background-color: #666666;
 }
 
-#nav-controls{
-   margin-right: 5px;
-   margin-left: 5px;
-}
-#edit-controls{
 
-}
 
 .disabled.hotkey{
    opacity:0.5;
@@ -182,4 +172,15 @@ chunk specific rules
 }
 #completed-controls{
    margin-bottom:2em;
+}
+
+#nav-controls{
+}
+#edit-controls{
+
+}
+#compact-controls{
+   margin-top:3em;
+   margin-bottom:20px;
+   padding: 2px;
 }
