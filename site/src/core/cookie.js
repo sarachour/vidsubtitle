@@ -4,7 +4,6 @@ var UserCookie = function(){
     }
     this._load = function(){
       var text=$.cookie('user_data');
-      console.log(text);
       this.data = null;
       if(text != undefined)
          this.data = JSON.parse(text);

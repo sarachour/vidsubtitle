@@ -57,7 +57,7 @@ $(document).ready(function(){
 
          nav.start(input_url,function(vid_url){
             $("#spinner").spin(false);
-            ck.cache('portal', {data:[],url:vid_url})
+            ck.cache('portal', {seg_data:[],url:vid_url})
             
             if(ck.tutorial('segment')){
                var seg_url = nav.segment(vid_url);

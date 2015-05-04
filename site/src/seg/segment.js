@@ -563,19 +563,21 @@ var SegmentController = function(){
 
     //load url
     var args = this.cookies.cache();
-    console.log(args);
-
-    if(isValue(args.data) && args.data.data.length > 0){
-      var url = args.data.url;
-      console.log(args.data.data);
-      this.prog.video_bar().model.from_json(args.data.data);
-      that.load(url);
-      that.prog.video_player().play();
+    
+    if(isValue(args.data.url)){
+      this.load(args.data.url);
     }
 
+    if(isValue(args.data.seg_data) && args.data.seg_data.length > 0){
+      this.prog.video_bar().model.from_json(args.data.seg_data);
+      this.prog.video_bar().model.select(0);
+      this.prog.video_player().play();
+    }
+    
+    //on navigate away
     $( window ).bind("beforeunload",function() {
       var data = {};
-      data.tmp = that.prog.video_bar().model.to_json();
+      data.seg_data = that.prog.video_bar().model.to_json();
       data.data = that.prog.video_bar().model.export()
       data.url = that.prog.video_player().get_model().get_url();
       that.cookies.cache('segment', data);
