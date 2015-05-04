@@ -64,9 +64,14 @@ INSTRUCTIONS: Caption the video, segment by segment.
             <div id="controls" class="fill-parent-width text-label">PROGRESS BAR HERE</div>
          </div>
 
-         <button type="button" id="prevButton" class="offset-by-one-fourth one-half column button-primary">Prev</button>
-         <button type="button" id="mainButton" class="fill-parent-width">START</button>
-         <button type="button" id="nextButton" class="offset-by-one-fourth one-half column button-primary">Next</button>
+         <button type="button" id="prevButton" hotkey-name="up" hotkey-code="up"
+            class="hotkey node offset-by-one-fourth one-half column button-primary">Prev</button>
+         
+         <button type="button" id="mainButton" hotkey-name="down" hotkey-code="down"
+            class="hotkey node fill-parent-width">START</button>
+
+         <button type="button" id="nextButton" hotkey-name="enter" hotkey-code="enter"
+            class="hotkey node offset-by-one-fourth one-half column button-primary">Next</button>
 
       </div>
 
