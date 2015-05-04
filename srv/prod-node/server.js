@@ -2,12 +2,12 @@ var srv_static = require('node-static')
 var fs = require('fs');
 var urlparser = require('url');
 var process = require('child_process');
-
+/*
 var mongo= {};
 mongo.client = require('mongodb').MongoClient;
 mongo.server = require('mongodb').Server;
 mongo.db = require('mongodb').Db;
-
+*/
 
 var web_root = '../../site/';
 var media_root = web_root + "media/youtube/";

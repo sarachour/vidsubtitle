@@ -10,6 +10,8 @@
 <script src="src/core/observer.js"></script>
 <script src="src/core/youtube.js"></script>
 <script src="src/edit/SegmentNode.js"></script>
+<script src="lib/jwerty.js"></script>
+<script src="src/core/hotkey.js"></script>
 <script src="src/edit.js"></script>
 
 <link rel="stylesheet" href="css/jquery-ui-1.11.3.css" />
@@ -39,7 +41,7 @@
          &nbsp;
 
          <!-- buttons -->
-         <button id="next_button" class="button-primary fill-parent-width">Start/Next [tab]</button>
+         <div id="next_button" button-title="Next" hotkey-name="tab" hotkey-code="tab/ctrl+down" class="hotkey node fill-parent-width"></div>
          <button id="prev_button" class="button-primary fill-parent-width">Prev [shift-tab]</button>
          <button id="replay_button" class="button-primary fill-parent-width">Replay [ctrl-space]</button>
       </div>
