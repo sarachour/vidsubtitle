@@ -65,13 +65,13 @@ textarea {
 }
 
 .jump-button{
-   font-size:12px;
+   font-size:14px;
    text-align:center;
    padding:0.1em;
-   color:#888888;
+   color:#FFFFFF;
    border-radius:7px;
    border-style:solid;
-   border-color:#888888;
+   border-color:#000000;
    border-width:1px;
    margin-bottom: 1em;
 }
