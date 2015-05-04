@@ -35,7 +35,7 @@ var HINTS = {
       desc:'Move to the next segment. Use the '+RES.key(KEYS.right)+" key or "+RES.next+" button"
    },
    prev: {
-      name:"Next Segment", 
+      name:"Previous Segment", 
       desc:'Move to the previous segment. Use the '+RES.key(KEYS.left)+" key or "+RES.prev+" button"
    },
    replay: {

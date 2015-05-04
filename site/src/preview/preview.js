@@ -67,6 +67,9 @@ var PreviewController = function(){
       this.video.load(this.url);
       console.log(fn,url);
    }
+   this.display_file = function(){
+
+   }
 
    this.export = function(type){
     var dat = this.data;
@@ -78,6 +81,7 @@ var PreviewController = function(){
       var str = this.exp.to_raw(dat);
 
     var fn = this.exp.to_file(str);
+    
     this.file_url = fn;
    }
    this.init();

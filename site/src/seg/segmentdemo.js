@@ -149,6 +149,7 @@ var DummySegmentationInterface = function(){
       var that = this;
       var v = $("#view").removeClass('dummy').detach().appendTo('.mock.active');
       this.obs.clear();
+      this.model.clear();
       //only enable pertinent elements
       for(var key in this.enabled) this.enabled[key] = false;
       for(var i=0; i < enabled.length; i++){
@@ -218,7 +219,7 @@ var Start = function(){
       iface.load(this.id, "start", ['start_button']);
       iface.listen('start', function(){
          demo.success();
-         demo.enable_next();
+         demo.next();
       },'1');
    }
 
@@ -234,8 +235,9 @@ var Hotkey = function(){
       demo.disable_next();
       iface.load(this.id, "start", ['start_key']);
       iface.listen('start', function(){
+         console.log("succ");
          demo.success();
-         demo.enable_next();
+         demo.next();
       },'1');
    }
 
@@ -263,7 +265,7 @@ var Breaking = function(){
          }
          if(that.tcount >= nbreaks && that.keycount >= nkeys){
             demo.success();
-            demo.enable_next();
+            demo.next();
          }
       },'1');
       iface.listen('start-key', function(){
@@ -313,7 +315,7 @@ var AboutBar2 = function(){
          if(count>=3){
             $("#region_counter").addClass('success')
             demo.success();
-            demo.enable_next();
+            demo.next();
          }
       },'1');
 
@@ -359,7 +361,7 @@ var Navigating = function(){
          $("#left_counter").removeClass('pending').addClass('success').html(KEYS['check']);
          if(sel_item && move_right && move_left && repeat){
             demo.success();
-            demo.enable_next();
+            demo.next();
          }
       },'1');
       iface.obs.listen('next', function(){
@@ -367,7 +369,7 @@ var Navigating = function(){
          if(sel_item) move_right = true;
          if(sel_item && move_right && move_left && repeat){
             demo.success();
-            demo.enable_next();
+            demo.next();
          }
       },'1');
       iface.obs.listen('repeat', function(){
@@ -375,7 +377,7 @@ var Navigating = function(){
          if(sel_item) repeat = true;
          if(sel_item && move_right && move_left && repeat){
             demo.success();
-            demo.enable_next();
+            demo.next();
          }
       })
 
@@ -408,7 +410,7 @@ var AddBreak = function(){
          if(that.tcount > that.keycount + that.buttoncount && 
             that.tcount > 0 && that.keycount>0 && that.buttoncount > 0){
             demo.success();
-            demo.enable_next();
+            demo.next();
          }
 
       },'1');
@@ -439,7 +441,7 @@ var RemoveBreak = function(){
       iface.listen('remove', function(){
          demo.success();
          $("#remove_counter").removeClass('pending').addClass('success').html(KEYS['check']);
-         demo.enable_next();
+         demo.next();
       },'1');
    }
 
@@ -476,7 +478,7 @@ var ShortenSeg = function(){
          if(keyshifts > 0 && shifts > 4 && shifts > keyshifts){
             demo.success();
             $("#shorten_counter").addClass('success');
-            demo.enable_next();
+            demo.next();
          }
       },'1');
       iface.listen('lshift_key', function(){
@@ -485,7 +487,7 @@ var ShortenSeg = function(){
          if(keyshifts > 0 && shifts > 4 && shifts > keyshifts){
             demo.success();
             $("#shorten_counter").addClass('success');
-            demo.enable_next();
+            demo.next();
          }
       },'1');
 
@@ -523,7 +525,7 @@ var LengthenSeg = function(){
          if(keyshifts > 0 && shifts > 4 && shifts > keyshifts){
             demo.success();
             $("#lengthen_counter").addClass('success');
-            demo.enable_next();
+            demo.next();
          }
       },'1');
       iface.listen('rshift_key', function(){
@@ -532,7 +534,7 @@ var LengthenSeg = function(){
          if(keyshifts > 0 && shifts > 4 && shifts > keyshifts){
             demo.success();
             $("#lengthen_counter").addClass('success');
-            demo.enable_next();
+            demo.next();
          }
       },'1');
    }
@@ -575,7 +577,7 @@ var Buttons = function(){
          if(cnt == n){
             demo.success();
             $("#hints_counter").addClass('success');
-            demo.enable_next();
+            demo.next();
          }
          
       })
@@ -700,6 +702,7 @@ var Demonstration = function(){
    }
    this.success = function(){
       $("#command",this.root).removeClass('command').addClass('success');
+      this.enable_next();
    }
    this.disable_next = function(){
       console.log("disabling");
@@ -712,9 +715,12 @@ var Demonstration = function(){
       $("#next-step",this.root).css('display','block')
    }
    this.next = function(){
+      var that = this;
       if(this.idx < this.order.length-1 && !this.stall){
          this.idx ++;
-         this.load(this.stages[this.order[this.idx]]);
+         setTimeout(function(){
+            that.load(that.stages[that.order[that.idx]])
+         },200);
       }
 
    }
@@ -726,15 +732,28 @@ var Demonstration = function(){
       }
 
    }
-   this.load = function(stage){
+   this.load = function(stage, idx){
       this.ds.unload();
       this.enable_next();
+      if(this.idx == 0)
+         $("#prev-step",this.root).css('display','none')
+
+      else
+         $("#prev-step",this.root).css('display','block')
+
+      if(this.idx == this.order.length-1)
+         $("#next-step",this.root).css('display','none')
+
+      else
+         $("#next-step",this.root).css('display','block')
+
       var par = $("#"+stage.id);
       var title = $("#title",par).clone();
       var cmd = $("#command",par).clone();
       var prompt = $("#prompt",par).clone();
       var content = $("#content",par).clone();
    
+      $("#stepid").html("Step "+(this.idx+1)+" of "+this.order.length);
       $("#title",this.root).html("").append(title);
       $("#prompt",this.root).html("").append(prompt);
       $("#command",this.root).html("").append(cmd).removeClass('success').addClass('command');
