@@ -355,6 +355,7 @@ var ShiftButton = function(button_name, state, type, amt){
       if(that.type == 'lshift') amt *= -1;
       that.player.pause();
       that.state.shift(0,amt);
+      that.state.select(that.state.video_bar().model.time()+amt, "goto");
       if(that.state.video_bar().model.select().subtype != "continue")
         that.player.play();
     })
