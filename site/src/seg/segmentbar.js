@@ -63,6 +63,7 @@ var SegmentBar = function(id, model){
             var c = norm(e);
             if($(this).data('drag')){
                var del = delta(this,c);
+               that._model.select($(this).data('coord').t+del.t);
                that._model.shift(0,del.t);
             }
             $(this).data('coord',c);
@@ -78,6 +79,7 @@ var SegmentBar = function(id, model){
          .mousedown(function(e){
             var c = norm(e);
             $(this).data('coord',c).data('drag',true);
+            that._model.select($(this).data('coord').t);
          })
          .mouseup(function(e){
             $(this).data('drag',false);

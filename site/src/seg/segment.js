@@ -355,6 +355,7 @@ var ShiftButton = function(button_name, state, type, amt){
       if(that.type == 'lshift') amt *= -1;
       that.player.pause();
       that.state.shift(0,amt);
+      that.state.select(that.state.video_bar().model.time()+amt, "goto");
       if(that.state.video_bar().model.select().subtype != "continue")
         that.player.play();
     })
@@ -541,14 +542,19 @@ var SegmentController = function(){
 
     if(isValue(args.data.seg_data) && args.data.seg_data.length > 0){
       this.prog.video_bar().model.from_json(args.data.seg_data);
-      this.prog.video_bar().model.select(0);
-      this.prog.video_player().play();
+      this.buttons.mark.view.click();
+      if(isValue(args.data.time))
+        this.prog.video_bar().model.select(args.data.time, 'goto');
+      else
+        this.prog.video_bar().model.select(0, 'goto');
+
     }
     
     //on navigate away
     $( window ).bind("beforeunload",function() {
       var data = {};
       data.seg_data = that.prog.video_bar().model.to_json();
+      data.time = that.prog.video_bar().model.time();
       data.data = that.prog.video_bar().model.export()
       data.url = that.prog.video_player().get_model().get_url();
       that.cookies.cache('segment', data);

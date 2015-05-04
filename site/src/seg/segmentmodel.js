@@ -256,6 +256,7 @@ var SegmentModel  = function(){
          this.data.duration = d;
          if(this.data.selection.subtype == "continue"){
             this.data.selection = this._get_continuation();
+            this.data.selection.end = d;
          }
          this._evt.trigger('update',{obj:this});
       }
