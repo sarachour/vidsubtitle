@@ -87,8 +87,6 @@ var SelectionPlayer = function(state){
     var s = sel.start;
     var e = sel.end;
 
-    console.log(s + ' -- ' + time + ' -- ' + e);
-
     if(this.state.video_bar().model.time() == undefined) s = sel.start;
     if (time != undefined){
       this.state.video_player().segment(time,e);
@@ -233,7 +231,14 @@ var MainButton = function(button_name, state){
       .data("button-title","Start")
       .pulse({'background-color':'#16a085'},{pulses:-1,duration:1000})
       .click(function(){
+         $('.hotkey.title').each(function (idx, obj) {
+                if ('START' == obj.innerHTML) {
+                    obj.innerHTML = 'Replay';
+                }
+            });
         that.start();
+        $(prevButton).css("visibility", "visible");
+        $(nextButton).css("visibility", "visible");
       })
     this.view.prop('disabled', true);
     this.state.statemgr().listen('ready', function(){
@@ -247,8 +252,8 @@ var MainButton = function(button_name, state){
 
     var sel = this.state.selected();
     this.state.play();
-
     this.started = true;
+
     this.is_down = false;
     this.view.unbind('click')
       .pulse('destroy');
@@ -256,8 +261,6 @@ var MainButton = function(button_name, state){
     this.view.click(function(){
       var sel = that.state.selected();
       that.state._player.play(sel.start);
-      //state.prog._model.add_caption(state.entry.get_text());
-      //state.prog._model.curIndex++;
     })
   }
   this.init();
@@ -336,7 +339,6 @@ var VideoBar = function(bar_name, state){
   }
   this._update_time = function(){
     var dur = this.state.video_player().get_model().time();
-    //console.log(dur + ' -- ' + this.state._model.selected().end);
     if (dur >= this.state._model.selected().end) {
       this.model.time(this.state._model.selected().start);
       state._video_player.pause();
