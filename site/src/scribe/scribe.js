@@ -433,7 +433,7 @@ var SegmentController = function(){
     
     this.queryResolver = new Navigator();
     var args = this.queryResolver.get();
-    var data = args.data;
+    var data = args.data.data;
     var seg_data = data['data'];
 
     this.prog = new ProgramState("player", "controls");
