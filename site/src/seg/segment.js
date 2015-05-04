@@ -467,10 +467,8 @@ var RedirectButton = function(id,to,state){
 
   this.redirect = function(){
     var data = {};
-    data.go = this.dest;
-    data.from = this.src;
     data.data = this.export();
-    var purl = this.resolver.portal(this.src,data);
+    var purl = this.resolver.portal(this.src,this.dest, data);
     this.resolver.redirect(purl);
   }
 
@@ -537,26 +535,14 @@ var SegmentController = function(){
   this.init = function(){
     var that = this;
     this.prog = new ProgramState("player1", "controls", "hint");
-    this.queryResolver = new Navigator();
-    //load url
-    var args = this.queryResolver.get();
-    //load request
-    if(args.practice != undefined && args.practice){
-      console.log("NOT IMPLEMENTED")
-    }
-    if(isValue(args.data)){
-      var url = args.data.url;
-      this.prog.video_bar().model.from_json(args.data.data);
-      that.load(url);
-    }
+    this.resolver = new Navigator();
+    this.cookies = new UserCookie();
+    
 
     this.prog.listen('ended', function(){
       that.done_prompt.show();
     });
-    $("#demo").click(function(){
-      var url = that.queryResolver.demo('segment',args.url);
-      that.queryResolver.redirect(url);
-    })
+
     this.buttons = {};
     this.buttons.mark = new MarkButton("break", this.prog);
     this.buttons.replay = new ReplayButton("replay", this.prog);
@@ -570,11 +556,30 @@ var SegmentController = function(){
     this.buttons.redo = new HistoryButton("redo",this.prog, false);
 
     this.buttons.done = new RedirectButton('done',"scribe",this.prog);
-    this.buttons.done_to_edit = new RedirectButton('done_to_edit',"edit",this.prog);
     this.buttons.preview = new RedirectButton('preview','preview',this.prog);
+    this.buttons.demo = new RedirectButton('demo','demo',this.prog);
 
     this.done_prompt = new DonePrompt(this.prog,'completed-controls',"done","preview");
 
+    //load url
+    var args = this.cookies.cache();
+    console.log(args);
+
+    if(isValue(args.data) && args.data.data.length > 0){
+      var url = args.data.url;
+      console.log(args.data.data);
+      this.prog.video_bar().model.from_json(args.data.data);
+      that.load(url);
+      that.prog.video_player().play();
+    }
+
+    $( window ).bind("beforeunload",function() {
+      var data = {};
+      data.tmp = that.prog.video_bar().model.to_json();
+      data.data = that.prog.video_bar().model.export()
+      data.url = that.prog.video_player().get_model().get_url();
+      that.cookies.cache('segment', data);
+    });
 
     $("#title").html(INSTRUCTIONS);
 

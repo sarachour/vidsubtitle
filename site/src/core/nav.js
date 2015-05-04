@@ -29,31 +29,32 @@ var Navigator = function(){
    this.redirect = function(url){
       window.location.href = url;
    }
-   this._encode_data = function(url,data){
+   this._encode_data = function(url,data, from, to){
       var text = this._strip(JSON.stringify(data));
       var val = encodeURIComponent(text);
-      url += "?data="+val;
+      url += "?data="+val+"&from="+from+"&to="+to;
       return url;
    }
-   this.segment = function(url, is_practice){
-      return this._encode_data(this.base_url + "/segment.html",{url:url,data:[],practice:is_practice});
+   this.segment = function(data){
+      //now we pass it in through cookies
+      return this._encode_data(this.base_url + "/segment.html",null,null,'segment');
    }
-   this.demo = function(type,url){
-      return this._encode_data(this.base_url + "/"+type+"demo.html",{url:url,data:[]});
+   this.demo = function(from,data){
+      return this._encode_data(this.base_url + "/"+from+"demo.html",data, from, 'demo');
    }
    //data to trans
    this.scribe = function(data){
-      return this._encode_data(this.base_url + "/scribe.html",data);
+      return this._encode_data(this.base_url + "/scribe.html",null, null, 'scribe');
    }
    this.edit = function(data){
-      return this._encode_data(this.base_url + "/edit.html",data);
+      return this._encode_data(this.base_url + "/edit.html",data, from, 'edit');
    }
-   this.preview = function(data){
-      return this._encode_data(this.base_url + "/preview.html",data);
+   this.preview = function(data, from){
+      return this._encode_data(this.base_url + "/preview.html",data, from, 'preview');
    }
-   this.portal = function(phase,data){
-      var url = this._encode_data(this.base_url+"/portal.html",data);
-      url + "&phase="+phase;
+   this.portal = function(from,to,data){
+      var url = this._encode_data(this.base_url+"/portal.html",data, from, to);
+      url + "&from="+from+"&to="+to;
       return url;
    }
    this.start = function(youtube_url, cbk){

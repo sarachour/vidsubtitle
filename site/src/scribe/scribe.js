@@ -431,14 +431,14 @@ var SegmentController = function(){
   this.init = function(){
     var that = this;
     
-    this.queryResolver = new Navigator();
-    var args = this.queryResolver.get();
-    var data = args.data.data;
-    var seg_data = data['data'];
+    this.cookies = new UserCookie();
 
     this.prog = new ProgramState("player", "controls");
-    that.load(data['url']);
 
+    var args = this.cookies.cache();
+    var seg_data = args.data;
+    this.load(args.data.url);
+    this.prog.video_bar().model.from_json(args.data.data);
     
 
     this.buttons = {};
@@ -472,6 +472,16 @@ var SegmentController = function(){
       console.log("reached end");
       that.done_prompt.show();
     })
+
+    
+
+    $( window ).bind("beforeunload",function() {
+      var data = {};
+      data.data = that.prog.video_bar().model.to_json()
+      data.url = that.prog.video_player().get_model().get_url();
+      that.cookies.cache('edit', data);
+      return 'test';
+    });
 
     this.prog.load(seg_data);
   }

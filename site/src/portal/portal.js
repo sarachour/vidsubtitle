@@ -4,21 +4,21 @@ stages: segment, scribe, edit
 var handle_redirects = function(s){
    var par_args = s.get();
    if(par_args.data == undefined) return false;
-   var args = par_args.data;
-
-   var go = args.go;
-   if(args.go != undefined && args.data != undefined){
+   var data = par_args.data;
+   var to = par_args.to;
+   var from = par_args.from;
+   console.log(par_args);
+   if(par_args.to != undefined && par_args.data != undefined){
       var g_url = "";
-      var data = args.data;
-      switch(args.go){
+      switch(to){
          case "preview":
-            g_url = s.preview(data);
+            g_url = s.preview(data, from); //from 
             break;
          case "segment":
             g_url = s.segment(data);
             break;
          case "demo":
-            g_url = s.demo(args.demo_type, data);
+            g_url = s.demo(from, data);
             break;
          case "edit":
             g_url = s.edit(data);
@@ -27,14 +27,13 @@ var handle_redirects = function(s){
             g_url = s.scribe(data);
             break;
          case "portal":
-            g_url = s.portal();
+            g_url = s.portal(to, from, data);
       }
       console.log(g_url);
       console.log(data);
       s.redirect(g_url);
       return true;
    }
-   console.log("args:",args);
    return false;
 }
 
@@ -58,6 +57,8 @@ $(document).ready(function(){
 
          nav.start(input_url,function(vid_url){
             $("#spinner").spin(false);
+            ck.cache('portal', {data:[],url:vid_url})
+            
             if(ck.tutorial('segment')){
                var seg_url = nav.segment(vid_url);
                nav.redirect(seg_url);

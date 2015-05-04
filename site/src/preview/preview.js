@@ -23,6 +23,9 @@ var PreviewController = function(){
       that.export('raw');
     });
 
+    this.views.back = $("#back").click(function(){
+      that.back();
+    })
     this.track = $("<track/>")
       .attr('kind', 'subtitles')
       .attr('srclang', 'en')
@@ -32,13 +35,25 @@ var PreviewController = function(){
 
     $("video").append(this.track);
    }
+   this.back = function(){
+    var args = this.resolver.get();
+    var url = "";
+    var from = args.from;
+    if(from == 'segment')
+      url = this.resolver.segment(this.data);
+    else if(from == 'edit')
+      url = this.resolver.edit(this.data);
+    else if(from == 'scribe')
+      url = this.resolver.scribe(this.data);
+
+    this.resolver.redirect(url);
+   }
    this.load_from_query = function(){
       var data = this.resolver.get();
       if(data.data == undefined) return;
       var d = data.data;
-      this.data = d;
-      this.url = d.url;
-      console.log(d.data);
+      this.data = d.data;
+      this.url = this.data.url;
       this.video.load(this.url);
       this.export('vtt');
       this.track.attr('src', this.file_url);
