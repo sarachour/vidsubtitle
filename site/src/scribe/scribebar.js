@@ -28,7 +28,7 @@ var ScribeBar = function(id, model){
       var gnorm = function(e){
          var f = e.offsetX/that._view.gcanv.width();
          var d = that._model.get_data();
-         var time = f*d.duration/(d.select.end-d.select.start)/2;
+         var time = f*(d.select.end-d.select.start) + d.select.start;
          return { t:time };
       }
       var delta = function(t,c){ 
@@ -49,9 +49,7 @@ var ScribeBar = function(id, model){
          .click(function(e){
             var c = gnorm(e);
             $(this).data('coord',c);
-            console.log(that._model.selected().start);
             that._model.select(c.t);
-            that._model.time(c.t/2);
          })
          .mouseleave(function(e){
             $(this).data('coord',{x:null,y:null}).data('drag',false);
