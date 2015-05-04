@@ -95,7 +95,7 @@ var ScribeModel = function(){
       return false;
    }
    this.select = function(t){
-      this.time(t);
+      this.data.time = t;
       this._evt.trigger('select',{obj:this});
       return this.data.time;
    }

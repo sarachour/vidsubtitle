@@ -49,7 +49,9 @@ var ScribeBar = function(id, model){
          .click(function(e){
             var c = gnorm(e);
             $(this).data('coord',c);
-            that._model.time(c.t);
+            console.log(that._model.selected().start);
+            that._model.select(c.t);
+            that._model.time(c.t/2);
          })
          .mouseleave(function(e){
             $(this).data('coord',{x:null,y:null}).data('drag',false);
