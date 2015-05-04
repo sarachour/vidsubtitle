@@ -68,7 +68,7 @@ $(document).ready(function(){
       if(!is_redirect){
          $("#spinner").spin('medium');
          if(args.mock == true){
-            handle_video('media/youtube/video.mp4');
+            handle_video('media/video.mp4');
          }
          else{
             nav.start(input_url,function(vid_url){
