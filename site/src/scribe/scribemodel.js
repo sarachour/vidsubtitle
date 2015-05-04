@@ -25,7 +25,6 @@ var ScribeModel = function(){
       return this.data.time;
    }
    this.from_json = function(arr){
-      console.log(arr);
       for(var i=0; i < arr.length; i++){
          var a = arr[i];
          var elem = {

@@ -11,13 +11,14 @@ var ScribeBar = function(id, model){
 
       this._model = model;
       this._view = {};
-      seg = {};
 
       this._view.gcanv = $("<canvas/>").attr('id','macro');
       this._view.gctx = this._view.gcanv[0].getContext('2d');
 
       that._state = {};
       this._model.listen('update',function(){that._draw();})
+      this._model.listen('select',function(){that._draw();})
+      this._model.listen('time',function(){that._draw();})
       this._root.html("");
 
       this._view.gcanv
@@ -27,7 +28,7 @@ var ScribeBar = function(id, model){
       var gnorm = function(e){
          var f = e.offsetX/that._view.gcanv.width();
          var d = that._model.get_data();
-         var time = f*d.duration;
+         var time = f*d.duration/(d.select.end-d.select.start)/2;
          return { t:time };
       }
       var delta = function(t,c){ 
@@ -43,11 +44,11 @@ var ScribeBar = function(id, model){
          .data('coord', {x:null,y:null})
          .mousemove(function(e){
             var c = gnorm(e);
-            $(this).data('coord',c);
             that._draw();
          })
          .click(function(e){
             var c = gnorm(e);
+            $(this).data('coord',c);
             that._model.time(c.t);
          })
          .mouseleave(function(e){

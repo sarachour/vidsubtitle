@@ -22,11 +22,6 @@ scribe specific rules
 .container {
   max-width: 1400px;
 }
-.text{
-   font-size:18pt;
-   color:#303030;
-   text-align:center;
-}
 
 .video-container {
    height: 190px;
@@ -58,26 +53,10 @@ scribe specific rules
 .display {
    border: 1px dotted #444;
    background-color: #FFFFFF;
-   height: 80px;
-   font-size:20px;
-   text-align:middle;
-   width: 100%;
-   padding: 10px 21px 10px 10px;
-   margin: 5px 0px 5px 0px;
-   overflow: hidden;
+  
 }
 .display.disable {
    background-color:#DDDDDD;
-}
-
-.nav {
-   height:80px;
-   width:160px;
-   margin-bottom:15px;
-   font-size:22px;
-   border-width:3px;
-   border-style:solid;
-   border-radius:10px;
 }
 
 #current_pane {
@@ -88,18 +67,6 @@ scribe specific rules
 #segmentbar {
    margin-top:5px;
    margin-bottom:20px;
-}
-
-#mainButton {
-   height:160px;
-   font-size:50px;
-   margin-top:30px;
-   margin-bottom:45px;
-   background-color: white;
-   border-color: #807115;
-   border-width:3px;
-   border-style:solid;
-   border-radius:10px;
 }
 
 #curText{
@@ -118,69 +85,52 @@ scribe specific rules
    border-width:5px;
 }
 
-
-
-/*.scribe .hotkey.title {
-   color: #333333;
-   padding-top:10px;
-   font-size:45px;
-}
-.scribe .hotkey.shortcut {
-   color: #666666;
-   font-size:28px;
-   padding-top: 17px;
+.floating_pane {
+    position: fixed;
 }
 
-.scribe.container.prev {
-   background-color: #D4876A;
-   border-color: #803215;
+.active_box {
+    border: 1px solid #000;
+    background-color: #FFFFCC;
 }
 
-.scribe.container.next {
-   background-color: #64B058;
-   border-color: #1E6912;
+.inactive_box {
+    border: 1px dotted #444;
+    background-color: #FFFFFF;
+   height: 80px;
+   font-size:20px;
+   text-align:middle;
+   width: 100%;
+   padding: 10px 21px 10px 10px;
+   margin: 5px 0px 5px 0px;
+   overflow: hidden;
 }
 
-.scribe.replay {
-   background-color: #D4C66A;
-   border-color: #807115;
+.inactive_box:hover {
+    border: 1px dotted #444;
+    background-color: #E0E0FF;
 }
 
-.scribe.entry {
-   border-radius:12px;
-   height:190px;
-   margin-bottom:31px;
-   visibility: hidden;
+.segment_counter {
+    margin: 10px 10px 0px 10px;
+    text-decoration: underline;
 }
 
-.scribe.entry.label {
-   font-size:36px;
-   text-align:left;
-   border-width:2px;
-   border-style:solid;
-   vertical-align: middle;
+.preedit_box {
+    margin: 10px 10px 0px 10px;
+    padding: 0px 0px 10px 0px;
+    border-bottom: 1px dashed #00F;
+    font-size: 16px;
 }
 
-.entry {
-   resize:none;
-   border:none;
-   text-align:center;
-   height:190px;
-   font-size: 32px;
-   line-height: 1.6;
-   font-weight: 500;
-   font-family: "Raleway", "HelveticaNeue", "Helvetica Neue", Helvetica, Arial, sans-serif;
-   color: #222
+.postedit_box {
+    margin: 10px;
+    padding: 0px;
+    font-size: 16px;
 }
 
-.scribe.entry.text {
-   font-size:28px;
-   padding-left:32px;
-   padding-right:32px;
-   border: 2px solid #777777;
+textarea {
+    width: 100%;
+    font-size: 16px;
 }
 
-.scribe.entry.label .container {
-   padding-top: 50px;
-}
-*/

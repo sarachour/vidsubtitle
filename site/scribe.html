@@ -35,6 +35,7 @@
 <link rel="stylesheet" href="lib/mejs/mediaelementplayer.min.css" />
 <link rel="stylesheet" href="css/scribe.css" />
 <link rel="stylesheet" href="css/base.css" />
+<link rel="stylesheet" href="css/nav-button.css" />
 
 </head>
 
@@ -62,17 +63,13 @@
          </div>
 
          <div id="segmentbar" class="row vspace">
-            <div id="controls" class="fill-parent-width text-label">PROGRESS BAR HERE</div>
+            <div id="controls" class="fill-parent-width text-label"></div>
          </div>
 
-         <button type="button" id="prevButton" hotkey-name="up" hotkey-code="up"
-            class="hotkey node offset-by-one-fourth one-half column button-primary">Prev</button>
+         <div id="prevButton" button-title="Prev" hotkey-name="shift-tab/ctrl+up" hotkey-code="shift-tab/ctrl+up" class="hotkey node hotkey-button nav-button fill-parent-width"></div>
+         <div id="mainButton" button-title="START" hotkey-name="ctrl+left" hotkey-code="ctrl+left" class="hotkey node hotkey-button nav-button fill-parent-width"></div>
+         <div id="nextButton" button-title="Next" hotkey-name="tab/ctrl+down" hotkey-code="tab/ctrl+down" class="hotkey node hotkey-button nav-button fill-parent-width"></div>
          
-         <button type="button" id="mainButton" hotkey-name="down" hotkey-code="down"
-            class="hotkey node fill-parent-width">START</button>
-
-         <button type="button" id="nextButton" hotkey-name="enter" hotkey-code="enter"
-            class="hotkey node offset-by-one-fourth one-half column button-primary">Next</button>
 
       </div>
 
@@ -81,27 +78,27 @@
    <div id="text_pane" class="column two-thirds">
       <div class="fill-parent-width prev">
          <div id="pt2_dis" class="one-quarter seg_display"></div>
-         <div id="prevText2" class="display"></div>
+         <div id="prevText2" class="inactive_box"></div>
       </div>
 
       <div class="fill-parent-width prev">
          <div id="pt_dis" class="one-quarter seg_display"></div>
-         <div id="prevText" class="display"></div>
+         <div id="prevText" class="inactive_box"></div>
       </div>
 
-      <div id="curText" class="fill-parent-width text">
+      <div id="curText" class="fill-parent-width active_box">
          <div id="cur_dis" class="one-quarter seg_display"></div>
          <textarea autofocus rows="12" id="entryArea" class="fill-parent-width entry" placeholder="type captions here"></textarea>
       </div>
 
       <div class="fill-parent-width prev">
          <div id="nt_dis" class="one-quarter seg_display"></div>
-         <div id="nextText" class="display"></div>
+         <div id="nextText" class="inactive_box"></div>
       </div>
 
       <div class="fill-parent-width prev">
          <div id="nt2_dis" class="one-quarter seg_display"></div>
-         <div id="nextText2" class="display"></div>
+         <div id="nextText2" class="inactive_box"></div>
       </div>
 
    </div>

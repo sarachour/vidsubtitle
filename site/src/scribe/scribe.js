@@ -12,8 +12,6 @@ unhold: the user stopped a marking
 select: the user selected something
 modify: the user modified something
 delete: the user deleted a marking
-
-
 */
 
 var ProgramState = function(vp_name, vb_name){
@@ -140,6 +138,17 @@ var DisplayField = function(field_name, relIndex, state){
     this.state.video_bar().model.listen('index', function(){
       that.update_text();
     });
+    this.view.click(function(){
+      if(that.relIndex > 0){
+        for (i=0; i < that.relIndex; i++){
+          that.state.next();
+        }
+      }else{
+        for (i=0; i > that.relIndex; i--){
+          that.state.prev();
+        }
+      }
+    });
   }
   this.update_text = function(){
     var entry = this.state.peek(this.relIndex);
@@ -216,7 +225,7 @@ var MainButton = function(button_name, state){
 
     this.view
       .data("button-title","Start")
-      .pulse({'background-color':'#96E6B8'},{pulses:-1,duration:1000})
+      .pulse({'background-color':'#16a085'},{pulses:-1,duration:1000})
       .click(function(){
         that.start();
       })
