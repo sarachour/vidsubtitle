@@ -190,16 +190,18 @@ function __sn_activate () {
 // has info about the edit.
 function SegmentNode (id, segment, prev, total) {
 
-    // FIXME: Mike and I need to standardize on the caption.
-    if (!segment.text) segment.text = segment.caption.speaker;
+    if (!segment.caption || !segment.caption.speaker) {
+        // No text for this segment.
+        segment.caption = { speaker: '' };
+    }
 
     this.index = id + 1;
     this.total = total;
     this.id = 'segment_id_' + id;
     this.start = segment.start;
     this.end = segment.end;
-    this.preedit = segment.text;
-    this.postedit = segment.text;
+    this.preedit = segment.caption.speaker;
+    this.postedit = segment.caption.speaker;
     this.prev = prev;
     this.next = null;
     if (prev) { prev.next = this; }

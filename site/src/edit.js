@@ -44,11 +44,7 @@ function load (input_obj) {
     last_seg = prev;
 }
 
-function load_json () {
-    load(JSON.parse($('#output').val()));
-}
-
-function save_json () {
+function save_data () {
     // Save existing work.
     if (active_segment) {
         active_segment.deactivate($('#active_text').val());
@@ -62,8 +58,9 @@ function save_json () {
     for (node = first_seg; node != null; node = node.next) {
         data.push({ start: node.start,
                     end: node.end,
-                    old: node.preedit,
-                    text: node.postedit });
+                    old: { speaker: node.preedit},
+                    caption: { speaker: node.postedit }
+                  });
     }
 
     var url = $('#player1').prop('src');
@@ -71,8 +68,12 @@ function save_json () {
     var obj = { data: data,
                 url: url };
 
-    // Store the object to the output buffer.
-    $('#output').val(JSON.stringify(obj));
+    // Store the object in local cache.
+    (new UserCookie()).user_cookie.cache('edit', obj);
+}
+
+function click_done () {
+    alert('oh, snap!');
 }
 
 function setup_segment (seg) {
@@ -134,10 +135,10 @@ function replay_segment () {
 }
 
 $("document").ready(function() {
-    var nav = new Navigator();
-    var data;
+    var user_cookie = new UserCookie();
+    var args = user_cookie.cache();
 
-    var args = nav.get();
+    console.log(args);
     if (isValue(args.data)) {
         data = args.data;
     } else {
@@ -147,6 +148,11 @@ $("document").ready(function() {
     load(data);
     video = new YoutubeVideo("player1");
 
+    $(window).bind('beforeunload', function () {
+        save_data();
+        user_cookie.cache('edit', data);
+    });
+
     // Get the correct width for the floating segment.
     $('#floating_panel').width($('#left_pane').width());
 
@@ -154,6 +160,7 @@ $("document").ready(function() {
     $('#next_button').click(go_next_segment);
     $('#prev_button').click(go_prev_segment);
     $('#replay_button').click(replay_segment);
+    $('#done_button').click(click_done);
 
     $('#replay_button')[0].disabled = true;
     $('#prev_button')[0].disabled = true;
