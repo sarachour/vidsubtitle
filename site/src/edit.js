@@ -65,7 +65,6 @@ function save_data () {
     }
 
     var url = $('#player1').prop('src');
-
     var obj = { data: data,
                 url: url };
 
@@ -75,11 +74,15 @@ function save_data () {
     return obj;
 }
 
-function click_done () {
+function preview_redirect () {
     var data = save_data();
     var nav = new Navigator();
     var purl = nav.portal('edit', 'preview', data);
     nav.redirect(purl);
+}
+
+function click_done () {
+    $('#prompt').fadeIn();
 }
 
 function setup_segment (seg) {
@@ -182,4 +185,7 @@ $("document").ready(function() {
 
     $('#replay_button')[0].disabled = true;
     $('#prev_button')[0].disabled = true;
+
+    $('.preview').click(preview_redirect);
+    $('.cancel').click(function () { $('#prompt').fadeOut(); });
 });
