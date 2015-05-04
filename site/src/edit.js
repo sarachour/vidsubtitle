@@ -2,6 +2,7 @@
 // Sample segments.
 var sample_json = '{"data":[{"start": 2, "end": 17, "text": "[fone ringing]"},{"start": 17, "end": 20, "text": "Yo not paying attension"},{"start": 20, "end": 23, "text": "I just want to anser the fone!"},{"start": 23, "end": 31, "text": "Emo, look.  I mean listen.  Yo hav to learn too listen."},{"start": 31, "end": 40, "text": "Thi sis not some game.  You i mean we could die out her.  Listen"},{"start": 40, "end": 44, "text": "Listen to the sounds of the machine."}],"url": "media/vid1.webm"}';
 
+var changed_start_to_next = false;
 var active_segment = null;
 var first_seg = null;
 var last_seg = null;
@@ -71,11 +72,14 @@ function save_data () {
     // Store the object in local cache.
     var user_cookie = new UserCookie();
     user_cookie.cache('edit', obj);
+    return obj;
 }
 
 function click_done () {
-    save_data();
-    alert('wha?');
+    var data = save_data();
+    var nav = new Navigator();
+    var purl = nav.portal('edit', 'preview', data);
+    nav.redirect(purl);
 }
 
 function setup_segment (seg) {
@@ -91,10 +95,22 @@ function setup_segment (seg) {
 
 function click_edit_segment (seg) {
     return function (event) {
+        // Change the Start button to a Next button if it hasn't already
+        // been changed.
+        if (!changed_start_to_next) {
+            changed_start_to_next = true;
+            $('.hotkey.title').each(function (idx, obj) {
+                if ('Start' == obj.innerHTML) {
+                    obj.innerHTML = 'Next';
+                }
+            });
+        }
+
         if (seg.active) {
             // Already active -- do nothing.
             return;
         }
+
         if (active_segment != null) {
             active_segment.deactivate($('#active_text').val());
         }
@@ -112,21 +128,9 @@ function click_edit_segment (seg) {
 }
 
 // Move activity to the next segment in the list, if there is one.
-var changed_start_to_next = false;
 function go_next_segment () {
     var next_segment = active_segment == null ?
         first_seg : active_segment.next;
-
-    // Change the Start button to a Next button if it hasn't already been
-    // changed.
-    if (!changed_start_to_next) {
-        changed_start_to_next = true;
-        $('.hotkey.title').each(function (idx, obj) {
-            if ('Start' == obj.innerHTML) {
-                obj.innerHTML = 'Next';
-            }
-        });
-    }
 
     if (next_segment != null) {
         $('#' + next_segment.id).click();
