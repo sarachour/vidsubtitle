@@ -49,11 +49,11 @@ var ScribeModel = function(){
    }
    this.caption = function(c){
       if(c != undefined){
-         this.data.segments.get(this.data.idx).caption = c;
+         this.data.segments.get(this.data.idx).caption.speaker = c;
          this._evt.trigger('caption',{obj:this});
          this._evt.trigger('update',{obj:this});
       }
-      return this.data.segments.get(this.data.idx).caption;
+      return this.data.segments.get(this.data.idx).caption.speaker;
    }
    this.peek = function(offset){
       var idx = this.data.idx + offset;

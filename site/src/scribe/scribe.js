@@ -112,8 +112,8 @@ var DisplayField = function(field_name, relIndex, state){
   }
   this.update_text = function(){
     var entry = this.state.peek(this.relIndex);
-    if(entry != null)
-      this.view.html(entry.caption); 
+    if(entry != null && entry.caption.speaker != undefined)
+      this.view.html(entry.caption.speaker); 
     else
       this.view.html("");
   }
@@ -139,8 +139,9 @@ var EntryField = function(entry_name,state){
 
   this.update_text = function(){
     var entry = this.state.peek(0);
-    if(entry != null)
-      this.view.val(entry.caption); 
+    console.log(entry.caption);
+    if(entry != null && entry.caption.speaker != undefined)
+      this.view.val(entry.caption.speaker); 
     else
       this.view.val("");
   }
