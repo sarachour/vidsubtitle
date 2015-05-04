@@ -155,9 +155,6 @@ $("document").ready(function() {
     $('#prev_button').click(go_prev_segment);
     $('#replay_button').click(replay_segment);
 
-    $('#load').click(load_json);
-    $('#save').click(save_json);
-
     $('#replay_button')[0].disabled = true;
     $('#prev_button')[0].disabled = true;
 });
