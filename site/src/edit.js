@@ -137,6 +137,8 @@ function go_next_segment () {
 
     if (next_segment != null) {
         $('#' + next_segment.id).click();
+    } else {
+        click_done();
     }
 }
 
