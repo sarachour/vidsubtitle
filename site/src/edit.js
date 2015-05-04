@@ -137,24 +137,6 @@ $("document").ready(function() {
     $('#output').val(sample_json);
     load_json();
 
-    // Register key presses.
-    $(document).keydown(function (event) {
-        var keyCode = event.keyCode;
-        if (keyCode == 9) {       // TAB key.
-            if (event.shiftKey) { // Shift-tab.
-                go_prev_segment();
-            } else {              // Regular tab.
-                go_next_segment();
-            }
-            return false;
-        } else if (keyCode == 32) {
-            if (event.ctrlKey) {  // Ctrl-space
-                replay_segment();
-                return false;
-            }
-        }
-    });
-
     // Register button clicks.
     $('#next_button').click(go_next_segment);
     $('#prev_button').click(go_prev_segment);
