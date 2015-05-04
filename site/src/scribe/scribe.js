@@ -141,9 +141,11 @@ var DisplayField = function(field_name, relIndex, state){
   this.update_text = function(){
     var entry = this.state.peek(this.relIndex);
     if(entry != null && entry.caption.speaker != undefined)
-      this.view.html(entry.caption.speaker); 
+      this.view.html(entry.caption.speaker).removeClass('disable'); 
     else
-      this.view.html("");
+      this.view.html("")
+    
+    if(entry == null) this.view.addClass('disable');
   }
 
   this.init(field_name, relIndex, state);
@@ -169,8 +171,9 @@ var EntryField = function(entry_name,state){
     var entry = this.state.peek(0);
     if(entry != null && entry.caption.speaker != undefined)
       this.view.val(entry.caption.speaker); 
-    else
+    else{
       this.view.val("");
+    }
   }
   this.get_text = function(){
     return this.view.value;
@@ -435,6 +438,7 @@ var SegmentController = function(){
 
     //handline done
     this.buttons.done = new RedirectButton('done',"edit",this.prog);
+    this.buttons.preview = new RedirectButton('preview',"edit",this.prog);
     this.done_prompt = new DonePrompt(this.prog,'completed-controls',"done","preview");
 
     this.fields = {};

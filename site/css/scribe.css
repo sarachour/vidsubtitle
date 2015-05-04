@@ -22,6 +22,11 @@ scribe specific rules
 .container {
   max-width: 1400px;
 }
+.text{
+   font-size:18pt;
+   color:#303030;
+   text-align:center;
+}
 
 .video-container {
    height: 190px;
@@ -45,6 +50,9 @@ scribe specific rules
    padding: 10px 21px 10px 10px;
    margin: 5px 0px 5px 0px;
    overflow: hidden;
+}
+.display.disable {
+   background-color:#DDDDDD;
 }
 
 .nav {
@@ -94,6 +102,8 @@ scribe specific rules
    margin: 5px 0px 35px 0px;
    border-width:5px;
 }
+
+
 
 /*.scribe .hotkey.title {
    color: #333333;
