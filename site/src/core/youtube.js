@@ -68,6 +68,11 @@ var YoutubeVideo = function(id) {
       console.log(this.id);
       this.root.parent().css('position','relative').append(this.dummy);
    }
+   this.controls = function(e){
+      if(e == true){
+         this.dummy.remove();
+      }
+   }
    this.rate = function(e){
       this.media.playbackRate = e;
    }

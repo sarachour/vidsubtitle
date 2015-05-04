@@ -3,12 +3,11 @@ stages: segment, scribe, edit
 */
 var handle_redirects = function(s){
    var par_args = s.get();
-   if(par_args.data == undefined) return false;
    var data = par_args.data;
    var to = par_args.to;
    var from = par_args.from;
-   console.log(par_args);
-   if(par_args.to != undefined && par_args.data != undefined){
+   console.log(to);
+   if(par_args.to != undefined){
       var g_url = "";
       switch(to){
          case "preview":
@@ -21,6 +20,7 @@ var handle_redirects = function(s){
             g_url = s.demo(from, data);
             break;
          case "edit":
+            console.log("data");
             g_url = s.edit(data);
             break;
          case "scribe":
@@ -28,6 +28,7 @@ var handle_redirects = function(s){
             break;
          case "portal":
             g_url = s.portal(to, from, data);
+            break;
       }
       console.log(g_url);
       console.log(data);

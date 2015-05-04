@@ -47,13 +47,14 @@ var Navigator = function(){
       return this._encode_data(this.base_url + "/scribe.html",null, null, 'scribe');
    }
    this.edit = function(data){
-      return this._encode_data(this.base_url + "/edit.html",data, from, 'edit');
+      console.log(data);
+      return this._encode_data(this.base_url + "/edit.html",null, null, 'edit');
    }
    this.preview = function(data, from){
       return this._encode_data(this.base_url + "/preview.html",null, from, 'preview');
    }
    this.portal = function(from,to,data){
-      var url = this._encode_data(this.base_url+"/portal.html",data, from, to);
+      var url = this._encode_data(this.base_url+"/portal.html",null, from, to);
       url + "&from="+from+"&to="+to;
       return url;
    }

@@ -362,7 +362,7 @@ var RedirectButton = function(id,to,state){
     data.go = this.dest;
     data.from = this.src;
     data.data = this.export();
-    var purl = this.resolver.portal(this.src,data);
+    var purl = this.resolver.portal(this.src,this.dest, data);
     this.resolver.redirect(purl);
   }
 

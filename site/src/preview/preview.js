@@ -5,7 +5,7 @@ var PreviewController = function(){
     this.exp = new SubtitleExporter();
     this.resolver = new Navigator();
     this.cookie = new UserCookie();
-
+    this.video.controls(true);
     var that = this;
     this.views = {};
     this.views.play = $("#play").click(function(){
@@ -87,7 +87,7 @@ var PreviewController = function(){
    this.init();
 }
 var pc;
-//http://localhost:8080/preview.html?data=%22%7B%5C%22data%5C%22%3A%5B%7B%5C%22start%5C%22%3A0%2C%5C%22end%5C%22%3A1.637008%2C%5C%22caption%5C%22%3A%7B%7D%7D%2C%7B%5C%22start%5C%22%3A1.637008%2C%5C%22end%5C%22%3A4.539383%2C%5C%22caption%5C%22%3A%7B%7D%7D%2C%7B%5C%22start%5C%22%3A4.539383%2C%5C%22end%5C%22%3A6.721969%2C%5C%22caption%5C%22%3A%7B%7D%7D%2C%7B%5C%22start%5C%22%3A6.721969%2C%5C%22end%5C%22%3A9.670782%2C%5C%22caption%5C%22%3A%7B%7D%7D%2C%7B%5C%22start%5C%22%3A9.670782%2C%5C%22end%5C%22%3A11.528302%2C%5C%22caption%5C%22%3A%7B%7D%7D%2C%7B%5C%22start%5C%22%3A11.528302%2C%5C%22end%5C%22%3A13.919859%2C%5C%22caption%5C%22%3A%7B%7D%7D%2C%7B%5C%22start%5C%22%3A13.919859%2C%5C%22end%5C%22%3A15.127247%2C%5C%22caption%5C%22%3A%7B%7D%7D%2C%7B%5C%22start%5C%22%3A15.127247%2C%5C%22end%5C%22%3A18.911944%2C%5C%22caption%5C%22%3A%7B%7D%7D%2C%7B%5C%22start%5C%22%3A18.911944%2C%5C%22end%5C%22%3A20.212208%2C%5C%22caption%5C%22%3A%7B%7D%7D%2C%7B%5C%22start%5C%22%3A20.212208%2C%5C%22end%5C%22%3A21.233844%2C%5C%22caption%5C%22%3A%7B%7D%7D%2C%7B%5C%22start%5C%22%3A21.233844%2C%5C%22end%5C%22%3A23.509306%2C%5C%22caption%5C%22%3A%7B%7D%7D%2C%7B%5C%22start%5C%22%3A23.509306%2C%5C%22end%5C%22%3A24.670256%2C%5C%22caption%5C%22%3A%7B%7D%7D%2C%7B%5C%22start%5C%22%3A24.670256%2C%5C%22end%5C%22%3A25.668673%2C%5C%22caption%5C%22%3A%7B%7D%7D%5D%2C%5C%22url%5C%22%3A%5C%22http%3A%2F%2Flocalhost%3A8080%2Fmedia%2Fyoutube%2FnqFq1jL_4V4.mp4%5C%22%7D%22
+
 $(document).ready(function(){
    pc = new PreviewController();
 
