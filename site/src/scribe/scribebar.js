@@ -12,8 +12,6 @@ var ScribeBar = function(id, model){
       this._model = model;
       this._view = {};
       seg = {};
-      seg.s = this._model.selected().start;
-      seg.e = this._model.selected().end;
 
       this._view.gcanv = $("<canvas/>").attr('id','macro');
       this._view.gctx = this._view.gcanv[0].getContext('2d');
@@ -24,7 +22,7 @@ var ScribeBar = function(id, model){
 
       this._view.gcanv
          .css('width',"100%")
-         .css('height',35);
+         .css('height',20);
       
       var gnorm = function(e){
          var f = e.offsetX/that._view.gcanv.width();
@@ -76,6 +74,7 @@ var ScribeBar = function(id, model){
    }
    this._draw = function(){
 
+      var that = this;
       var sel_draw = function(seg,color){
          var s = seg.start;
          var e = seg.end;
@@ -91,10 +90,11 @@ var ScribeBar = function(id, model){
 
       this._resize();
 
-      var that = this;
       var gctx = this._view.gctx;
 
-      var d = this._model.get_data();
+      var d = that._model.get_data();
+      var s = that._model.selected().start;
+      var e = that._model.selected().end;
 
       var gwidth = this._view.gcanv.width();
       var gheight = this._view.gcanv.height();
@@ -168,26 +168,14 @@ var ScribeBar = function(id, model){
       
       //draw segments bar
       gctx.fillStyle = colors.global.segments;
-      gctx.fillRect(gx(0),gy(prop.global.seg.start),gx(d.time),gy(prop.global.seg.end-prop.global.seg.start));
+      gctx.fillRect(gx(0),gy(prop.global.seg.start),gx((d.time-s)/((e-s)/d.duration)),gy(prop.global.seg.end-prop.global.seg.start));
 
-      
-      if(d.selection != null ){
-         var sstart = d.selection.start;
-         if(d.selection.subtype == 'continue')
-            gctx.fillStyle = colors.global.progress;
-         else
-            gctx.fillStyle = colors.global.selected;
-         gctx.fillRect(gx(sstart),gy(prop.global.seg.start),gx(d.time-sstart),gy(prop.global.seg.end-prop.global.seg.start));
-          
-      }else{
-         gctx.fillStyle = colors.global.progress;
-         gctx.fillRect(gx(seg.s),gy(prop.global.seg.start),gx(d.time-seg.s),gy(prop.global.seg.end-prop.global.seg.start));
-      }
+
       
       var gmark_draw = function(x){
          gctx.fillStyle = '#806515'
          gctx.fillRect(
-            gx(x),
+            gx((x-s)/((e-s)/d.duration)),
             gy(prop.global.start),
             1.5,
             gh(prop.global.end - prop.global.start)

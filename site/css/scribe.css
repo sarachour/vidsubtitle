@@ -2,6 +2,23 @@
 scribe specific rules
 */
 
+.jump-button{
+   font-size:12px;
+   text-align:center;
+   padding:0.1em;
+   color:#888888;
+   border-radius:7px;
+   border-style:solid;
+   border-color:#888888;
+   border-width:1px;
+   margin-bottom:10px;
+}
+.jump-button:hover{
+   border-style:solid;
+   border-color:orange;
+   color:orange;
+}
+
 .container {
   max-width: 1400px;
 }
@@ -11,22 +28,22 @@ scribe specific rules
 }
 
 .seg_display{
-   float:left;
-   height:80px;
-   width:60px;
+   text-align:left;
+   font-size:16px;
+   margin-left:10px;
+   text-decoration:underline;
+   height:20px;
 }
 
 .display {
-   margin-left:60px;
+   border: 1px dotted #444;
+   background-color: #FFFFFF;
    height: 80px;
    font-size:20px;
    text-align:middle;
-   border-width:1px;
-   border-style:solid;
-   border-radius:5px;
    width: 100%;
-   margin: 0px 0px 10px 0px;
-   padding: 0px;
+   padding: 10px 21px 10px 10px;
+   margin: 5px 0px 5px 0px;
    overflow: hidden;
 }
 
@@ -62,6 +79,10 @@ scribe specific rules
    border-radius:10px;
 }
 
+#curText{
+   margin-top: 20px;
+}
+
 .entry {
    resize:none;
    text-align:center;
@@ -70,8 +91,8 @@ scribe specific rules
    line-height: 1.5;
    font-weight: 500;
    font-family: "Raleway", "HelveticaNeue", "Helvetica Neue", Helvetica, Arial, sans-serif;
-   color: #222;
-   margin-top: 10px;
+   margin: 5px 0px 35px 0px;
+   border-width:5px;
 }
 
 /*.scribe .hotkey.title {

@@ -39,10 +39,8 @@
 
 <body>
 
-<div class="row">
-<h4 class="text-label">
-INSTRUCTIONS: Caption the video, segment by segment.
-<h4>
+<div class="row vspace" id="completed-controls">
+<div class="columns two jump-button" id="done">Done</div>
 </div>
 
 <!-- content pane -->
@@ -79,15 +77,30 @@ INSTRUCTIONS: Caption the video, segment by segment.
 
    <div id="text_pane" class="column two-thirds">
 
-      <div id="prevText2" class="three-quarter prev display">dummy</div>
-      <div id="prevText" class="three-quarter prev display">dummy</div>
+      <div class="fill-parent-width prev">
+         <div id="pt2_dis" class="one-quarter seg_display"></div>
+         <div id="prevText2" class="display"></div>
+      </div>
+
+      <div class="fill-parent-width prev">
+         <div id="pt_dis" class="one-quarter seg_display"></div>
+         <div id="prevText" class="display"></div>
+      </div>
 
       <div id="curText" class="fill-parent-width text">
+         <div id="cur_dis" class="one-quarter seg_display"></div>
          <textarea autofocus rows="12" id="entryArea" class="fill-parent-width entry" placeholder="type captions here"></textarea>
       </div>
 
-      <div id="nextText" class="three-quarter next display">dummy</div>
-      <div id="nextText2" class="three-quarter next display">dummy</div>
+      <div class="fill-parent-width prev">
+         <div id="nt_dis" class="one-quarter seg_display"></div>
+         <div id="nextText" class="display"></div>
+      </div>
+
+      <div class="fill-parent-width prev">
+         <div id="nt2_dis" class="one-quarter seg_display"></div>
+         <div id="nextText2" class="display"></div>
+      </div>
 
    </div>
 

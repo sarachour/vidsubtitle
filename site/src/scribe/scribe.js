@@ -95,7 +95,34 @@ var SelectionPlayer = function(state){
   this.init();
 }
 
-// mark a pause with this button
+var SegmentField = function(field_name, relIndex, state){
+  this.init = function(){
+    var that = this;
+    this.relIndex = relIndex;
+    this.view = $("#"+field_name);
+    this.state = state;
+    this.state.video_bar().model.listen('caption', function(){
+      that.update_text();
+    });
+    this.state.video_bar().model.listen('index', function(){
+      that.update_text();
+    });
+    this.state.video_bar().model.listen('update', function(){
+      that.update_text();
+    });
+  }
+
+  this.update_text = function(){
+    seg_id = this.state._model.data.idx+this.relIndex;
+    if(seg_id < 0 || seg_id >= this.state._model.data.segments.length()){
+      this.view.html("");
+    }else{
+      this.view.html("Section " + (this.state._model.data.idx+this.relIndex+1) + "/" + this.state._model.data.segments.length());
+    }
+  }
+
+  this.init(field_name, relIndex, state);
+}
 
 var DisplayField = function(field_name, relIndex, state){
   this.init = function(){
@@ -139,7 +166,6 @@ var EntryField = function(entry_name,state){
 
   this.update_text = function(){
     var entry = this.state.peek(0);
-    console.log(entry.caption);
     if(entry != null && entry.caption.speaker != undefined)
       this.view.val(entry.caption.speaker); 
     else
@@ -416,6 +442,13 @@ var SegmentController = function(){
     this.fields.prevText = new DisplayField('prevText', -1,this.prog);
     this.fields.nextText = new DisplayField('nextText', 1,this.prog);
     this.fields.nextText2 = new DisplayField('nextText2', 2,this.prog);
+
+    this.segdis = {};
+    this.segdis.pt2 = new SegmentField('pt2_dis', -2,this.prog);
+    this.segdis.pt = new SegmentField('pt_dis', -1,this.prog);
+    this.segdis.cur = new SegmentField('cur_dis', 0, this.prog);
+    this.segdis.nt = new SegmentField('nt_dis', 1,this.prog);
+    this.segdis.nt2 = new SegmentField('nt2_dis', 2,this.prog);
 
     this.entry = new EntryField('entryArea',this.prog);
 
