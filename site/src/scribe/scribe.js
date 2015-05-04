@@ -115,11 +115,14 @@ var SegmentField = function(field_name, relIndex, state){
 
   this.update_text = function(){
     seg_id = this.state._model.data.idx+this.relIndex;
-    if(seg_id < 0 || seg_id >= this.state._model.data.segments.length()){
-      this.view.html("");
-    }else{
-      this.view.html("Section " + (this.state._model.data.idx+this.relIndex+1) + "/" + this.state._model.data.segments.length());
+    if(seg_id >= 0 && seg_id < this.state._model.data.segments.length()){
+      this.view.html("Section " + (this.state._model.index()+this.relIndex+1) 
+          + "/" + this.state._model.length());
     }
+    else{
+      this.view.html("");
+    }
+
   }
 
   this.init(field_name, relIndex, state);
@@ -396,7 +399,7 @@ var DonePrompt = function(state,other_settings,done_button,preview_button){
       that.done.click();
     });
 
-/*
+
   this.view.preview = $("<div/>").addClass('button')
     .css('display','block')
     .html('Preview the Video with Captions')
@@ -405,7 +408,7 @@ var DonePrompt = function(state,other_settings,done_button,preview_button){
       that.compl_settings.fadeIn();
       that.preview.click();
     });
-*/
+
 
   this.view.root.append(this.view.prompt,this.view.edit, this.view.done, this.view.preview);
   $("body").append(this.view.root);
@@ -427,9 +430,7 @@ var SegmentController = function(){
     this.prog = new ProgramState("player", "controls");
     that.load(data['url']);
 
-    this.prog.listen('ended', function(){
-      that.done_prompt.show();
-    });
+    
 
     this.buttons = {};
     this.buttons.replay = new MainButton("mainButton", this.prog);
@@ -438,7 +439,7 @@ var SegmentController = function(){
 
     //handline done
     this.buttons.done = new RedirectButton('done',"edit",this.prog);
-    this.buttons.preview = new RedirectButton('preview',"edit",this.prog);
+    this.buttons.preview = new RedirectButton('preview',"preview",this.prog);
     this.done_prompt = new DonePrompt(this.prog,'completed-controls',"done","preview");
 
     this.fields = {};
@@ -457,6 +458,11 @@ var SegmentController = function(){
     this.entry = new EntryField('entryArea',this.prog);
 
     this.status = new Status("progress", "status", 1);
+
+    this.prog.video_bar().model.listen('end', function(e){
+      console.log("reached end");
+      that.done_prompt.show();
+    })
 
     this.prog.load(seg_data);
   }

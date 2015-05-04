@@ -54,6 +54,12 @@ var ScribeModel = function(){
    this.selected = function(){
       return this.data.select;
    }
+   this.index = function(){
+      return this.data.idx;
+   }
+   this.length = function(){
+      return this.data.segments.length();
+   }
    this.caption = function(c){
       if(c != undefined){
          this.data.segments.get(this.data.idx).caption.speaker = c;
@@ -85,6 +91,8 @@ var ScribeModel = function(){
          this._evt.trigger('update',{obj:this});
          return true;
       }
+      else
+         this._evt.trigger('end',{obj:this});
       return false;
    }
    this.select = function(t){
