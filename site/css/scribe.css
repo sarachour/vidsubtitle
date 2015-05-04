@@ -10,23 +10,24 @@ scribe specific rules
    height: 190px;
 }
 
-.shot {
-   height: 80px;
-   margin-bottom: 15px;
-   visibility:hidden;
-   position:absolute;
-   left:0;
-   top:0;
+.seg_display{
+   float:left;
+   height:80px;
+   width:60px;
 }
 
 .display {
+   margin-left:60px;
    height: 80px;
-   margin-bottom: 15px;
    font-size:20px;
    text-align:middle;
    border-width:1px;
    border-style:solid;
    border-radius:5px;
+   width: 100%;
+   margin: 0px 0px 10px 0px;
+   padding: 0px;
+   overflow: hidden;
 }
 
 .nav {
@@ -51,7 +52,6 @@ scribe specific rules
 
 #mainButton {
    height:160px;
-   width:200px;
    font-size:50px;
    margin-top:30px;
    margin-bottom:45px;
@@ -60,16 +60,6 @@ scribe specific rules
    border-width:3px;
    border-style:solid;
    border-radius:10px;
-}
-
-.prev {
-   background-color: #D4876A;
-   border-color: #803215;
-}
-
-.next {
-   background-color: #64B058;
-   border-color: #1E6912;
 }
 
 .entry {

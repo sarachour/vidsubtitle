@@ -49,10 +49,7 @@ INSTRUCTIONS: Caption the video, segment by segment.
 <div class="container scribe">
 <!-- video and controls -->
 
-   <div id="video_pane" class="column one-fourth">
-
-      <div class="fill-parent-width shot"><canvas id="prevShot2" height="100px" width="75px"></canvas></div>
-      <div class="fill-parent-width shot"><canvas id="prevShot" height="100px" width="75px"></canvas></div>
+   <div id="video_pane" class="column one-third">
 
       <div id="current_pane">
          <div class="row black-bg">
@@ -67,33 +64,26 @@ INSTRUCTIONS: Caption the video, segment by segment.
             <div id="controls" class="fill-parent-width text-label">PROGRESS BAR HERE</div>
          </div>
 
-      </div>
+         <button type="button" id="prevButton" class="offset-by-one-fourth one-half column button-primary">Prev</button>
+         <button type="button" id="mainButton" class="fill-parent-width">START</button>
+         <button type="button" id="nextButton" class="offset-by-one-fourth one-half column button-primary">Next</button>
 
-      <div class="fill-parent-width shot"><canvas id="nextShot" height="100px" width="75px"></canvas></div>
-      <div class="fill-parent-width shot"><canvas id="nextShot2" height="100px" width="75px"></canvas></div>
+      </div>
 
    </div>
 
-   <div id="text_pane" class="column one-half">
+   <div id="text_pane" class="column two-thirds">
 
-      <div id="prevText2" class="fill-parent-width prev display">dummy</div>
-      <div id="prevText" class="fill-parent-width prev display">dummy</div>
+      <div id="prevText2" class="three-quarter prev display">dummy</div>
+      <div id="prevText" class="three-quarter prev display">dummy</div>
 
       <div id="curText" class="fill-parent-width text">
          <textarea autofocus rows="12" id="entryArea" class="fill-parent-width entry" placeholder="type captions here"></textarea>
       </div>
 
-       <div id="nextText" class="fill-parent-width next display">dummy</div>
-       <div id="nextText2" class="fill-parent-width next display">dummy</div>
+      <div id="nextText" class="three-quarter next display">dummy</div>
+      <div id="nextText2" class="three-quarter next display">dummy</div>
 
-   </div>
-
-   <div id="button_pane" class="column one-fourth">
-      <button type="button" id="prev2Button" class="row vspace prev nav">go to previous segment</button>
-      <button type="button" id="prevButton" hotkey-name="up key" hotkey-code="up" class="hotkey node row vspace prev nav">go to previous segment</button>
-      <button type="button" id="mainButton" class="row vspace">START</button>
-      <button type="button" id="nextButton" hotkey-name="enter" hotkey-code="enter" class="hotkey node row vspace next nav">go to next segment</button>
-      <button type="button" id="next2Button" class="row vspace next nav">go to next segment</button>
    </div>
 
 </div>

@@ -87,8 +87,8 @@ var SelectionPlayer = function(state){
     var sel = this.state.selected();
     var s = sel.start;
     var e = sel.end;
-    console.log(sel);
-    if(time == undefined) s = sel.start;
+
+    if(this.state.video_bar().model.time() == undefined) s = sel.start;
     this.state.video_player().segment(s,e);
     this.state.video_player().play();
   }
@@ -103,19 +103,14 @@ var DisplayField = function(field_name, relIndex, state){
     this.relIndex = relIndex;
     this.view = $("#"+field_name);
     this.state = state;
-    this.state.video_bar().model.listen('update', function(){
-      that.update_text();
+    this.state.statemgr().listen('caption-change', function(){
+      console.log(this.state.peek);
+      var entry = this.state.peek(this.relIndex);
+      this.view.html(entry.caption); 
     });
   }
 
-  this.update_text = function(){
-    var entry = this.state.peek(this.relIndex);
-    console.log(entry);
-    if(entry != null)
-      this.view.html(entry.caption);
-  }
-
-  this.init(field_name, relIndex);
+  this.init(field_name, relIndex, state);
 }
 
 var EntryField = function(entry_name,state){
@@ -159,7 +154,7 @@ var NavigateButton = function(button_name, state, type){
       else{
         that.state.prev();
       }
-      that.state.play();
+      that.state._player.play(that.state.selected().start);
       that.state.statemgr().trigger('state-change',{state:'caption-change'});
     })
   }
@@ -176,7 +171,7 @@ var MainButton = function(button_name, state){
 
     this.view
       .data("button-title","Start")
-      .pulse({'background-color':'#96E6B8'},{pulses:-1,duration:1000});
+      .pulse({'background-color':'#96E6B8'},{pulses:-1,duration:1000})
       .click(function(){
         that.start();
       })
@@ -200,9 +195,9 @@ var MainButton = function(button_name, state){
 
     this.view.click(function(){
       var sel = that.state.selected();
-      that.state.play();
-      state.prog._model.add_caption(state.entry.get_text());
-      state.prog._model.curIndex++;
+      that.state._player.play(sel.start);
+      //state.prog._model.add_caption(state.entry.get_text());
+      //state.prog._model.curIndex++;
     })
   }
   this.init();
@@ -215,7 +210,6 @@ var VideoPane = function(video_name, state){
     this.state = state;
     //initialize video
     this.state.statemgr().listen('scrub', function(e){
-      console.log('testing');
       that.video.time(that.state.video_bar().model.time());
     })
     this.video.listen('load', function(evt){
@@ -282,7 +276,13 @@ var VideoBar = function(bar_name, state){
   }
   this._update_time = function(){
     var dur = this.state.video_player().get_model().time();
-    this.model.time(dur);
+    //console.log(dur + ' -- ' + this.state._model.selected().end);
+    if (dur >= this.state._model.selected().end) {
+      this.model.time(this.state._model.selected().start);
+      state._video_player.pause();
+    }else{
+      this.model.time(dur);
+    }
   }
   this._update_duration = function(){
     var dur = this.state.video_player().get_model().duration();
@@ -381,10 +381,6 @@ var SegmentController = function(){
     var args = this.queryResolver.get();
     var data = args.data;
     var seg_data = data['data'];
-
-    for(i=0; i < seg_data.length; i++){
-      seg_data[i].caption = 'This is text part ' + i;
-    }
 
     this.prog = new ProgramState("player", "controls", seg_data);
     that.load(data['url']);

@@ -8,8 +8,12 @@ var ScribeBar = function(id, model){
       else{
          this._root = id;
       }
+
       this._model = model;
       this._view = {};
+      seg = {};
+      seg.s = this._model.selected().start;
+      seg.e = this._model.selected().end;
 
       this._view.gcanv = $("<canvas/>").attr('id','macro');
       this._view.gctx = this._view.gcanv[0].getContext('2d');
@@ -46,7 +50,7 @@ var ScribeBar = function(id, model){
          })
          .click(function(e){
             var c = gnorm(e);
-            that._model.select(c.t);
+            that._model.time(c.t);
          })
          .mouseleave(function(e){
             $(this).data('coord',{x:null,y:null}).data('drag',false);
@@ -95,10 +99,6 @@ var ScribeBar = function(id, model){
       var gwidth = this._view.gcanv.width();
       var gheight = this._view.gcanv.height();
 
-      var viewport = {};
-      viewport.start=0;
-      viewport.end=d.duration;
-
       var gx = function(v){return v*gwidth/d.duration}
       var gy = function(v){return v*gheight}
       var gw = function(v){return v*gwidth/d.duration}
@@ -128,10 +128,6 @@ var ScribeBar = function(id, model){
       prop.global.seg.start = 0.4;
       prop.global.seg.end = 0.6;
       var colors = {};
-      // a pause marker
-      colors.pause = {};
-      colors.pause.marker = "#2980b9";
-      colors.pause.stem = "#2980b9";
       
       //the cursor showing where you are currently
       colors.cursor = {};
@@ -161,8 +157,8 @@ var ScribeBar = function(id, model){
       colors.global.progress = "darkgrey";
       colors.global.selected = "#2ecc71";
 
-      this._view.start.html(viewport.start);
-      this._view.end.html(viewport.end);
+      this._view.start.html(this._model.selected.start);
+      this._view.end.html(this._model.selected.end);
       if(d.duration == null || d.duration == 0) return;
       //fill in background
 
@@ -183,14 +179,13 @@ var ScribeBar = function(id, model){
             gctx.fillStyle = colors.global.selected;
          gctx.fillRect(gx(sstart),gy(prop.global.seg.start),gx(d.time-sstart),gy(prop.global.seg.end-prop.global.seg.start));
           
-      }
-      else{
+      }else{
          gctx.fillStyle = colors.global.progress;
-         gctx.fillRect(gx(viewport.start),gy(prop.global.seg.start),gx(d.time-viewport.start),gy(prop.global.seg.end-prop.global.seg.start));
+         gctx.fillRect(gx(seg.s),gy(prop.global.seg.start),gx(d.time-seg.s),gy(prop.global.seg.end-prop.global.seg.start));
       }
       
-      var gmark_draw = function(x,c){
-         gctx.fillStyle = c.marker;
+      var gmark_draw = function(x){
+         gctx.fillStyle = '#806515'
          gctx.fillRect(
             gx(x),
             gy(prop.global.start),
@@ -201,16 +196,6 @@ var ScribeBar = function(id, model){
 
       var hovered = false;
       var hover_t = null;
-      //show hovered segment
-      if(this._view.gcanv.data('coord') != undefined){
-         var hover_t = this._view.gcanv.data('coord').t;
-         var matches = d.segments.match(function(e){
-            return (hover_t >= e.start && hover_t <= e.end);
-         });
-         if(matches.length() > 0){
-            sel_draw(matches.get(0).elem, colors.hovered);
-         }
-      }
 
       if(!hovered && hover_t != null){
          hovered = true;
@@ -218,15 +203,12 @@ var ScribeBar = function(id, model){
       }
 
       if(hover_t != null){
-         gmark_draw(hover_t,colors.cursor);
+         gmark_draw(hover_t);
       }
       else{
-         gmark_draw(d.time,colors.cursor);
+         gmark_draw(d.time);
       }
 
-      d.segments.for_each(function(e){
-         gmark_draw(e.end, colors.pause);
-      });
 
    }
 
