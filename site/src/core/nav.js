@@ -1,5 +1,5 @@
 var Navigator = function(){
-   this.base_url = "http://localhost:8080";
+   this.base_url = "";
    this._strip = function(text){
       text=text.replace(/^["]+/g,"");
       text=text.replace(/["]+$/g,"");
