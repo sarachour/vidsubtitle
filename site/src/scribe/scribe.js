@@ -26,7 +26,7 @@ var ProgramState = function(vp_name, vb_name){
     this._player = new SelectionPlayer(this);
 
     this.video_bar().model.listen('select', function(e){
-      that._player.play(e.time);
+      that._player.play(e.obj.data.time);
       that.obs.trigger("update");
     })
     this.obs.listen('state-change', function(e){
@@ -82,13 +82,19 @@ var SelectionPlayer = function(state){
     this.state = state;
     this.timer = null;
   }
-  this.play = function(){
+  this.play = function(time){
     var sel = this.state.selected();
     var s = sel.start;
     var e = sel.end;
 
+    console.log(s + ' -- ' + time + ' -- ' + e);
+
     if(this.state.video_bar().model.time() == undefined) s = sel.start;
-    this.state.video_player().segment(s,e);
+    if (time != undefined){
+      this.state.video_player().segment(time,e);
+    }else{
+      this.state.video_player().segment(s,e);
+    }
     this.state.video_player().play();
   }
   this.init();
