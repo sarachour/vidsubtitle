@@ -4,6 +4,7 @@ var PreviewController = function(){
     this.video = new YoutubeVideo("player1");
     this.exp = new SubtitleExporter();
     this.resolver = new Navigator();
+    this.cookie = new UserCookie();
 
     var that = this;
     this.views = {};
@@ -31,7 +32,7 @@ var PreviewController = function(){
       .attr('srclang', 'en')
       .attr('label', 'English')
 
-    this.load_from_query();
+    this.load_from_cookie();
 
     $("video").append(this.track);
    }
@@ -48,15 +49,14 @@ var PreviewController = function(){
 
     this.resolver.redirect(url);
    }
-   this.load_from_query = function(){
-      var data = this.resolver.get();
-      if(data.data == undefined) return;
-      var d = data.data;
-      this.data = d.data;
-      this.url = this.data.url;
-      this.video.load(this.url);
-      this.export('vtt');
-      this.track.attr('src', this.file_url);
+   this.load_from_cookie = function(){
+      var args = this.cookie.cache();
+      if(args.data != undefined){
+        this.video.load(args.data.url);
+        this.data = args.data;
+        this.export('vtt');
+        this.track.attr('src', this.file_url);
+      }
 
    }
    this.load_subtitles = function(){

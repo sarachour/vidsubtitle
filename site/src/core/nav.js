@@ -50,7 +50,7 @@ var Navigator = function(){
       return this._encode_data(this.base_url + "/edit.html",data, from, 'edit');
    }
    this.preview = function(data, from){
-      return this._encode_data(this.base_url + "/preview.html",data, from, 'preview');
+      return this._encode_data(this.base_url + "/preview.html",null, from, 'preview');
    }
    this.portal = function(from,to,data){
       var url = this._encode_data(this.base_url+"/portal.html",data, from, to);
