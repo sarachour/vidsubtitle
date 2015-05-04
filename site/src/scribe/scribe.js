@@ -335,7 +335,7 @@ var RedirectButton = function(id,to,state){
   this.resolver = new Navigator();
   this.state = state;
   this.dest = to;
-  this.src = "segment";
+  this.src = "scribe";
 
 
   this.root = $("#"+id).click(function(){
@@ -434,7 +434,7 @@ var SegmentController = function(){
     this.buttons.prev = new NavigateButton("prevButton", this.prog, 'prev');
 
     //handline done
-    this.buttons.done = new RedirectButton('done',"scribe",this.prog);
+    this.buttons.done = new RedirectButton('done',"edit",this.prog);
     this.done_prompt = new DonePrompt(this.prog,'completed-controls',"done","preview");
 
     this.fields = {};
