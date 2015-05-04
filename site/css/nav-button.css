@@ -1,0 +1,18 @@
+.nav-button {
+    background-color: #00F;
+    color: #FFF;
+    font-weight: bold;
+}
+
+.nav-button .shortcut {
+    color: #CCC;
+}
+
+.nav-button:hover {
+    background-color: #FFF;
+    color: #000;
+}
+
+.nav-button:hover div {
+    color: #000;
+}
