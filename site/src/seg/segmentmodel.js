@@ -17,22 +17,26 @@ var SegmentModel  = function(){
          this.val = false;
          this.pending = [];
          this.lock = function(cbk){
-            if(this.val == false)
+            if(this.val == false){
                this.val = true;
+               cbk();
+               this.val = false;
+            }
             else
                this.pending.push(cbk);
          }
          this.unlock = function(){
             this.val =  false;
             if(this.pending.length > 0){
-               this.val = true;
+               this.lock();
                var cbk = this.pending.shift();
                cbk();
+               this.unlock();
             }
 
          }
       }
-      this.mutex = new Lock();
+      this.mutex = new this.Lock();
 
       this.data.selection = this._get_continuation();
       
@@ -232,7 +236,6 @@ var SegmentModel  = function(){
       var that = this;
       this.mutex.lock(function(){
          cbk();
-         that.mutex.unlock();
       });
    }
    this.time = function(t){

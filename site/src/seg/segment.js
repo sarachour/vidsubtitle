@@ -439,15 +439,15 @@ var VideoBar  =function(bar_name, state){
     this.model.duration(dur);
   }
   this.shift = function(l,r){
-    this.model.sync(function(){this.model.shift(l,r)});
+    this.model.shift(l,r);
   }
   this.remove = function(){
-    this.model.sync(function(){this.model.remove()});
+    return this.model.remove();
   }
   this.mark = function(){
       var t = this.state.video_player().get_model().time();
-      this.model.sync(function(){this.model.add(t)});
-      this.state.video_player().segment(t,this.model.duration());
+      this.model.add(t);
+      this.state.video_player().segment(t+0.001,this.model.duration());
       this.state.video_player().play();
   }
   this._init();
