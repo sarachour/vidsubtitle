@@ -7,7 +7,7 @@ var UserCookie = function(){
       this.data = null;
       if(text != undefined)
          this.data = JSON.parse(text);
-
+      
       if(this.data == null){
          this.data = {};
          this.data.tuts = {};
@@ -18,9 +18,19 @@ var UserCookie = function(){
          this.data.work.type = "none";
          this.data.work.data = "";
       }
+      else{
+        this.data.work.data = JSON.parse(localStorage.getItem('work-data'));
+      }
     }
     this._store = function(){
+      var tmp= this.data.work.data;
+      this.data.work.data = "";
+
       $.cookie('user_data',JSON.stringify(this.data));
+      //store the work
+      localStorage.setItem('work-data', JSON.stringify(tmp));
+      this.data.work.data = tmp;
+
     }
     this.tutorial = function(key,val){
       if(val != undefined){

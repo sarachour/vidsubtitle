@@ -36,24 +36,37 @@
 </head>
 
 <body>
+<div id="prompt" class="overlay-bg dummy">
+   <div class="overlay">
+      <div class="overlay-title" >
+         Segmentation Task Complete
+         <div class="prompt close overlay-close-button">&times;</div>
+      </div>
+      <div class="overlay-prompt" >
+      You have completed segmenting the video. 
+      What would you like to do next?
+      </div>
+      <div class="overlay-field">
+            <div class="prompt continue overlay-button jump-button">Move to Scribing Task</div>
+      </div>
+      <div class="overlay-field" >
+            <div class="prompt preview overlay-button jump-button">Preview Video with Segments</div>
+      </div>
+      <div class="overlay-field" >
+            <div class="prompt stay overlay-button jump-button">Continue Editing Segments</div>
+      </div>
+
+   </div>
+</div>
+
 
 <div class="container segment">
 
-<!--
-<div class="row" id="header">
-   <div class="column one-fourth text-label">
-      <button id="start_demo">Play Demonstration</button>
-   </div>
-   <div id="progress" class="column one-half text-label">PROGRESS HERE</div>
-   <div id="status" class="column one-fourth text-label dummy">STATS HERE</div>
-</div>
--->
-   
+
 
 
 <!-- content pane -->
 <div id="content">
-
 
 <div class="row vspace" id="completed-controls">
 <div class="columns two jump-button" id="demo">Go To Tutorial</div>
@@ -92,7 +105,7 @@
 
 <div class="row">
 
-<div id="compact-controls" class="fill-parent-width white-text row">
+<div id="compact-controls" class="fill-parent-width row">
  
    <div id="nav-controls" class="compact three columns">
 
@@ -107,7 +120,7 @@
    </div>
    </div>  
 
-   <div id="break" button-title="Start" hotkey-name="" hotkey-code="space" class="hotkey button four columns"></div>
+   <div id="break" button-title="Start" hotkey-name="(spacebar)" hotkey-code="space" class="hotkey node hotkey-button four columns"></div>
 
 
    <div id="edit-controls" class="compact four columns">

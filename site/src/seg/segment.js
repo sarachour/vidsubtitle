@@ -482,49 +482,29 @@ var RedirectButton = function(id,to,state){
   
 }
 
-var DonePrompt = function(state,other_settings,done_button, preview_button){
+var DonePrompt = function(state,prompt_window,done_button, preview_button){
   var that = this;
   this.done = $("#"+done_button);
   this.preview = $("#"+preview_button);
-  this.compl_settings = $("#"+other_settings);
   this.view = {};
-  this.view.root = $("<div/>")
-    .addClass('overlay')
-    .hide();
+  this.view.root = $("#"+prompt_window);
 
-  this.view.prompt = $("<div/>")
-  .css('text-align','center')
-  .html(
-    "The video has finished! What do you want to do next?"
-  )
-  this.view.edit = $("<div/>").addClass('button')
-    .css('display','block')
-    .html('Continue Editing the Segments')
+  this.view.edit = $(".prompt.close,.prompt.stay", this.view.root)
     .click(function(){
       that.view.root.fadeOut();
-      that.compl_settings.fadeIn();
     });
 
-  this.view.done = $("<div/>").addClass('button')
-    .css('display','block')
-    .html('I\'m Done')
+  this.view.done = $(".prompt.continue", this.view.root)
     .click(function(){
       that.view.root.fadeOut();
-      that.compl_settings.fadeIn();
       that.done.click();
     });
 
-  this.view.preview = $("<div/>").addClass('button')
-    .css('display','block')
-    .html('Preview the Video with Segments')
+  this.view.preview = $(".prompt.preview", this.view.root)
     .click(function(){
       that.view.root.fadeOut();
-      that.compl_settings.fadeIn();
       that.preview.click();
     });
-
-  this.view.root.append(this.view.prompt,this.view.edit, this.view.done, this.view.preview);
-  $("body").append(this.view.root);
 
   this.show = function(){
     this.view.root.fadeIn();
@@ -559,7 +539,7 @@ var SegmentController = function(){
     this.buttons.preview = new RedirectButton('preview','preview',this.prog);
     this.buttons.demo = new RedirectButton('demo','demo',this.prog);
 
-    this.done_prompt = new DonePrompt(this.prog,'completed-controls',"done","preview");
+    this.done_prompt = new DonePrompt(this.prog,'prompt',"done","preview");
 
     //load url
     var args = this.cookies.cache();
