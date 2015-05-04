@@ -1,5 +1,5 @@
 .nav-button {
-    background-color: #d35400;
+    background-color: #3F51B5;
     color: #FFF;
     font-weight: bold;
 }
@@ -9,10 +9,9 @@
 }
 
 .nav-button:hover {
-    background-color: #FFF;
-    color: #000;
+    background-color: orange; // #E8EAF6;
 }
 
 .nav-button:hover div {
-    color: #000;
+    color: #FFF;
 }
