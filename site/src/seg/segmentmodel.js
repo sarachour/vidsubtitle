@@ -13,6 +13,26 @@ var SegmentModel  = function(){
       this.data.time = 0;
       this.data.hold = null;
       this.data.duration = 0;
+      this.Lock = function(){
+         this.val = false;
+         this.pending = [];
+         this.lock = function(cbk){
+            if(this.val == false)
+               this.val = true;
+            else
+               this.pending.push(cbk);
+         }
+         this.unlock = function(){
+            this.val =  false;
+            if(this.pending.length > 0){
+               this.val = true;
+               var cbk = this.pending.shift();
+               cbk();
+            }
+
+         }
+      }
+      this.mutex = new Lock();
 
       this.data.selection = this._get_continuation();
       
@@ -207,6 +227,13 @@ var SegmentModel  = function(){
          this.data.selection = this._get_continuation();
       }
       this._evt.trigger('update',{obj:this, type:'add',id:s.id, time:time});
+   }
+   this.sync = function(cbk){
+      var that = this;
+      this.mutex.lock(function(){
+         cbk();
+         that.mutex.unlock();
+      });
    }
    this.time = function(t){
       var that = this;
