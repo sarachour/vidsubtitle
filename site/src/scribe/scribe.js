@@ -480,7 +480,6 @@ var SegmentController = function(){
       data.data = that.prog.video_bar().model.to_json()
       data.url = that.prog.video_player().get_model().get_url();
       that.cookies.cache('edit', data);
-      return 'test';
     });
 
     this.prog.load(seg_data);
