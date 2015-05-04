@@ -30,19 +30,29 @@ var SubtitleExporter = function(){
       var that = this;
       var str = this.for_each(json, function(n,i,s,e){
          var nub = "";
-         nub = "Speaker";
-         nub += delim;
-         nub += s;
-         nub += delim;
-         nub += e;
-         nub += delim;
-         if(n.text != undefined){
-            nub += n.text;
+         
+         var nspeakers = 0;
+         if(n.caption != undefined){
+            for(var speaker in n.caption){
+               nub += speaker;
+               nub += delim;
+               nub += s;
+               nub += delim;
+               nub += e;
+               nub += n.caption[speaker];
+               nub += nline;
+               nspeakers++;
+            }
          }
-         else{
+         if(nspeakers == 0){
+            nub += speaker;
+            nub += delim;
+            nub += s;
+            nub += delim;
+            nub += e;
             nub += that.lorem.createText(1, Lorem.TYPE.SENTENCE);
+            nub += nline;
          }
-         nub += nline;
          return nub;
       })
       return str;
@@ -62,12 +72,16 @@ var SubtitleExporter = function(){
       str += this.for_each(json, function(n,i,s,e){
          var nub = "";
          nub += tc(s)+" --> "+tc(e)+"\n";
-         nub += "<v Speaker>";
-         if(n.text != undefined){
-            nub += n.text + "\n";
+         var nspeakers = 0;
+         if(n.caption != undefined){
+            for(var speaker in n.caption){
+               nub += "<v "+speaker+">";
+               nub += n.caption[speaker] + "\n";
+               nspeakers++;
+            }
          }
-         else{
-            nub += that.lorem.createText(1, Lorem.TYPE.SENTENCE)+"\n";
+         if(nspeakers == 0){
+            nub += "<v speaker>"+that.lorem.createText(1, Lorem.TYPE.SENTENCE)+"\n";
          }
          nub += "\n";
          return nub;
@@ -91,6 +105,16 @@ var SubtitleExporter = function(){
          var nub = "";
          nub += (i+1)+"\n";
          nub += tc(s)+" --> "+tc(e)+"\n";
+
+         var nspeakers = 0;
+         if(n.caption != undefined){
+            for(var speaker in n.caption){
+               nub += speaker+":";
+               nub += n.caption[speaker] + "\n";
+               nspeakers++;
+            }
+         }
+
          if(n.text != undefined){
             nub += n.text + "\n";
          }
