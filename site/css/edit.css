@@ -63,3 +63,21 @@ textarea {
 .modified {
     background-color: #FF0;
 }
+
+.jump-button{
+   font-size:12px;
+   text-align:center;
+   padding:0.1em;
+   color:#888888;
+   border-radius:7px;
+   border-style:solid;
+   border-color:#888888;
+   border-width:1px;
+   margin-bottom: 1em;
+}
+
+.jump-button:hover{
+   border-style:solid;
+   border-color:orange;
+   color:orange;
+}
