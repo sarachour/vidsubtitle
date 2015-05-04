@@ -7,9 +7,10 @@ var first_seg = null;
 var last_seg = null;
 var seg_count = 0;
 var video;
+var tha_data;
 
-function load_json () {
-    var input_obj = JSON.parse($('#output').val());
+function load (input_obj) {
+    tha_data = input_obj;
 
     // Reset the current state.
     first_seg = last_seg = active_segment = null;
@@ -41,6 +42,10 @@ function load_json () {
         prev = seg;
     }
     last_seg = prev;
+}
+
+function load_json () {
+    load(JSON.parse($('#output').val()));
 }
 
 function save_json () {
@@ -129,13 +134,21 @@ function replay_segment () {
 }
 
 $("document").ready(function() {
+    var nav = new Navigator();
+    var data;
+
+    var args = nav.get();
+    if (isValue(args.data)) {
+        data = args.data;
+    } else {
+        data = JSON.parse(sample_json);
+    }
+
+    load(data);
     video = new YoutubeVideo("player1");
 
     // Get the correct width for the floating segment.
     $('#floating_panel').width($('#left_pane').width());
-
-    $('#output').val(sample_json);
-    load_json();
 
     // Register button clicks.
     $('#next_button').click(go_next_segment);

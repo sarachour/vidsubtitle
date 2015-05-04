@@ -189,6 +189,10 @@ function __sn_activate () {
 // SegmentNode contains info about itself in relation to other nodes, and
 // has info about the edit.
 function SegmentNode (id, segment, prev, total) {
+
+    // FIXME: Mike and I need to standardize on the caption.
+    if (!segment.text) segment.text = segment.caption.speaker;
+
     this.index = id + 1;
     this.total = total;
     this.id = 'segment_id_' + id;
