@@ -42,6 +42,10 @@ body {
 	font-family: 'lato' sans-serif;
 	font-weight:bold;
 }
+.red-button.disabled{
+	background-color:grey;
+	color:lightgrey;
+}
 /* Sara */
 .title {
 	text-align:center;

@@ -46,10 +46,7 @@ $(document).ready(function(){
    var opt = {lines: 8, length:2, width:2, radius:3};
    var args = nav.get();
 
-   var user_data = $.cookie('user_data');
-   if(user_data == undefined){
-      
-   }
+
    //$("#spinner").spin();
    // clicking button
    var handle_video = function(vid_url){
@@ -66,6 +63,7 @@ $(document).ready(function(){
       }
    }
    $("#begin").click(function() {
+      if($(this).hasClass('disabled')) return;
       var input_url = $("#input_url").val();
       if(!is_redirect){
          $("#spinner").spin('medium');
@@ -79,12 +77,21 @@ $(document).ready(function(){
          }
          
       }
-   });
+   })
+   .addClass('disabled');
 
    // pressing enter
    $("#input_url").keyup(function(event){
       if(event.keyCode == 13){
          $("#begin").click();
+      }
+   })
+   .on('input propertychange paste',function(){
+      if($(this).val() != ""){
+         $("#begin").removeClass('disabled');
+      }
+      else{
+         $("#begin").addClass('disabled');
       }
    });
    
