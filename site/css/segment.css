@@ -140,22 +140,6 @@ chunk specific rules
 .text.centered {
    text-align: center;
 }
-.jump-button{
-   font-size:14px;
-   text-align:center;
-   padding:0.1em;
-   background-color:#e74c3c;
-   color:white;
-   border-radius:7px;
-   border-style:solid;
-   border-color:#888888;
-   border-width:1px;
-}
-.jump-button:hover{
-   border-style:solid;
-   border-color:orange;
-   color:yellow;
-}
 
 #hint {
    background-color:lightyellow;

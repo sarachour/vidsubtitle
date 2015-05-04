@@ -108,8 +108,9 @@
 }
 .jump-button:hover{
    border-style:solid;
-   border-color:orange;
-   color:yellow;
+   background-color:#f39c12;
+   border-color:#f39c12;
+   color:white;
 }
 
 .overlay-title{

@@ -1,6 +1,6 @@
 
-var YoutubeVideo = function(id,features) {
-   this.init = function(id, features){
+var YoutubeVideo = function(id,features, params) {
+   this.init = function(id, features,params){
       var that = this;
       this.loaded = false;
       this.events = new Observer();
@@ -12,7 +12,10 @@ var YoutubeVideo = function(id,features) {
          this.root = id;
       }
 
-      var args = {};    
+      var args = {}; 
+      if(params != undefined){
+         args = params;
+      }   
       args.seekable = true;
       args.enableAutosize = true;
       args.success = function(me, d){
@@ -50,6 +53,7 @@ var YoutubeVideo = function(id,features) {
          args.features = features;
       else
          args.features = [];
+      
       args.enableKeyboard = false;
       //args.mode = "auto"
       args.mode = "native"
@@ -161,5 +165,5 @@ var YoutubeVideo = function(id,features) {
       this.media.setSrc(url);
       this.media.load();
    }
-   this.init(id, features);
+   this.init(id, features, params);
 }

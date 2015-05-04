@@ -1,12 +1,26 @@
+.container {
+  max-width: 1400px;
+}
+
+.export-button {
+   background-color:white;
+}
+#theater{
+   background-color:#222221;
+   padding-top:2em;
+   padding-bottom:2em;
+}
 #video-container {
    margin-top:5em;
    width:100%;
-   height:400px;
+   height:600px;
    background-color:#444444;
+   max-width: 800px;
+   margin: 0 auto;
 }
 
 #player1{
    position:relative;
-   left:25%;
-   width:50%;
+   width:100%;
+   height:100%;
 }

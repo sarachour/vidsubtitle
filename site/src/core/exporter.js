@@ -39,6 +39,7 @@ var SubtitleExporter = function(){
                nub += s;
                nub += delim;
                nub += e;
+               nub += delim;
                nub += n.caption[speaker];
                nub += nline;
                nspeakers++;
@@ -72,6 +73,7 @@ var SubtitleExporter = function(){
             }
          }
          nub += "\n";
+         if(nspeakers == 0) nub = "";
          return nub;
       })
       return str;
@@ -103,6 +105,7 @@ var SubtitleExporter = function(){
             }
          }
          nub += "\n";
+         if(nspeakers == 0) nub = "";
          return nub;
       })
       return str;

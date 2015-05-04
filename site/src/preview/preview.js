@@ -2,11 +2,14 @@
 var PreviewController = function(){
    this.init = function(){
     this.video = new YoutubeVideo("player1",
-      ['playpause','progress','current','duration','tracks','volume','fullscreen']);
+      ['playpause','progress','current','duration','tracks','volume','fullscreen'],
+      {enableAutosize: true, videoWidth:'100%', videoHeight:'100%'});
+
     this.exp = new SubtitleExporter();
     this.resolver = new Navigator();
     this.cookie = new UserCookie();
     this.video.controls(true);
+
     var that = this;
     this.views = {};
     this.views.play = $("#play").click(function(){
@@ -15,19 +18,19 @@ var PreviewController = function(){
 
     this.views.srt = $("#srt").click(function(){
       that.export('srt');
+      window.location.assign(that.file_url); 
     });
 
     this.views.vtt = $("#vtt").click(function(){
       that.export('vtt');
+      window.location.assign(that.file_url); 
     });
 
     this.views.vtt = $("#raw").click(function(){
       that.export('raw');
+      window.location.assign(that.file_url); 
     });
 
-    this.views.back = $("#back").click(function(){
-      that.back();
-    })
     this.track = $("<track/>")
       .attr('kind', 'subtitles')
       .attr('srclang', 'en')
@@ -36,19 +39,6 @@ var PreviewController = function(){
     this.load_from_cookie();
 
     $("video").append(this.track);
-   }
-   this.back = function(){
-    var args = this.resolver.get();
-    var url = "";
-    var from = args.from;
-    if(from == 'segment')
-      url = this.resolver.segment(this.data);
-    else if(from == 'edit')
-      url = this.resolver.edit(this.data);
-    else if(from == 'scribe')
-      url = this.resolver.scribe(this.data);
-
-    this.resolver.redirect(url);
    }
    this.load_from_cookie = function(){
       var args = this.cookie.cache();
@@ -82,8 +72,9 @@ var PreviewController = function(){
       var str = this.exp.to_raw(dat);
 
     var fn = this.exp.to_file(str);
-    
+
     this.file_url = fn;
+
    }
    this.init();
 }
