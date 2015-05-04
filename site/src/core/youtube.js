@@ -1,6 +1,6 @@
 
-var YoutubeVideo = function(id) {
-   this.init = function(id){
+var YoutubeVideo = function(id,features) {
+   this.init = function(id, features){
       var that = this;
       this.loaded = false;
       this.events = new Observer();
@@ -46,7 +46,10 @@ var YoutubeVideo = function(id) {
       args.error = function(){
          console.log("ERROR: Could not play");
       }
-      args.features = [];
+      if(features != undefined)
+         args.features = features;
+      else
+         args.features = [];
       args.enableKeyboard = false;
       //args.mode = "auto"
       args.mode = "native"
@@ -158,5 +161,5 @@ var YoutubeVideo = function(id) {
       this.media.setSrc(url);
       this.media.load();
    }
-   this.init(id);
+   this.init(id, features);
 }

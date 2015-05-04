@@ -78,7 +78,13 @@ $(document).ready(function(){
          
       }
    })
-   .addClass('disabled');
+
+   if($("#input_url").val() != ""){
+      $("#begin").removeClass('disabled');
+   }
+   else{
+      $("#begin").addClass('disabled');
+   }
 
    // pressing enter
    $("#input_url").keyup(function(event){

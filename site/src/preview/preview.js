@@ -1,7 +1,8 @@
 
 var PreviewController = function(){
    this.init = function(){
-    this.video = new YoutubeVideo("player1");
+    this.video = new YoutubeVideo("player1",
+      ['playpause','progress','current','duration','tracks','volume','fullscreen']);
     this.exp = new SubtitleExporter();
     this.resolver = new Navigator();
     this.cookie = new UserCookie();

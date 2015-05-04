@@ -1,5 +1,6 @@
 var Navigator = function(){
    this.base_url = "";
+   
    this._strip = function(text){
       text=text.replace(/^["]+/g,"");
       text=text.replace(/["]+$/g,"");
