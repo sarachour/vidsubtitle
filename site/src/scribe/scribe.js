@@ -103,11 +103,19 @@ var DisplayField = function(field_name, relIndex, state){
     this.relIndex = relIndex;
     this.view = $("#"+field_name);
     this.state = state;
-    this.state.statemgr().listen('caption-change', function(){
-      console.log(this.state.peek);
-      var entry = this.state.peek(this.relIndex);
-      this.view.html(entry.caption); 
+    this.state.video_bar().model.listen('caption', function(){
+      that.update_text();
     });
+    this.state.video_bar().model.listen('index', function(){
+      that.update_text();
+    });
+  }
+  this.update_text = function(){
+    var entry = this.state.peek(this.relIndex);
+    if(entry != null)
+      this.view.html(entry.caption); 
+    else
+      this.view.html("");
   }
 
   this.init(field_name, relIndex, state);
@@ -118,11 +126,13 @@ var EntryField = function(entry_name,state){
     var that = this;
     this.view = $("#"+entry_name);
     this.state = state;
-    this.state.statemgr().listen('caption-change', function(){
+    this.state.video_bar().model.listen('caption', function(){
+      that.update_text();
+    });
+    this.state.video_bar().model.listen('index', function(){
       that.update_text();
     });
     this.view.on('input propertychange paste', function(){
-      console.log("set",$(this).val())
       that.state.caption($(this).val());
     })
   }
@@ -130,7 +140,9 @@ var EntryField = function(entry_name,state){
   this.update_text = function(){
     var entry = this.state.peek(0);
     if(entry != null)
-      this.view.val(entry.caption);
+      this.view.val(entry.caption); 
+    else
+      this.view.val("");
   }
   this.get_text = function(){
     return this.view.value;
@@ -155,7 +167,6 @@ var NavigateButton = function(button_name, state, type){
         that.state.prev();
       }
       that.state._player.play(that.state.selected().start);
-      that.state.statemgr().trigger('state-change',{state:'caption-change'});
     })
   }
   

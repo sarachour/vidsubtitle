@@ -50,6 +50,8 @@ var ScribeModel = function(){
    this.caption = function(c){
       if(c != undefined){
          this.data.segments.get(this.data.idx).caption = c;
+         this._evt.trigger('caption',{obj:this});
+         this._evt.trigger('update',{obj:this});
       }
       return this.data.segments.get(this.data.idx).caption;
    }
@@ -62,6 +64,7 @@ var ScribeModel = function(){
       if(this.data.idx > 0){
          this.data.idx--;
          this.data.select = this.data.segments.get(this.data.idx);
+         this._evt.trigger('index',{obj:this});
          this._evt.trigger('update',{obj:this});
          return true;
       }
@@ -71,6 +74,7 @@ var ScribeModel = function(){
       if(this.data.idx < this.data.segments.length()-1){
          this.data.idx++;
          this.data.select = this.data.segments.get(this.data.idx);
+         this._evt.trigger('index',{obj:this});
          this._evt.trigger('update',{obj:this});
          return true;
       }
