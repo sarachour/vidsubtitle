@@ -621,7 +621,6 @@ var Demonstration = function(){
       var resolver = new Navigator();
       var cookies = new UserCookie();
 
-      var args = resolver.get();
 
       var that = this;
 
@@ -690,7 +689,7 @@ var Demonstration = function(){
       })
       $("#exit-tutorial").click(function(){
          cookies.tutorial('segment', true);
-         var url = resolver.segment(args.data.url,false);
+         var url = resolver.segment();
          resolver.redirect(url);
       })
    }

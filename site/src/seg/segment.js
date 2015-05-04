@@ -466,19 +466,10 @@ var RedirectButton = function(id,to,state){
   });
 
   this.redirect = function(){
-    var data = {};
-    data.data = this.export();
-    var purl = this.resolver.portal(this.src,this.dest, data);
+    var purl = this.resolver.portal(this.src,this.dest, null);
     this.resolver.redirect(purl);
   }
 
-  this.export = function(d){
-    var data = {};
-    var segdata = this.state.video_bar().model.export();
-    data.data = segdata;
-    data.url = this.state.video_player().get_model().get_url();
-    return data;
-  }
   
 }
 
