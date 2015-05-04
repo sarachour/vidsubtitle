@@ -69,11 +69,13 @@ function save_data () {
                 url: url };
 
     // Store the object in local cache.
-    (new UserCookie()).user_cookie.cache('edit', obj);
+    var user_cookie = new UserCookie();
+    user_cookie.cache('edit', obj);
 }
 
 function click_done () {
-    alert('oh, snap!');
+    save_data();
+    alert('wha?');
 }
 
 function setup_segment (seg) {
