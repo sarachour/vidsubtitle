@@ -543,7 +543,6 @@ var SegmentController = function(){
     if(isValue(args.data.seg_data) && args.data.seg_data.length > 0){
       this.prog.video_bar().model.from_json(args.data.seg_data);
       this.buttons.mark.view.click();
-      console.log(args.data.seg_data);
       if(isValue(args.data.time))
         this.prog.video_bar().model.select(args.data.time, 'goto');
       else

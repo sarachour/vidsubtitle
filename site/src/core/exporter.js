@@ -44,15 +44,6 @@ var SubtitleExporter = function(){
                nspeakers++;
             }
          }
-         if(nspeakers == 0){
-            nub += speaker;
-            nub += delim;
-            nub += s;
-            nub += delim;
-            nub += e;
-            nub += that.lorem.createText(1, Lorem.TYPE.SENTENCE);
-            nub += nline;
-         }
          return nub;
       })
       return str;
@@ -79,9 +70,6 @@ var SubtitleExporter = function(){
                nub += n.caption[speaker] + "\n";
                nspeakers++;
             }
-         }
-         if(nspeakers == 0){
-            nub += "<v speaker>"+that.lorem.createText(1, Lorem.TYPE.SENTENCE)+"\n";
          }
          nub += "\n";
          return nub;
@@ -113,13 +101,6 @@ var SubtitleExporter = function(){
                nub += n.caption[speaker] + "\n";
                nspeakers++;
             }
-         }
-
-         if(n.text != undefined){
-            nub += n.text + "\n";
-         }
-         else{
-            nub += "test"+i + "\n";
          }
          nub += "\n";
          return nub;
