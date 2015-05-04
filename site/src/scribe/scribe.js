@@ -16,13 +16,12 @@ delete: the user deleted a marking
 
 */
 
-var ProgramState = function(vp_name, vb_name, seg_data){
+var ProgramState = function(vp_name, vb_name){
   this.init = function(){
     var that = this;
     this.state = "";
     this.obs = new Observer();
     this._model = new ScribeModel();
-    this._model.from_json(seg_data);
 
     this._video_player = new VideoPane(vp_name,this);
     this._video_bar = new VideoBar(vb_name,this);
@@ -36,6 +35,9 @@ var ProgramState = function(vp_name, vb_name, seg_data){
       that.state = e.state;
       that.obs.trigger(that.state);
     }, "state_change_listener")
+  }
+  this.load = function(seg_data){
+    this._model.from_json(seg_data);
   }
   this.listen = function(name,cbk){
     this.obs.listen(name, cbk);
@@ -333,7 +335,7 @@ var RedirectButton = function(id,to,state){
   this.resolver = new Navigator();
   this.state = state;
   this.dest = to;
-  this.src = "segment;";
+  this.src = "segment";
 
 
   this.root = $("#"+id).click(function(){
@@ -351,7 +353,7 @@ var RedirectButton = function(id,to,state){
 
   this.export = function(d){
     var data = {};
-    var segdata = this.state.video_player().get_model().data;
+    var segdata = this.state.video_bar().model.to_json();
     data.data = segdata;
     data.url = this.state.video_player().get_model().get_url();
     return data;
@@ -419,7 +421,7 @@ var SegmentController = function(){
     var data = args.data;
     var seg_data = data['data'];
 
-    this.prog = new ProgramState("player", "controls", seg_data);
+    this.prog = new ProgramState("player", "controls");
     that.load(data['url']);
 
     this.prog.listen('ended', function(){
@@ -452,6 +454,7 @@ var SegmentController = function(){
 
     this.status = new Status("progress", "status", 1);
 
+    this.prog.load(seg_data);
   }
   
   this.load = function(v){
@@ -467,16 +470,5 @@ $("document").ready(function() {
   var data = {};
   var ctrl = new SegmentController();
 
-  $("#next_step").click(function(){
-    var data = ctrl.export();
-    console.log(data.data.length, enteredText.length);
-    
-    for(var i=0; i < data.data.length; i++){
-      data.data[i].caption['speaker'] = enteredText[i];
-    }
-
-    var url = resolver.portal('edit',data);
-    resolver.redirect(url);
-  });
   
 });

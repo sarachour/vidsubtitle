@@ -25,18 +25,25 @@ var ScribeModel = function(){
       return this.data.time;
    }
    this.from_json = function(arr){
+      console.log(arr);
       for(var i=0; i < arr.length; i++){
          var a = arr[i];
          var elem = {
             start: a.start,
             end: a.end,
             id: this._id,
-            caption: a.caption
+            caption: {}
          };
+         for(var speaker in a.caption){
+            elem.caption[speaker] = a.caption[speaker];
+         }
          this.data.segments.push(elem)
          this._id++;
       }
       this.data.select = this.data.segments.get(0);
+      this._evt.trigger('caption',{obj:this});
+      this._evt.trigger('index',{obj:this});
+      this._evt.trigger('update',{obj:this});
    }
    this.to_json = function(){
       return this.data.segments.get_array();
