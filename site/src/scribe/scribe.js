@@ -238,33 +238,31 @@ var NavigateButton = function(button_name, state, type){
     this.view = $("#"+button_name);
     this.state = state;
     this.type = type;
+    this.enabled = true;
 
     this.state.video_bar().model.listen('update', function(){
-      if(that.type == "prev"){
+      if (that.type == "prev"){
         if(that.state.video_bar().model.data.idx == 0){
-          that.view.addClass('disable');
+          that.view.addClass('inactive_btn');
+          that.enabled = false;
         }else{
-          that.view.removeClass('disable');
-        }
-      }
-      if(that.type == "next"){
-        if(that.state.video_bar().model.data.idx == (that.state.video_bar().model.data.segments.length() - 1)){
-          that.view.addClass('disable');
-        }else{
-          that.view.removeClass('disable');
+          that.view.removeClass('inactive_btn');
+          that.enabled = true;
         }
       }
     });
 
     this.view.click(function(){
-      if(type == "next"){
-        that.state.next();
+      if(that.enabled == true) {
+        if(type == "next"){
+          that.state.next();
+        }
+        else{
+          that.state.prev();
+        }
+        that.state._player.play(that.state.selected().start);
       }
-      else{
-        that.state.prev();
-      }
-      that.state._player.play(that.state.selected().start);
-    })
+    });
   }
   
   this.init();
@@ -313,6 +311,7 @@ var MainButton = function(button_name, state){
       .pulse('destroy');
 
     this.view.click(function(){
+      $(this).pulse({'background-color':'#F1948A'},{pulses:1,duration:200})
       var sel = that.state.selected();
       that.state._player.play(sel.start);
     })

@@ -60,11 +60,6 @@ scribe specific rules
   visibility:hidden;
 }
 
-.nav-button.disable {
-  background-color: "white";
-  color: "white";
-}
-
 #current_pane {
    height:160px;
    margin-top:30px;
