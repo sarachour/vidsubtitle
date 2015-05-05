@@ -46,6 +46,10 @@
    border-color:orange;
    color:orange;
 }
+.hotkey.hotkey-button:hover div{
+   border-color:orange;
+   color:orange;
+}
 
 .hotkey.title {
    white-space: normal;
