@@ -56,8 +56,7 @@ scribe specific rules
 }
 */
 .disable {
-   display:none;
-   visibility:hidden;
+   display:hidden;
 }
 
 #current_pane {

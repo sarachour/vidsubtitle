@@ -36,17 +36,38 @@
 <link rel="stylesheet" href="css/skeleton.css" />
 <link rel="stylesheet" href="lib/mejs/mediaelementplayer.min.css" />
 <link rel="stylesheet" href="css/scribe.css" />
-<link rel="stylesheet" href="css/base.css" />
 <link rel="stylesheet" href="css/nav-button.css" />
+<link rel="stylesheet" href="css/base.css" />
 
 </head>
 
 
 <body>
 
+<div id="prompt" class="overlay-bg dummy floating_pane">
+   <div class="overlay">
+      <div class="overlay-title" >
+         Editing Task Complete
+         <div class="prompt close cancel overlay-close-button">&times;</div>
+      </div>
+      <div class="overlay-prompt" >
+        Have you completed scribing the captions for this video?<br>
+        If so, you can move on to editing them.
+      </div>
+      <div class="overlay-field" >
+            <div class="prompt preview overlay-button jump-button">View the Captions.</div>
+      <div class="overlay-field">
+            <div id="doneFinal" class="prompt continue overlay-button jump-button">Move to Editing Task</div>
+      </div>
+      <div class="overlay-field" >
+            <div class="prompt cancel overlay-button jump-button">Cancel</div>
+      </div>
+   </div>
+   </div>
+</div>
+
 <div class="row vspace" id="completed-controls">
-<div class="columns two offset-by-seven jump-button" id="done">Done</div>
-<div class="columns two jump-button" id="preview">Preview</div>
+<div class="columns two offset-by-ten jump-button" id="done_button">Done</div>
 </div>
 
 <!-- content pane -->

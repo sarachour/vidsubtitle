@@ -313,6 +313,24 @@ var MainButton = function(button_name, state){
   this.init();
 }
 
+var RedirectButton = function(id,to,state){
+  var that = this;
+  this.resolver = new Navigator();
+  this.state = state;
+  this.dest = to;
+  this.src = "segment";
+
+
+  this.root = $("#"+id).click(function(){
+      that.redirect();
+  });
+
+  this.redirect = function(){
+    var purl = this.resolver.portal(this.src,this.dest, null);
+    this.resolver.redirect(purl);
+  }
+}
+
 var VideoPane = function(video_name, state){
   this._init = function(){
     var that = this;
@@ -400,10 +418,21 @@ var VideoBar = function(bar_name, state){
   this._init();
 }
 
-function preview_redirect () {
-    var data = save_data();
+function save_data(segments) {
+    var url = $('#player').prop('src');
+    var obj = { data: segments,
+                url: url };
+
+    // Store the object in local cache.
+    var user_cookie = new UserCookie();
+    user_cookie.cache('scribe', obj);
+    return obj;
+}
+
+function preview_redirect(state) {
+    var data = save_data(state._model.data.segments);
     var nav = new Navigator();
-    var purl = nav.portal('edit', 'preview', data);
+    var purl = nav.portal('scribe', 'preview', data);
     nav.redirect(purl);
 }
 
@@ -490,6 +519,8 @@ var SegmentController = function(){
     this.segdis.nt = new SegmentField('nt_dis', 1,this.prog);
     this.segdis.nt2 = new SegmentField('nt2_dis', 2,this.prog);
 
+    this.buttons.done = new RedirectButton('doneFinal',"edit",this.prog);
+
     this.entry = new EntryField('entryArea',this.prog);
 
     this.status = new Status("progress", "status", 1);
@@ -522,7 +553,9 @@ $("document").ready(function() {
   var data = {};
   var ctrl = new SegmentController();
 
-  $('#done_button').click($('#prompt').fadeIn());
-  $('.preview').click(preview_redirect);
+   $('#floating_panel').width($('#left_pane').width());
+
+  $('#done_button').click(function(){ $('#prompt').fadeIn(); });
+  $('.preview').click(function() { preview_redirect(ctrl.prog) });
   $('.cancel').click(function () { $('#prompt').fadeOut(); });
 });
