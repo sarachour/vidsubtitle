@@ -255,7 +255,7 @@ var MarkButton = function(button_name, state){
         if(that.playing) that.state.mark();
         that.is_down = true;
         $(this)
-          .pulse({'background-color':'#d33434',color:'white'},{pulses:1,duration:200});
+          .pulse({'background-color':'#F1948A'},{pulses:1,duration:200});
     })
   }
   this._init();
