@@ -26,3 +26,11 @@
 .inactive_btn .shortcut {
     color: #444;
 }
+
+.inactive_btn:hover {
+    border: 1px solid black !important;
+}
+
+.inactive_btn:hover div {
+    color: #444 !important;
+}
