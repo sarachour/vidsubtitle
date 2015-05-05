@@ -181,7 +181,6 @@ $("document").ready(function() {
 
     $(window).bind('beforeunload', function () {
         save_data();
-        user_cookie.cache('edit', data);
     });
 
     // Get the correct width for the floating segment.
