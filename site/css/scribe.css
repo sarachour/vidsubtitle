@@ -55,8 +55,14 @@ scribe specific rules
    background-color: #FFFFFF;
 }
 */
-.disable {
-   display:hidden;
+
+.display.disable {
+  visibility:hidden;
+}
+
+.nav-button.disable {
+  background-color: "white";
+  color: "white";
 }
 
 #current_pane {

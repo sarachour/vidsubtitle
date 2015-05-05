@@ -157,15 +157,19 @@ var DisplayField = function(field_name, relIndex, state){
     });
 
     this.state.video_bar().model.listen('update', function(){
-      if(that.state.video_bar().model.data.idx < -relIndex && (relIndex < 0)){
-        that.view.addClass('disable');
-      }else{
-        that.view.removeClass('disable');
+      if (relIndex < 0){
+        if(that.state.video_bar().model.data.idx < -relIndex){
+          that.view.addClass('disable');
+        }else{
+          that.view.removeClass('disable');
+        }
       }
-      if(that.state.video_bar().model.data.idx >= (that.state.video_bar().model.data.segments.length() - relIndex) && (relIndex > 0)){
-        that.view.addClass('disable');
-      }else{
-        that.view.removeClass('disable');
+      if (relIndex > 0){
+        if(that.state.video_bar().model.data.idx >= (that.state.video_bar().model.data.segments.length() - relIndex)){
+          that.view.addClass('disable');
+        }else{
+          that.view.removeClass('disable');
+        }
       }
     });
     this.view.click(function(){
@@ -207,6 +211,9 @@ var EntryField = function(entry_name,state){
     this.view.on('input propertychange paste', function(){
       that.state.caption($(this).val());
     })
+    this.state.video_bar().model.listen('index', function(){
+      that.view.focus();
+    })
   }
 
   this.update_text = function(){
@@ -235,16 +242,16 @@ var NavigateButton = function(button_name, state, type){
     this.state.video_bar().model.listen('update', function(){
       if(that.type == "prev"){
         if(that.state.video_bar().model.data.idx == 0){
-          that.view.hide();
+          that.view.addClass('disable');
         }else{
-          that.view.show();
+          that.view.removeClass('disable');
         }
       }
       if(that.type == "next"){
         if(that.state.video_bar().model.data.idx == (that.state.video_bar().model.data.segments.length() - 1)){
-          that.view.hide();
+          that.view.addClass('disable');
         }else{
-          that.view.show();
+          that.view.removeClass('disable');
         }
       }
     });
@@ -527,7 +534,7 @@ var SegmentController = function(){
 
     this.prog.video_bar().model.listen('end', function(e){
       console.log("reached end");
-      that.done_prompt.show();
+      $('#prompt').fadeIn();
     })
 
     $( window ).bind("beforeunload",function() {
