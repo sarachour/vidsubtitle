@@ -113,6 +113,19 @@ var SegmentField = function(field_name, relIndex, state){
     this.state.video_bar().model.listen('update', function(){
       that.update_text();
     });
+
+    this.state.video_bar().model.listen('update', function(){
+      if(that.state.video_bar().model.data.idx < -relIndex && (relIndex < 0)){
+        that.view.addClass('disable');
+      }else{
+        that.view.removeClass('disable');
+      }
+      if(that.state.video_bar().model.data.idx >= (that.state.video_bar().model.data.segments.length() - relIndex) && (relIndex > 0)){
+        that.view.addClass('disable');
+      }else{
+        that.view.removeClass('disable');
+      }
+    });
   }
 
   this.update_text = function(){
@@ -141,6 +154,19 @@ var DisplayField = function(field_name, relIndex, state){
     });
     this.state.video_bar().model.listen('index', function(){
       that.update_text();
+    });
+
+    this.state.video_bar().model.listen('update', function(){
+      if(that.state.video_bar().model.data.idx < -relIndex && (relIndex < 0)){
+        that.view.addClass('disable');
+      }else{
+        that.view.removeClass('disable');
+      }
+      if(that.state.video_bar().model.data.idx >= (that.state.video_bar().model.data.segments.length() - relIndex) && (relIndex > 0)){
+        that.view.addClass('disable');
+      }else{
+        that.view.removeClass('disable');
+      }
     });
     this.view.click(function(){
       if(that.relIndex > 0){
@@ -202,9 +228,26 @@ var EntryField = function(entry_name,state){
 var NavigateButton = function(button_name, state, type){
   this.init = function(){
     var that = this;
-    this.view = $("#"+button_name).addClass('disabled');
+    this.view = $("#"+button_name);
     this.state = state;
-    this.state.listen('play',function(){that.view.removeClass('disabled')});
+    this.type = type;
+
+    this.state.video_bar().model.listen('update', function(){
+      if(that.type == "prev"){
+        if(that.state.video_bar().model.data.idx == 0){
+          that.view.hide();
+        }else{
+          that.view.show();
+        }
+      }
+      if(that.type == "next"){
+        if(that.state.video_bar().model.data.idx == (that.state.video_bar().model.data.segments.length() - 1)){
+          that.view.hide();
+        }else{
+          that.view.show();
+        }
+      }
+    });
 
     this.view.click(function(){
       if(type == "next"){
@@ -229,7 +272,7 @@ var MainButton = function(button_name, state){
 
     this.view
       .data("button-title","Start")
-      .pulse({'background-color':'#16a085'},{pulses:-1,duration:1000})
+      .pulse({'background-color':'#96E6B8'},{pulses:-1,duration:1000})
       .click(function(){
          $('.hotkey.title').each(function (idx, obj) {
                 if ('START' == obj.innerHTML) {
@@ -239,10 +282,13 @@ var MainButton = function(button_name, state){
         that.start();
         $(prevButton).css("visibility", "visible");
         $(nextButton).css("visibility", "visible");
+        $(controls).css("visibility", "visible");
+        $(curText).css("visibility", "visible");
+        $(".display").removeClass("disable");
       })
-    this.view.prop('disabled', true);
+    this.view.prop('disable', true);
     this.state.statemgr().listen('ready', function(){
-      that.view.prop('disabled',false);
+      that.view.prop('disable',false);
     });
 
     this.started = false;
@@ -250,6 +296,7 @@ var MainButton = function(button_name, state){
   this.start = function(){
     var that = this;
 
+    this.state.select = 0;
     var sel = this.state.selected();
     this.state.play();
     this.started = true;
@@ -353,35 +400,11 @@ var VideoBar = function(bar_name, state){
   this._init();
 }
 
-var RedirectButton = function(id,to,state){
-  var that = this;
-  this.resolver = new Navigator();
-  this.state = state;
-  this.dest = to;
-  this.src = "scribe";
-
-
-  this.root = $("#"+id).click(function(){
-    that.redirect();
-  });
-
-  this.redirect = function(){
-    var data = {};
-    data.go = this.dest;
-    data.from = this.src;
-    data.data = this.export();
-    var purl = this.resolver.portal(this.src,this.dest, data);
-    this.resolver.redirect(purl);
-  }
-
-  this.export = function(d){
-    var data = {};
-    var segdata = this.state.video_bar().model.to_json();
-    data.data = segdata;
-    data.url = this.state.video_player().get_model().get_url();
-    return data;
-  }
-  
+function preview_redirect () {
+    var data = save_data();
+    var nav = new Navigator();
+    var purl = nav.portal('edit', 'preview', data);
+    nav.redirect(purl);
 }
 
 var DonePrompt = function(state,other_settings,done_button,preview_button){
@@ -454,11 +477,6 @@ var SegmentController = function(){
     this.buttons.next = new NavigateButton("nextButton", this.prog, 'next');
     this.buttons.prev = new NavigateButton("prevButton", this.prog, 'prev');
 
-    //handline done
-    this.buttons.done = new RedirectButton('done',"edit",this.prog);
-    this.buttons.preview = new RedirectButton('preview',"preview",this.prog);
-    this.done_prompt = new DonePrompt(this.prog,'completed-controls',"done","preview");
-
     this.fields = {};
     this.fields.prevText2 = new DisplayField('prevText2', -2,this.prog);
     this.fields.prevText = new DisplayField('prevText', -1,this.prog);
@@ -480,8 +498,6 @@ var SegmentController = function(){
       console.log("reached end");
       that.done_prompt.show();
     })
-
-    
 
     $( window ).bind("beforeunload",function() {
       var data = {};
@@ -506,5 +522,7 @@ $("document").ready(function() {
   var data = {};
   var ctrl = new SegmentController();
 
-  
+  $('#done_button').click($('#prompt').fadeIn());
+  $('.preview').click(preview_redirect);
+  $('.cancel').click(function () { $('#prompt').fadeOut(); });
 });

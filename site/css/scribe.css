@@ -50,13 +50,14 @@ scribe specific rules
    height:20px;
 }
 
-.display {
+/*.display {
    border: 1px dotted #444;
    background-color: #FFFFFF;
-  
 }
-.display.disable {
-   background-color:#DDDDDD;
+*/
+.disable {
+   display:none;
+   visibility:hidden;
 }
 
 #current_pane {
@@ -71,6 +72,7 @@ scribe specific rules
 
 #curText{
    margin-top: 20px;
+   visibility:hidden;
 }
 
 .entry {
