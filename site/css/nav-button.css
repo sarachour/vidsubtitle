@@ -18,3 +18,11 @@
 .nav-button:hover div {
     color: orange;
 }
+
+.inactive_btn {
+    background-color: #999;
+}
+
+.inactive_btn .shortcut {
+    color: #444;
+}

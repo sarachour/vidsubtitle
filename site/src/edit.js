@@ -10,6 +10,14 @@ var seg_count = 0;
 var video;
 var tha_data;
 
+function disable_button (btn, disabled_p) {
+    if (disabled_p) {
+        btn.addClass('inactive_btn');
+    } else {
+        btn.removeClass('inactive_btn');
+    }
+}
+
 function load (input_obj) {
     tha_data = input_obj;
 
@@ -49,8 +57,8 @@ function save_data () {
     // Save existing work.
     if (active_segment) {
         active_segment.deactivate($('#active_text').val());
-        $('#replay_button')[0].disabled = true;
-        $('#prev_button')[0].disabled = true;
+        disable_button($('#replay_button'), true);
+        disable_button($('#prev_button'), true);
     }
 
     // Build an object with the data we want to save.
@@ -121,9 +129,9 @@ function click_edit_segment (seg) {
         seg.activate();
 
         // Enable/disable navigation buttons.
-        $('#prev_button')[0].disabled = active_segment == first_seg;
-        $('#next_button')[0].disabled = active_segment == last_seg;
-        $('#replay_button')[0].disabled = false;
+        disable_button($('#prev_button'), active_segment == first_seg);
+        disable_button($('#next_button'), active_segment == last_seg);
+        disable_button($('#replay_button'), false);
 
         setup_segment(seg);
         video.play();
@@ -185,8 +193,8 @@ $("document").ready(function() {
     $('#replay_button').click(replay_segment);
     $('#done_button').click(preview_redirect);
 
-    $('#replay_button')[0].disabled = true;
-    $('#prev_button')[0].disabled = true;
+    disable_button($('#replay_button'), true);
+    disable_button($('#prev_button'), true);
 
     $('.preview').click(preview_redirect);
     $('.cancel').click(function () { $('#prompt').fadeOut(); });
