@@ -81,7 +81,7 @@ function preview_redirect () {
     nav.redirect(purl);
 }
 
-function click_done () {
+function confirm_done () {
     $('#prompt').fadeIn();
 }
 
@@ -138,7 +138,7 @@ function go_next_segment () {
     if (next_segment != null) {
         $('#' + next_segment.id).click();
     } else {
-        click_done();
+        confirm_done();
     }
 }
 
@@ -183,7 +183,7 @@ $("document").ready(function() {
     $('#next_button').click(go_next_segment);
     $('#prev_button').click(go_prev_segment);
     $('#replay_button').click(replay_segment);
-    $('#done_button').click(click_done);
+    $('#done_button').click(preview_redirect);
 
     $('#replay_button')[0].disabled = true;
     $('#prev_button')[0].disabled = true;
