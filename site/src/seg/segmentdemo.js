@@ -599,16 +599,11 @@ var AllTogether = function(){
       demo.success("Choose what you would like to do next.");
       cookies.tutorial('segment', true);
       $("#ready_segment").click(function(){
-         var url = resolver.segment(args.data.url,false);
-         resolver.redirect(url);
-      });
-      $("#practice_segment").click(function(){
-         var url = resolver.segment(args.data.url, true);
+         var url = resolver.segment();
          resolver.redirect(url);
       });
       $("#replay_tutorial").click(function(){
-         var url = resolver.demo("segment",args.data.url);
-         console.log(url);
+         var url = resolver.demo("segment");
          resolver.redirect(url);
       })
    }

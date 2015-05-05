@@ -41,7 +41,7 @@ var Navigator = function(){
       return this._encode_data(this.base_url + "/segment.html",null,null,'segment');
    }
    this.demo = function(from,data){
-      return this._encode_data(this.base_url + "/"+from+"demo.html",data, from, 'demo');
+      return this._encode_data(this.base_url + "/"+from+"demo.html",null, from, 'demo');
    }
    //data to trans
    this.scribe = function(data){
