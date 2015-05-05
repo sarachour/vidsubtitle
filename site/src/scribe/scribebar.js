@@ -43,16 +43,22 @@ var ScribeBar = function(id, model){
          .data('drag', false)
          .data('coord', {x:null,y:null})
          .mousemove(function(e){
-            var c = gnorm(e);
-            that._draw();
+            if (that._model.selected() != null){
+               var c = gnorm(e);
+               that._draw();
+            }
          })
          .click(function(e){
-            var c = gnorm(e);
-            $(this).data('coord',c);
-            that._model.select(c.t);
+            if (that._model.selected() != null){
+               var c = gnorm(e);
+               $(this).data('coord',c);
+               that._model.select(c.t);
+            }
          })
          .mouseleave(function(e){
-            $(this).data('coord',{x:null,y:null}).data('drag',false);
+            if(that._model.selected() != null){
+               $(this).data('coord',{x:null,y:null}).data('drag',false);
+            }
          })
          .css({
             'margin-bottom':'5px'
@@ -67,7 +73,6 @@ var ScribeBar = function(id, model){
       this._view.times.append(this._view.start,this._view.end)
 
       this._root.html("").append(this._view.gcanv,this._view.canv);
-      this._draw();
    }
    this._resize = function(){
       this._view.gcanv.attr("width",this._view.gcanv[0].offsetWidth);

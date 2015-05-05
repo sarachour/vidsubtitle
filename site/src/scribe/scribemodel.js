@@ -8,12 +8,11 @@ var ScribeModel = function(){
       this.data = {};
       this.data.time = 0;
       this.data.idx = 0;
-      this.data.select = 0;
+      this.data.select = null;
       this._id = 0;
 
       this.data.segments = new SortedArray(function(a,b){return a.start - b.start});
       this._evt = new Observer();
-      this._evt.trigger('update',{obj:this});
    }
    this.listen = function(ename, cbk){
       this._evt.listen(ename, cbk);
