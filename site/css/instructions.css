@@ -1,0 +1,49 @@
+.corner {
+    color: #666;
+    position: absolute;
+    text-align: right;
+    width: 790px;
+}
+
+h2 {
+    text-align:center;
+}
+
+#centered-boxes {
+    margin-top: 20px;
+}
+
+.content-box {
+    border: 1px solid black;
+    width: 800px;
+    margin-left: -400px;
+    position: absolute;
+    left: 50%;
+    padding: 10px;
+}
+
+.overlay-container {
+    text-align: center;
+}
+
+.img-overlay {
+    position: absolute;
+    z-index: 10;
+}
+
+.img-base {
+    position: relative;
+}
+
+table {
+    border-collapse: collapse;
+    border: 0px;
+    border-spacing: 0px;
+    margin: 0px;
+}
+
+td {
+    vertical-align: top;
+    border: 0px;
+    paddin: 2px;
+}
