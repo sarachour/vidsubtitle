@@ -17,9 +17,11 @@
 
 <div id="centered-boxes">
   <div id="i1" class="content-box">
+    <div class="corner">1 of 3</div>
     <h2>Segmentation Instructions</h2>
 
     The first task is breaking up the video into logical segments, so they can be captioned individually.  In order to segment most efficiently, hotkeys have been arranged so you can place your hands on the keyboard and not move them while the video plays.<br><br>
+
     <div class="overlay-container">
       <img src="res/keyboard-highlight.png" class="img-overlay">
       <img src="res/keyboard.png" class="img-base">
@@ -76,6 +78,7 @@
   </div>
 
   <div id="i2" class="content-box">
+    <div class="corner">2 of 3</div>
     <h2>Segmentation Example</h2>
 
     <div class="overlay-container">
@@ -107,6 +110,7 @@ So you press <b>Left</b> to go to the previous segment and tap <b>X</b> to sligh
   </div>
 
   <div id="i3" class="content-box">
+    <div class="corner">3 of 3</div>
     <h2>Segmentation Interface</h2>
 
     As the video plays, a progress bar will show you where you are and where your segment breaks have been placed.<br><br>
@@ -118,8 +122,12 @@ So you press <b>Left</b> to go to the previous segment and tap <b>X</b> to sligh
     That's it!  When the video ends, you'll be offered the choice to do cleanup or move onto the captioning interface.<br><br>
 
     <center>
-    <button class="btn-skip">Done</button>
-    </center>
+    <table>
+      <tr>
+        <td><button class="btn-skip">Done</button></td>
+        <td><button id="btn-i3-next">See instructions again</button></td>
+      </tr>
+    </table>
 
   </div>
 

@@ -1,3 +1,10 @@
+.corner {
+    color: #666;
+    position: absolute;
+    text-align: right;
+    width: 790px;
+}
+
 h2 {
     text-align:center;
 }
