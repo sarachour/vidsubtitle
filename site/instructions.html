@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Segmentation Instructions</title>
+
+<script src="lib/jquery-2.1.3.js"></script>
+<script src="lib/jquery-ui-1.11.3.js"></script>
+<script src="src/instructions.js"></script>
+
+<link rel="stylesheet" href="css/jquery-ui-1.11.3.css" />
+<link rel="stylesheet" href="css/skeleton.css" />
+<link rel="stylesheet" href="css/base.css" />
+<link rel="stylesheet" href="css/instructions.css" />
+
+</head>
+<body>
+
+<div id="centered-boxes">
+  <div id="i1" class="content-box">
+    <h2>Segmentation Instructions</h2>
+
+    The first task is breaking up the video into logical segments, so they can be captioned individually.  In order to segment most efficiently, hotkeys have been arranged so you can place your hands on the keyboard and not move them while the video plays.<br><br>
+    <div class="overlay-container">
+      <img src="res/keyboard-highlight.png" class="img-overlay">
+      <img src="res/keyboard.png" class="img-base">
+    </div>
+
+    <table>
+      <tr><td style="width: 50%">
+          <table>
+            <tr>
+              <td><b>Space</b></td>
+              <td>Insert a segment break.</td>
+            </tr> 
+            <tr>
+              <td><b>Z</b></td>
+              <td>Remove the next segment break.</td>
+            </tr> 
+            <tr>
+              <td><b>X</b></td>
+              <td>Shorten the current segment (move the next segment break back).</td>
+            </tr> 
+            <tr>
+              <td><b>C</b></td>
+              <td>Extend the current segment (move the next segment break ahead).</td>
+            </tr> 
+          </table>
+        </td>
+        <td style="width: 50%">
+          <table>
+            <tr>
+              <td><b>Left</b></td>
+              <td>Go to the previous segment.</td>
+            </tr>
+            <tr>
+              <td><b>Right</b></td>
+              <td>Go to the next segment.</td>
+            </tr>
+            <tr>
+              <td><b>Up</b></td>
+              <td>Replay the current segment.</td>
+            </tr>
+          </table>
+      </td></tr>
+    </table>
+
+    <center>
+    <table>
+      <tr>
+        <td><button id="btn-i1-next">Next</button></td>
+        <td><button class="btn-skip">Skip Instructions</button></td>
+      </tr>
+    </table>
+    </center>
+
+  </div>
+
+  <div id="i2" class="content-box">
+    <h2>Segmentation Example</h2>
+
+    <div class="overlay-container">
+      <img src="res/keyboard-highlight.png" class="img-overlay">
+      <img src="res/keyboard.png" class="img-base">
+    </div>
+
+    <b>Example 1</b><br>
+    Christopher Walken has just finished a sentence, so you press <b>Space</b> to create a segment break.  Only, it's Christopher Walken, so it turns out he wasn't _quite_ done.<br><br>
+
+So you press <b>Left</b> to go to the previous segment (the one you just created), and start tapping <b>C</b> a few times until he's actually done.
+
+<hr>
+
+    <b>Example 2</b><br>
+    Abbot and Costello are doing a quick back-and-forth and you press <b>Space</b> to create a segment break.  Unfortunately, they were faster than you were, so you caught a bit of the response.<br><br>
+
+So you press <b>Left</b> to go to the previous segment and tap <b>X</b> to slightly shorten the segment.
+
+    <center>
+    <table>
+      <tr>
+        <td><button id="btn-i2-next">Next</button></td>
+        <td><button class="btn-skip">Skip Instructions</button></td>
+      </tr>
+    </table>
+    </center>
+
+  </div>
+
+  <div id="i3" class="content-box">
+    <h2>Segmentation Interface</h2>
+
+    As the video plays, a progress bar will show you where you are and where your segment breaks have been placed.<br><br>
+
+    <b>FIXME:</b> Insert image of bar with segment markers in it.<br><br>
+
+    That's it!<br><br>
+
+    <center>
+    <button class="btn-skip">Done</button>
+    </center>
+
+  </div>
+
+</div>
+</body>
+</html>
