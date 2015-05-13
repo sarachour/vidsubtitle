@@ -14,8 +14,6 @@ type Action struct {
    Payload string `json:"payload"` //payload associated with action
 }
 
-var api_inst api.Api;
-
 func report(msg string){
    fmt.Println("# [LOG] "+msg);
 }
@@ -33,7 +31,7 @@ func server(){
    report(file_dir);
 
    http.Handle("/web/", http.StripPrefix("/web/", http.FileServer(http.Dir(file_dir) ) ) );
-   api_inst = api.SetupAPI("/api/");
+   api.SetupAPI("/api/");
    http.ListenAndServe(":8080", nil);
 
 
