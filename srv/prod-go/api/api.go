@@ -14,23 +14,41 @@ type Api struct {
    iface *ApiInterface
 }
 
+/*
+Core structs
+*/
+type CaptionStruct struct {
+   Speakers map[string]string `json:"captions"`
+   Start int `json:"start"`
+   End int `json:"end"`
+}
+type VideoDataStruct struct {
+   Data []CaptionStruct `json:"data"`
+   URL string `json:"url"`
+}
 
+/*
+postdata objects
+*/
 type ApiRequestInfo struct {
 
 }
 type ApiCommitInfo struct {
    Kind string `json:"kind"` //kind of work completed
-   Data string `json:"data"` //data completed
-   Captions string `json:"captions"` //data completed
+   Data VideoDataStruct `json:"data"` //data completed
 }
+
+/*
+Response objects
+*/
 type ApiGetWorkResponse struct{
    Kind string `json:"kind"`
-   Data string `json:"data"`
+   Data VideoDataStruct `json:"data"`
 }
 /* API Structurs */
 type ApiCaptionResponse struct {
    Kind string `json:"kind"`
-   Captions string `json:"captions"`
+   Data VideoDataStruct `json:"captions"`
 }
 type StatusResponse struct {
    Message string `json:"msg"`
@@ -56,6 +74,10 @@ type ListWorkResponse struct{
    VideoId string `json:"video_id"`
    Stage string `json:"stage"`
 }
+
+/*
+Interface
+*/
 type ApiInterface struct {
    gorest.RestService `root:"/api/" consumes:"application/json" produces:"application/json"`
    registerUser gorest.EndPoint `method:"POST" path:"/register/user/{uid:string}" postdata:"string"`
@@ -67,10 +89,14 @@ type ApiInterface struct {
    listRequests gorest.EndPoint `method:"GET" path:"/view/list/requests" output:"[]ListRequestResponse"`
    listWork gorest.EndPoint `method:"GET" path:"/view/list/work" output:"[]ListWorkResponse"`
    
+   //get things from server
    getCaptions gorest.EndPoint `method:"GET" path:"/view/get/{uid:string}/{vid:string}" output:"ApiCaptionResponse"`
+   getWork gorest.EndPoint `method:"GET" path:"/work/get/{uid:string}/{vid:string}/{work_type:string}" output:"ApiGetWorkResponse"`
+   
+   //push to server
    requestVideo gorest.EndPoint `method:"POST" path:"/view/request/{uid:string}/{vid:string}" postdata:"ApiRequestInfo"`
    commitWork gorest.EndPoint `method:"POST" path:"/work/commit/{uid:string}/{vid:string}" postdata:"ApiCommitInfo"`
-   getWork gorest.EndPoint `method:"GET" path:"/work/get/{uid:string}/{vid:string}/{work_type:string}" output:"ApiGetWorkResponse"`
+
    api_handle *Api
 }
 
@@ -96,7 +122,6 @@ type DBVideo struct {
    id sql.NullString //the id of the video
    stage sql.NullString //the stage of the video
    data sql.NullString
-   captions sql.NullString
 }
 
 var api_handle *Api;
@@ -108,7 +133,26 @@ func rslv_nstr(s sql.NullString) string{
    if s.Valid {return s.String;}
    return "null";
 }
+func serialize_data(s VideoDataStruct) string{
+   str,err := json.Marshal(s);
+   if err != nil {panic(err)}
+   return string(str);
+}
+func deserialize_data(s string) (VideoDataStruct){
+   var data VideoDataStruct;
+   byt := []byte(s);
+   err := json.Unmarshal(byt, &data);
+   if err != nil {panic(err)}
+   return data;
+}
 func snd_post_resp(serv *ApiInterface, data interface{}){
+   rb := serv.ResponseBuilder()
+   rb.AddHeader("Content-Type", "application/json")
+   str,err := json.Marshal(data);
+   if err != nil {panic(err)}
+   rb.Write([]byte(str))
+}
+func snd_err_resp(serv *ApiInterface, data interface{}){
    rb := serv.ResponseBuilder()
    rb.AddHeader("Content-Type", "application/json")
    str,err := json.Marshal(data);
@@ -125,11 +169,10 @@ func(serv ApiInterface) ListVideos() ([]ListVideoResponse){
    for rows.Next(){
       var vr DBVideo;
       var elem ListVideoResponse;
-      if err := rows.Scan(&vr.id, &vr.stage, &vr.data, &vr.captions); err != nil { panic(err);}
+      if err := rows.Scan(&vr.id, &vr.stage, &vr.data); err != nil { panic(err);}
       elem.Id = rslv_nstr(vr.id);
       elem.Stage = rslv_nstr(vr.stage);
       elem.Data = rslv_nstr(vr.data);
-      elem.Captions = rslv_nstr(vr.captions);
       l = append(l,elem);
    }
    return l;
@@ -216,7 +259,11 @@ func(serv ApiInterface) RequestVideo(i ApiRequestInfo, uid string, vid string) {
    defer rows.Close();
    if !rows.Next(){
       resp.Message = "first time request. inserting video request into database.";
-      if _,err := db.Exec("INSERT INTO Videos(id, stage) values(?,?);", vid, "pending"); err != nil {panic(err)}
+      var vstruct VideoDataStruct;
+      var vstruct_str string;
+      vstruct.URL = "http://foobar.com";
+      vstruct_str = serialize_data(vstruct);
+      if _,err := db.Exec("INSERT INTO Videos(id, stage,data) values(?,?,?);", vid, "pending",vstruct_str); err != nil {panic(err)}
    } else {
       resp.Message = "logging user request for video.";
    }
@@ -266,23 +313,68 @@ func(serv ApiInterface) RegisterTurker(i string, tid string){
    snd_post_resp(&serv,resp);
 }
 func(serv ApiInterface) GetCaptions(uid string, vid string) (ApiCaptionResponse){
-   var c ApiCaptionResponse;
-   c.Kind = "raw";
-   c.Captions = "FOOBAR";
-   return c;
+   var db = api_handle.db;
+   var elem ApiCaptionResponse;
+   var resp StatusResponse;
+
+   rows,err := db.Query("SELECT id,stage,data from Videos where id = ?",vid)
+   if err != nil {panic(err)}
+
+   defer rows.Close();
+   if rows.Next(){
+      var vr DBVideo;
+      if err := rows.Scan(&vr.id, &vr.stage, &vr.data); err != nil { panic(err); }
+      elem.Kind = rslv_nstr(vr.stage);
+      elem.Data = deserialize_data(rslv_nstr(vr.data));
+     
+   } else{
+      resp.Message = "captions do not exist";
+      snd_err_resp(&serv,resp);
+   }
+   return elem;
    //serv.ResponseBuilder().SetResponseCode(404).Overide(true)  
 }
-func(serv ApiInterface) CommitWork(i ApiCommitInfo, uid string, vid string) {
-   report("commit work");
+func(serv ApiInterface) CommitWork(i ApiCommitInfo, tid string, vid string) {
+   var db = api_handle.db;
+   //UPDATE table1 set v1 = '$v1', v2 = '$v2', v3 = '$v3', v4 = '$v4' WHERE id = 1
+   var dat_str = serialize_data(i.Data);
+   //update work
+   if _,err := db.Exec("UPDATE Videos set data = ? WHERE id = ?;", dat_str, vid); err != nil {
+      panic(err);
+   }
+   //insert work
+   db.Exec("INSERT INTO Work(video_id, turker_id, stage) values(?,?,?);", vid, tid, i.Kind);
    
 } 
-func(serv ApiInterface) GetWork(uid string, vid string, kind string) (ApiGetWorkResponse) {
-   var r ApiGetWorkResponse;
-   r.Kind  = "segment";
-   r.Data = "FOOBAR";
+func(serv ApiInterface) GetWork(tid string, vid string, kind string) (ApiGetWorkResponse) {
+   var db = api_handle.db;
+   var elem ApiGetWorkResponse;
+   var resp StatusResponse;
 
-   report("get work");
-   return r;
+   var get_kind = func() string{
+      switch kind{
+         case "segment": return "WHERE stage = 'pending'";
+         case "scribe": return "WHERE stage = 'segment'";
+         case "edit": return "WHERE stage = 'scribe'";
+         case "any": return "WHERE stage <> 'done'"
+      }
+      return "";
+   }
+   rows, err := db.Query("SELECT id,stage,data FROM Videos "+get_kind()+";");
+   if err != nil {panic(err)}
+   
+   defer rows.Close();
+   if rows.Next(){
+      var vr DBVideo;
+      if err := rows.Scan(&vr.id, &vr.stage, &vr.data); err != nil { panic(err); }
+      elem.Kind = rslv_nstr(vr.stage);
+      elem.Data = deserialize_data(rslv_nstr(vr.data));
+     
+   } else{
+      resp.Message = "no work of that kind.";
+      snd_err_resp(&serv,resp);
+   }
+   return elem;
 }
 
 /*
@@ -326,8 +418,7 @@ func setupDB() *sql.DB{
          ( 
             id STRING PRIMARY KEY,
             stage STRING,
-            data STRING,
-            captions STRING
+            data STRING
          );`); err != nil {panic(err);}
 
    if _, err := db.Exec(`
