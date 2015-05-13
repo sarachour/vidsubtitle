@@ -36,7 +36,7 @@ type ApiInterface struct {
    requestVideo gorest.EndPoint `method:"POST" path:"/view/request/{uid:string}/{vid:string}" postdata:"ApiRequestInfo"`
    commitWork gorest.EndPoint `method:"POST" path:"/work/commit/{uid:string}/{vid:string}" postdata:"ApiCommitInfo"`
    getWork gorest.EndPoint `method:"GET" path:"/work/get/{uid:string}/{vid:string}/{work_type:string}" output:"ApiGetWorkResponse"`
-
+   api_handle *Api
 }
 
 type DBTurker struct {
@@ -71,7 +71,9 @@ func report(msg string){
 
 
 func(serv ApiInterface) RequestVideo(i ApiRequestInfo, uid string, vid string) {
-   report("request video");
+   var db := serv.api_handle.db;
+   report("request video"); //user i requests video with code j
+   //if rows,err = db.Query("")
    
 } 
 func(serv ApiInterface) GetCaptions(uid string, vid string) (ApiCaptionResponse){
@@ -96,7 +98,6 @@ func(serv ApiInterface) GetWork(uid string, vid string, kind string) (ApiGetWork
 
 /*
 Sets up the database.
-
 */
 func setupDB() *sql.DB{
    db, err := sql.Open("sqlite3", "./db/hs.db");
@@ -160,8 +161,8 @@ func SetupAPI(prefix string) Api {
    var a Api;
    
    a.db = setupDB();
-
    a.iface = new(ApiInterface);
+   a.iface.api_handle = &a;
    gorest.RegisterService(a.iface);
    gorest.RegisterMarshaller("application/json", gorest.NewJSONMarshaller())
    http.Handle(prefix, gorest.Handle());
