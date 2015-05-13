@@ -7,6 +7,8 @@ import (
    "code.google.com/p/gorest"
    "fmt"
    "encoding/json"
+   "os/exec"
+   "os"
 )
 
 type Api struct {
@@ -159,6 +161,23 @@ func snd_err_resp(serv *ApiInterface, data interface{}){
    if err != nil {panic(err)}
    rb.Write([]byte(str))
 }
+func dl_video(vid string) string{
+   var url = "https://www.youtube.com/watch?v="+vid;
+   var media_root = "../../site/media/youtube/";
+   var media_file = vid + ".mp4";
+   var ofile = media_root + media_file;
+   var ourl = "web/media/youtube/"+media_file;
+   cmd := exec.Command("youtube-dl", "-o", ofile, url);
+   cmd.Stdin = os.Stdin;
+   cmd.Stdout = os.Stdout;
+   cmd.Stderr = os.Stderr;
+
+   err := cmd.Run();
+   if(err != nil){
+      fmt.Printf("%v\n", err)
+   }
+   return ourl;
+}
 func(serv ApiInterface) ListVideos() ([]ListVideoResponse){
    l := make([]ListVideoResponse,0);
 
@@ -261,7 +280,7 @@ func(serv ApiInterface) RequestVideo(i ApiRequestInfo, uid string, vid string) {
       resp.Message = "first time request. inserting video request into database.";
       var vstruct VideoDataStruct;
       var vstruct_str string;
-      vstruct.URL = "http://foobar.com";
+      vstruct.URL = dl_video(vid);
       vstruct_str = serialize_data(vstruct);
       if _,err := db.Exec("INSERT INTO Videos(id, stage,data) values(?,?,?);", vid, "pending",vstruct_str); err != nil {panic(err)}
    } else {
