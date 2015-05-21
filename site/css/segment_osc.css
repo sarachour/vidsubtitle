@@ -4,17 +4,19 @@ chunk specific rules
 .container {
   max-width: 1400px;
 }
-.segment #video-container{
+#video-container{
    height: 400px;
 }
 
-.segment #dev{
-   margin-top: 50px;
-}
 #segmentbar{
    margin-top: 0.2em;
    margin-bottom:0.5em;
 
+}
+#prompt {
+   font-size:30px;
+   margin-top:0.3em;
+   margin-bottom:0.3em;
 }
 
 .segment.hotkey.button {

@@ -4,7 +4,7 @@ var YoutubeVideo = function(id,features, params) {
       var that = this;
       this.loaded = false;
       this.events = new Observer();
-
+      this.rev = null;
       if(typeof(id) == "string"){
          this.root = $("#"+id);
       }
@@ -111,7 +111,7 @@ var YoutubeVideo = function(id,features, params) {
       this.events.listen('_update', function(e){
          var ctime = that.time();
          if(ctime >= endtime){
-            that.pause();
+            that.media.pause();
             that.media.setCurrentTime(endtime);
 
             //remove existing update handler and replace with generalized
@@ -139,14 +139,56 @@ var YoutubeVideo = function(id,features, params) {
          this.events.listen(name,callback,nick);
       }
    }
+   this.reverse = function(){
+      if(!this.is_loaded()){
+         console.log("ERROR: Not loaded.");
+         return;
+      }
+      if(this.rev != null) return;
+      /*
+      var that = this;
+      var teps = 0.3;
+      this.play();
+      that.time(that.time() - eps);
+      this.rev = setInterval(function(){
+         console.log(that.time());
+         that.time(that.time() - eps);
+      },teps*1000);
+      */
+      var eps = 0.10;
+      var that = this;
+      this.rev = {};
+      this.rev.bind= function(n){
+         that.play();
+         that.segment(
+            that.time() - n*eps,
+            that.time() - (n-1)*eps, 
+            function(){that.rev.bind(3);});
+      }
+      this.rev.unbind = function(){
+         that.rev = null;
+         that.events.remove_all('_update','update-propagate');
+         that.events.listen('_update', function(e){
+            that.events.trigger('update', e);
+         }, 'update-propagate');
+      }
+
+      this.rev.bind(1);
+
+   }
    this.play = function(){
       if(!this.is_loaded()){
          console.log("ERROR: Not loaded.");
          return;
       }
+      this.rate(1);
       this.media.play();
    }
    this.pause = function(){
+
+      if(this.rev != null){
+         this.rev.unbind();
+      }
       if(!this.is_loaded()){
          console.log("ERROR: Not loaded.");
          return;

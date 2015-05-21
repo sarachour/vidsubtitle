@@ -30,54 +30,25 @@ var RES = new _RES();
 
 console.log(RES);
 var HINTS = {
-   next: {
-      name:"Next Segment", 
-      desc:'Move to the next segment. Use the '+RES.key(KEYS.right)+" key or "+RES.next+" button"
+   forward: {
+      name:"Move Forward", 
+      desc:'Move forward through the video. Use the '+RES.key(KEYS.right)+" key or "+RES.next+" button"
    },
-   prev: {
-      name:"Previous Segment", 
-      desc:'Move to the previous segment. Use the '+RES.key(KEYS.left)+" key or "+RES.prev+" button"
+   backward: {
+      name:"Move Backward", 
+      desc:'Move backward through the video. Use the '+RES.key(KEYS.left)+" key or "+RES.prev+" button"
    },
-   replay: {
-      name:"Replay Segment", 
-      desc:'Replay the selected segment. '+
-      'Use the '+RES.key(KEYS.up)+" or "+RES.key(KEYS.down)+" key or "+RES.replay+" button"
-   },
-   start: {
-      name:"Start Segmentation Process", 
-      desc:'Start breaking up the video into segments. '+
-      'Use the '+RES.key(KEYS.spacebar)+" key or "+RES.button('Start')+" button"
-   },
-   "break": {
-      name:"Mark Break", 
-      desc:'Mark the  '+RES.emph("beginning")+" or "+RES.emph("end")+" of natural "+
+   "mark-start": {
+      name:"Mark Speech Start", 
+      desc:'Mark the  '+RES.emph("beginning")+" of a natural "+
       "phrase or sentence."+
       'Use the '+RES.key(KEYS.spacebar)+" key or "+RES.button('Break')+" button"
    },
-   "delete": {
-      name:"Delete Mark", 
-      desc:'Delete the mark at the end of the selected segment. '+
-      'Use the '+RES.key(KEYS.delete)+" or "+RES.key(KEYS.z)+" key or "+RES.delete+" button"
-   },
-   "lshift": {
-      name:"Shorten Segment", 
-      desc:'Chop off the very end of the segment. '+
-      'Use the '+RES.key(KEYS.x)+" key or "+RES.lshift+" button"
-   },
-   "rshift": {
-      name:"Lengthen Segment", 
-      desc:'Extend the very end of the segment. '+
-      'Use the '+RES.key(KEYS.c)+" key or "+RES.rshift+" button"
-   },
-   "undo": {
-      name:"Undo Change", 
-      desc:'Undo the last change made. '+
-      'Use the '+RES.key(KEYS.control)+"+"+RES.key(KEYS.z)+" key combination or "+RES.undo+" button"
-   },
-   "redo": {
-      name:"Redo Change", 
-      desc:'Redo the last change made. '+
-      'Use the '+RES.key(KEYS.control)+"+"+RES.key(KEYS.y)+" key combination or "+RES.redo+" button"
+   "mark-end": {
+      name:"Mark Speech End", 
+      desc:'Mark the  '+RES.emph("end")+" of natural "+
+      "phrase or sentence."+
+      'Use the '+RES.key(KEYS.spacebar)+" key or "+RES.button('Break')+" button"
    },
    "default": {
       name:null, 
@@ -85,9 +56,6 @@ var HINTS = {
    }
 }
 
-INSTRUCTIONS=
-   'Break up the video by pressing '+RES.button('Break')+" or "+RES.key(KEYS.spacebar)+" to mark "+
-   'the  '+RES.emph("beginning")+" or "+RES.emph("end")+" of each natural phrase or sentence."+
-   "Press "+RES.button('Start')+" or "+RES.key(KEYS.spacebar)+" to begin."
+INSTRUCTIONS="";
 
 
