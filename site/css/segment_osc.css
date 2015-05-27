@@ -130,7 +130,15 @@ chunk specific rules
 
 }
 
-
+.parent-of-overlay {
+   position:relative;
+}
+.overlay-parent {
+   position: absolute;
+   width:100%;
+   height:100%;
+   z-index:10;
+}
 .small.text{
    font-size:10pt;
    color:#303030;
@@ -152,6 +160,9 @@ chunk specific rules
    margin-top:1em;
 }
 
+#playback_mode {
+   background-color:white;
+}
 #seg-done{
    background-color:#e74c3c;
    color:#ecf0f1;

@@ -8,8 +8,7 @@ var SegmentModel = function(){
       this.data.segments = new SortedArray(function(a,b){return a.time - b.time});
       this.data.time = 0;
       this.data.duration = 0;
-      this.data.curr = null;
-      this.data.last = null;
+      this.data.last = {end:0, start:0};
       this.data.eps = 0.25;
       this.obs = new Observer();
    }
@@ -24,30 +23,19 @@ var SegmentModel = function(){
       if(t != undefined) this.data.duration = t;
       return t;
    }
-   this.start_speech = function(t){
-      if(t == undefined) var t = this.data.time;
-      if(this.data.last != null){
-         if(t - this.data.last.end > this.data.eps){
-            var silence = {type:"silence"};
-            silence.start = this.data.last.end;
-            silence.end = t;
-            this.data.segments.push(silence);
-         }
-      }
-      this.data.curr = {};
-      this.data.curr.start = t;
-      this.data.curr.type = "speech";
-
-      this.obs.trigger('state-change', {state:'start-speech'});
+   this.last = function(){
+      return this.data.last.end;
    }
-   this.end_speech = function(t){
-      if(t == undefined) var t = this.data.time;
-      this.data.curr.end = t;
-      this.data.curr.time = (this.data.curr.start + this.data.curr.end)/2;
-      this.data.segments.push(this.data.curr);
-      this.data.last = this.data.curr;
+   this.add_segment = function(s,e,type){
+      this.data.last = {};
+      this.data.last.start = s;
+      this.data.last.end = e;
+      this.data.last.time = (this.data.last.start + this.data.last.end)/2;
+      this.data.last.type = type;
+      this.data.segments.push(this.data.last);
 
-      this.obs.trigger('state-change', {state:'end-speech'});
+      this.obs.trigger('update');
+      this.obs.trigger('state-change', {state:'start-speech'});
    }
    this.get_data = function(){
       return this.data;

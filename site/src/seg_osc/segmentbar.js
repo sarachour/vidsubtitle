@@ -87,8 +87,10 @@ var SegmentBar = function(id, model){
 
       var colors = {};
       colors.background = {};
-      colors.background.all = "#0fffff";
-      colors.background.progress = "#eeee44";
+      colors.background.all = "#fff";
+      colors.background.progress = "#ddd";
+      colors.background.speech = "#4f4";
+      colors.background.silence = "#33a";
 
       if(d.duration == null || d.duration == 0) return;
 
@@ -101,6 +103,13 @@ var SegmentBar = function(id, model){
       ctx.fillRect(x(viewport.start),y(prop.prog.start),w(d.time-viewport.start),y(prop.prog.end - prop.prog.start));
       gctx.fillRect(gx(0),gy(prop.prog.start),gx(d.time),y(prop.prog.end - prop.prog.start));
 
+      d.segments.for_each(function(elem){
+         var s = elem.start;
+         var e = elem.end;
+         gctx.fillStyle = ctx.fillStyle = colors.background[elem.type];
+         ctx.fillRect(x(s),y(prop.prog.start), w(e-s), y(prop.prog.end - prop.prog.start))
+         gctx.fillRect(gx(s),gy(prop.prog.start), gx(e-s), gy(prop.prog.end - prop.prog.start))
+      })
      
       //draw some more of the global bar
 

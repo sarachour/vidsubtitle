@@ -76,7 +76,7 @@
 </div>
 <!-- Hint -->
 <div class="row">
-   <div id="prompt" class="centered text">PROMPT</div>
+   <div id="instructions" class="centered text">PROMPT</div>
 </div>
 
 
@@ -94,7 +94,11 @@
 
 
 <!-- progress bar -->
-<div id="segmentbar" class="row vspace">
+<div id="segmentbar" class="row vspace parent-of-overlay">
+<div id="playback_mode" class="overlay-parent">
+PLAYBACK MODE<br>
+TESTING.
+</div>
 <div id="controls" class="fill-parent-width text-label">PROGRESS BAR HERE</div>
 </div>
 
@@ -113,8 +117,8 @@
    <div id="backward" title="previous segment (left key)" hotkey-code="left" class="node hotkey small icon compact left">
       <img src="res/prev.png" class="fill-parent"></img>
    </div>
-   <div id="mark" hotkey-name="up/down" hotkey-code="up/down" class="node hotkey small icon compact left">
-      <img src="res/mark.png" class="fill-parent"></img>
+   <div id="mark" hotkey-name="spacebar/up/down" hotkey-code="space/up/down" class="node hotkey small icon compact left">
+      <img src="res/replay.png" class="fill-parent"></img>
    </div>
    <div id="forward" title="next segment (right key)" hotkey-code="right" class="node hotkey small icon compact left">
       <img src="res/next.png" class="fill-parent"></img>

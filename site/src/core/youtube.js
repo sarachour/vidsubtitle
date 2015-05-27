@@ -145,25 +145,19 @@ var YoutubeVideo = function(id,features, params) {
          return;
       }
       if(this.rev != null) return;
-      /*
-      var that = this;
-      var teps = 0.3;
-      this.play();
-      that.time(that.time() - eps);
-      this.rev = setInterval(function(){
-         console.log(that.time());
-         that.time(that.time() - eps);
-      },teps*1000);
-      */
-      var eps = 0.10;
       var that = this;
       this.rev = {};
+      this.rev.frac = 0.75;
+      this.rev.eps = 0.25;
+
       this.rev.bind= function(n){
          that.play();
-         that.segment(
-            that.time() - n*eps,
-            that.time() - (n-1)*eps, 
-            function(){that.rev.bind(3);});
+         var eps = that.rev.eps;
+         var f = that.rev.frac;
+         var start = that.time() - n*eps;
+         var end = start + eps*f;
+         console.log("SEGMENT");
+         that.segment(start, end, function(){that.rev.bind(2);});
       }
       this.rev.unbind = function(){
          that.rev = null;

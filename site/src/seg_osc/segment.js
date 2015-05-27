@@ -97,14 +97,11 @@ var NavigateButton = function(button_name, type, hint){
     this.view.mousedown(function(e){
       $(this).data('md', new Date())
       that.obs.trigger('move-start', {type:type, eps: that.params.eps*that.params.dir});
-      console.log(e);
     })
     this.view.mouseup(function(e){
       var mu = new Date();
       var msec = mu - $(this).data('md');
       that.obs.trigger('move-end', {type:type, eps: that.params.eps*that.params.dir});
-      console.log(e);
-
     });
   }
 
@@ -171,7 +168,7 @@ var SegmentController = function(){
   this.init = function(){
     var that = this;
     
-
+    this.data = {};
     this.buttons = {};
     this.model = new SegmentModel();
     this.views = {};
@@ -181,8 +178,7 @@ var SegmentController = function(){
     this.buttons.mark = new MarkButton("mark", this.views.hint);
     this.buttons.forward = new NavigateButton("forward",'forward', this.views.hint);
     this.buttons.backward = new NavigateButton("backward",'backward', this.views.hint);
-    var amt = 0.20;
-    
+
     this.buttons.done = new RedirectButton('done',"scribe");
     this.buttons.preview = new RedirectButton('preview','preview');
     this.buttons.demo = new RedirectButton('demo','demo');
@@ -190,64 +186,127 @@ var SegmentController = function(){
     this.done_prompt = new DonePrompt('prompt',"done","preview");
 
     $("#title").html(INSTRUCTIONS);
-    this.speech_start_mode();
+    this.marking_mode();
 
     this.views.player.listen('state-change', function(e){
       that.model.duration(e.player.duration());
       that.model.time(e.player.time());
-      console.log("player set: ", e);
     })
     this.views.player.listen('update', function(e){
       that.model.time(e.player.time());
-      console.log("player update");
     })
-    this.buttons.mark.listen('mark', function(){
-      console.log("break-marked");
-    })
-    var move = function(eps){
-      /*
-      var player = that.views.player.get_player();
-      var time = player.time();
-      var duration = player.duration();
-      time = Math.max(0, time+eps);
-      player.play();
-      player.segment(time-eps,time+eps, function(){
-        console.log(seg);
-      });
-      */
+    /*You just marked a break, let's mov*/
+    
 
-    }
+    var p = this.views.player.get_player();
+    this.buttons.mark.listen('mark', function(){
+      if(that.mode == "marking")
+        that.playback_start_mode();
+      else if(that.mode == "fix-start")
+        that.playback_end_mode();
+      else if(that.mode == "fix-end"){
+        var last = that.model.last();
+        console.log(last, that.data);
+        that.model.add_segment(last, that.data.start, "silence");
+        that.model.add_segment(that.data.start, that.data.end, "speech");
+        that.marking_mode();
+      }
+    })
     this.buttons.forward.listen('move-start', function(e){
-      that.views.player.get_player().play();
+      if(that.mode == "marking")
+        that.views.player.get_player().play();
     })
     this.buttons.forward.listen('move-end', function(e){
-      that.views.player.get_player().pause();
-      move(e.eps);
+      if(that.mode == "marking")
+        that.views.player.get_player().pause();
+      if(that.mode == "fix-start"){
+        that.data.start += that.data.eps;
+        that.data.start = Math.min(that.data.start,that.data.end)
+        p.segment(that.data.start, that.data.end);
+        p.play();
+      }
+      if(that.mode == "fix-end"){
+        var amt = that.data.amt;
+        that.data.end += that.data.eps;
+        p.segment(Math.max(that.data.start,that.data.end-amt), that.data.end);
+        p.play();
+      }
     })
     this.buttons.backward.listen('move-start', function(e){
-      that.views.player.get_player().reverse();
-      move(e.eps);
+      if(that.mode == "marking")
+        that.views.player.get_player().reverse();
     })
     this.buttons.backward.listen('move-end', function(e){
-      that.views.player.get_player().pause();
-      move(e.eps);
+      if(that.mode == "marking")
+        that.views.player.get_player().pause();
+      if(that.mode == "fix-start"){
+        that.data.start -= that.data.eps;
+        that.data.start = Math.max(that.data.start,that.model.last())
+        p.segment(that.data.start, that.data.end);
+        p.play();
+      }
+      if(that.mode == "fix-end"){
+        var amt = that.data.amt;
+        that.data.end -= that.data.eps;
+        that.data.end = Math.max(that.data.start,that.data.end)
+        p.segment(Math.max(that.data.start,that.data.end-amt), that.data.end);
+        p.play();
+      }
     })
 
 
     this.load('media/movie1.mp4')
   }
-  
+  this.marking_mode = function(){
+    var last = this.model.last();
+    $("#instructions").html("Use the arrow keys to find the part of the video where the speech ends or someone pauses. Press spacebar to continue.");
+    $("#playback_mode").hide();
+    this.mode = "marking";
+
+  }
+  this.playback_end_mode = function(){
+    var p = this.views.player.get_player();
+    var that = this;
+    var eps = 0.15;
+    var amt = 2;
+
+    $("#instructions").html("Listen to the segment you created. Press the left arrow key until any words cut off at the end are contained. Press spacebar to continue.");
+    $("#playback_mode").show();
+    that.data.eps = eps;
+    that.data.amt = amt;
+    p.segment(Math.max(that.data.start,that.data.end-amt), that.data.end);
+    p.play();
+    this.mode = "fix-end";
+  }
+  this.playback_start_mode = function(){
+    var p = this.views.player.get_player();
+    var that = this;
+    var eps = 0.25;
+    this.data.start = this.model.last();
+    this.data.end = p.time();
+    console.log(that.data);
+
+    $("#instructions").html("Listen to the segment you created. Press the right arrow key until any leading silence is gone. Press spacebar to continue.");
+    $("#playback_mode").show();
+    that.data.eps = eps;
+    p.segment(that.data.start, that.data.end);
+    p.play();
+    this.mode = "fix-start";
+
+  }
+  /*
   this.speech_start_mode = function(){
-    $("#prompt").html("Find the part of the video where the speech starts.");
+    $("#instructions").html("Find the part of the video where the speech starts.");
     this.mode = "speech-start";
     this.buttons.mark.set_mode(this.mode);
   }
   this.speech_end_mode = function(){
-    $("#prompt").html("Find the part of the video where the speech ends.");
+    $("#instructions").html("Find the part of the video where the speech ends.");
     this.mode = "speech-end";
     this.buttons.mark.set_mode(this.mode);
 
   }
+  */
   this.load = function(v){
     this.views.player.get_player().load(v);
   }
