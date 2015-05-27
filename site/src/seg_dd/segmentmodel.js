@@ -104,29 +104,24 @@ var SegmentModel  = function(){
             if(matches.length == 0) return;
             this.data.selection = matches.get(0).elem;
             this._evt.trigger('select',{obj:this, sel:this.data.selection, id:id});
-         }
-         else{
+         }else{
             this.data.selection = this._get_enclosing_selection(time);
             this.data.time = time;
             this._evt.trigger('select',{obj:this, sel:this.data.selection, time:this.data.time});
+
+            var selected = false;
+            for(i=0;i<this.data.segments.arr.length;i++){
+               if(this.data.segments.arr[i].time >= time-0.5 && this.data.segments.arr[i].time <= time+0.5){
+                  this.data.break_selection = i;
+                  selected = true;
+               }
+            }
+         if(selected == false){ this.data.break_selection = null; }            
          }
-      }
-      else {
+      }else{
          this.data.selection = this._get_enclosing_selection(this.data.time);
       }
       return this.data.selection;
-   }
-   this.select_break = function(time){
-      var selected = false;
-      if(time != undefined && typeof time == "number"){
-         for(i=0;i<this.data.segments.arr.length;i++){
-            if(this.data.segments.arr[i].time >= time-0.4 && this.data.segments.arr[i].time <= time+0.4){
-               this.data.break_selection = i;
-               selected = true;
-            }
-         }
-      }
-      if(selected == false){ this.data.break_selection = null; }
    }
    this._get_continuation = function(){
       return this.get_selections() //update continuation
@@ -150,29 +145,23 @@ var SegmentModel  = function(){
       var e = matches.get(0).elem;
       return e;
    }
-   this.shift = function(left_amt,right_amt,id){
-      if(id != undefined){
-         var e = this._get_by_id(id);
-         if(e != null){
-            e.time += left_amt;
-            this._evt.trigger('update',{obj:this,type:'shift',id:e.id,amt:left_amt});
-         }
-         return;
-      }
-      var sel = this.data.selection;
-      var that = this;
-      if(sel == null || sel.subtype == "continue") return;
-      var es = this._get_by_id(sel.sid);
-      if(es != null && left_amt != 0){
-         es.time += left_amt;
-         this._evt.trigger('update',{obj:this,type:'shift',id:es.id,amt:left_amt});
-      }
-      var ee= this._get_by_id(sel.eid);
-      if(ee != null && right_amt != 0){
-         ee.time += right_amt;
-         this._evt.trigger('update',{obj:this,type:'shift',id:ee.id,amt:right_amt});
+   this.shift = function(amt){
+      if (this.data.break_selection == null){
+         var sel = this.data.selection;
+         var es = this._get_by_id(id);
+      }else{
+         var sel = this.data.segments.arr[this.data.break_selection];
+         var es = this._get_by_id(this.data.break_selection);
+         console.log(es);
       }
 
+      var that = this;
+      if(sel == null || sel.subtype == "continue") return;
+
+      if(es != null && amt != 0){
+         es.time += amt;
+         this._evt.trigger('update',{obj:this,type:'shift',id:es.id,amt:amt});
+      } 
    }
    this.remove = function(id){
       if(id != undefined){

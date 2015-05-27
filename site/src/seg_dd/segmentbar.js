@@ -8,15 +8,13 @@ var SegmentBar = function(id, model){
       else{
          this._root = id;
       }
+
       this._model = model;
       this._view = {};
       this._view.canv = $("<canvas/>").attr('id','micro');
       this._view.ctx = this._view.canv[0].getContext('2d');
-
       that._state = {};
       this._state.viewport = {};
-      that._state.viewport.force_slide = false;
-      that._state.viewport.width = 80 ;
 
       this._model.listen('update',function(){that._draw();})
       this._model.listen('select',function(){that._draw();})
@@ -37,7 +35,7 @@ var SegmentBar = function(id, model){
       var delta = function(t,c){ 
          var oc = $(t).data('coord');
          var delta = {};
-         delta.t = (c.t - oc.t)/5;
+         delta.t = (c.t - oc.t)/4;
          return delta;
       }
 
@@ -47,12 +45,10 @@ var SegmentBar = function(id, model){
          .data('coord', {x:null,y:null})
          .mousemove(function(e){
             var c = norm(e);
-            if($(this).data('drag') && that._model.data.break_selection != null){
+            if($(this).data('drag')){
                var del = delta(this,c);
-               that._model.select($(this).data('coord').t+del.t);
-               that._model.shift(0,del.t);
-            }else{
-               that._model.select_break($(this).data('coord').t);
+               that._model.select($(this).data('coord').t);
+               that._model.shift(del.t);
             }
             $(this).data('coord',c);
             that._draw();
@@ -67,7 +63,6 @@ var SegmentBar = function(id, model){
             var c = norm(e);
             $(this).data('coord',c).data('drag',true);
             that._model.select($(this).data('coord').t);
-            that._model.select_break($(this).data('coord').t);
          })
          .mouseup(function(e){
             $(this).data('drag',false);
@@ -93,22 +88,9 @@ var SegmentBar = function(id, model){
       this._view.canv.attr("height",this._view.canv[0].offsetHeight);
    }
    this._get_viewport = function(d){
-      var t = d.time;
-      var range =  this._state.viewport.width/2; //10 seconds
-      var sel = d.selection;
-
-      if(sel != null && sel.type == "segment" && sel.subtype != "continue"){
-         if(this._state.viewport.start <= sel.start && 
-            this._state.viewport.end >= sel.end)
-         return this._state.viewport;
-
-         this._state.viewport.start = Math.max(sel.start-range,0);
-         this._state.viewport.end = Math.max(Math.min(sel.start + range,d.duration),range*2);
-      }
-      else{
-         this._state.viewport.start = Math.max(d.time-range,0);
-         this._state.viewport.end = Math.max(Math.min(d.time+range,d.duration),range*2); 
-      }
+      this._state.viewport.start = 0;
+      this._state.viewport.end = d.duration;
+      this._state.viewport.width = d.duration;
       return this._state.viewport;
    }
    this._draw = function(){
@@ -124,9 +106,9 @@ var SegmentBar = function(id, model){
       var viewport = this._get_viewport(d);
 
       var x = function(v){return (v-viewport.start)*width/(viewport.end - viewport.start);}
-      var y = function(v){return v*height/1;}
+      var y = function(v){return v*height;}
       var w = function(v){return (v)*width/(viewport.end - viewport.start);}
-      var h = function(v){return v*height/1;}
+      var h = function(v){return v*height;}
 
       var fixed = {};
       fixed.block_pad = 5;
@@ -167,7 +149,7 @@ var SegmentBar = function(id, model){
 
       //the selected segment
       colors.selected = "#2ecc71";
-      colors.highlighted = "#801515";
+      colors.highlighted = "#2980b9 ";
       colors.hovered = "#f1c40f";
       colors.block = "black";
       colors.continuation = "lightgrey";
@@ -225,6 +207,7 @@ var SegmentBar = function(id, model){
             Math.max(0,(w(e-s)-pad*2-fixed.plumbob.stem_width)*f),
             h((prop.prog.end - prop.prog.start)*0.5));
       }
+
       var block_draw = function(o,c){
          var s = o.start;
          var e = o.end;
@@ -235,22 +218,47 @@ var SegmentBar = function(id, model){
             Math.max(0,w(e-s)-pad*2-fixed.plumbob.stem_width),
             h((prop.prog.end - prop.prog.start)*0.5));
       }
-      var plumbob_draw = function(s,c){
+
+      var cursor_draw = function(s,c,arrow){
+         var ht = prop.markers.end - prop.markers.start;
+         ycoord = prop.markers.start;
+         xcoord = s;
+
+         var ycoord = prop.prog.start;
+         var ht = (prop.prog.end - prop.prog.start);
+         ctx.fillStyle = ctx.strokeStyle = c.stem;
+         ctx.fillRect(x(xcoord), y(ycoord), 2, h(ht));
+      }
+
+      var plumbob_draw = function(s,c,arrow){
          var ht = prop.markers.end - prop.markers.start;
          var wd = fixed.plumbob.marker_width;
          var lwd = fixed.plumbob.stem_width;
          ycoord = prop.markers.start;
          xcoord = s;
 
-         ctx.fillStyle = ctx.strokeStyle = c.marker;
-         ctx.fillRect(x(xcoord)-wd/2+lwd/2,y(ycoord),wd, h(ht));
+         if(arrow==true){
+            ctx.fillStyle = '#802415';
+            ctx.beginPath();
+            ctx.moveTo(x(xcoord)-wd*4, 7.5);
+            ctx.lineTo(x(xcoord)-wd*1.1, 0);
+            ctx.lineTo(x(xcoord)+wd*1.1, 0);
+            ctx.lineTo(x(xcoord)+wd*4, 7.5);
+            ctx.lineTo(x(xcoord)+wd*1.1, 15);
+            ctx.lineTo(x(xcoord)-wd*1.1, 15);
+            ctx.lineTo(x(xcoord)-wd*4, 7.5);
+            ctx.fill();
+         }else{
+            ctx.fillStyle = '#105E28';
+            ctx.fillRect(x(xcoord)-wd/2+lwd/2, y(ycoord), wd, h(ht));
+         }
 
          var ycoord = prop.prog.start;
          var ht = (prop.prog.end - prop.prog.start);
          ctx.fillStyle = ctx.strokeStyle = c.stem;
          ctx.fillRect(x(xcoord),y(ycoord),lwd,h(ht));
-
       }
+
       var sel_draw = function(o,color){
          var s = o.start;
          var e = o.end;
@@ -274,6 +282,7 @@ var SegmentBar = function(id, model){
       }
 
       var hovered = false;
+      var break_hovered = false;
       var hover_t = null;
       if(this._view.canv.data('coord') != undefined){
          var hover_t = this._view.canv.data('coord').t;
@@ -283,47 +292,49 @@ var SegmentBar = function(id, model){
       this._model.get_selections().for_each(function(e){
 
          //check hover
-         if(!hovered && hover_t != null){
-            //hovering over a segment
-            if (e.type == "segment" && hover_t <= e.end && hover_t >= e.start)
-            {
-               hovered = true; 
-               sel_draw(e,colors.hovered);
-            }
-            
+         if(!hovered && hover_t != null && e.type == "segment" && hover_t <= e.end && hover_t >= e.start){
+            hovered = true; 
+            sel_draw(e,colors.hovered);
          }
+
+         if (!break_hovered && hover_t != null && e.type == "segment" && hover_t >= e.end-0.5 && hover_t <= e.end){
+            break_hovered = true;
+            plumbob_draw(e.end,"red",true);
+            return;
+         }
+
          //draw nonhover segment
          if(e.type == "segment" && e.subtype == "continue"){  
             if(d.selection == null || (d.selection.subtype == "continue")){
                block_draw({start:e.start,end:d.time},colors.continuation);
             }
-            return;
          }
+
          //draw nonhover segment
          else if(e.type == "segment" && e.subtype != "continue"){
             if(d.selection != null && d.selection.sid == e.sid && d.selection.eid == e.eid ){
                prog_block_draw(e,d.time,{fg:colors.progbar.elapsed,bg:colors.progbar.total});
                var br = that._model.get(e.eid);
-               plumbob_draw(br.time,{marker:colors.selected,stem:colors.selected});
-            }
-            else {
+               plumbob_draw(br.time,{marker:colors.selected,stem:colors.selected},false);
+            }else{
                block_draw(e,colors.block);
                var br = that._model.get(e.eid);
-               if(br.id == that._model.data.break_selection){
-                  plumbob_draw(br.time,colors.highlighted);
-               }else{
-                  plumbob_draw(br.time,colors.pause);
-               }
+               plumbob_draw(br.time,colors.pause,false);
             }
-            return;
          }
-      });
+
+         if (!break_hovered && hover_t != null && e.type == "segment" && hover_t <= e.start+0.5 && hover_t >= e.start){
+            break_hovered = true;
+            plumbob_draw(e.start,"red",true);
+         }
+
+         });
 
       if(hover_t != null){
-         plumbob_draw(hover_t,colors.cursor);
+         cursor_draw(hover_t,colors.cursor);
       }
       else{
-         plumbob_draw(d.time,colors.cursor);
+         cursor_draw(d.time,colors.cursor);
       }
 
    }
