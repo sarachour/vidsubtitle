@@ -13,7 +13,7 @@ var SegmentBar = function(id, model){
       this._view = {};
       this._view.canv = $("<canvas/>").attr('id','micro');
       this._view.ctx = this._view.canv[0].getContext('2d');
-      that._state = {};
+      that._state = {}; 
       this._state.viewport = {};
 
       this._model.listen('update',function(){that._draw();})
@@ -122,8 +122,8 @@ var SegmentBar = function(id, model){
       prop.markers.end = 0.25;
 
       prop.prog = {};
-      prop.prog.start = 0.25;
-      prop.prog.end = 0.80;
+      prop.prog.start = 0.3;
+      prop.prog.end = 0.7;
       
       prop.footer = {};
       prop.footer.start = 0.90;
