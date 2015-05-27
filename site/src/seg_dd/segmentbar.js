@@ -13,14 +13,10 @@ var SegmentBar = function(id, model){
       this._view.canv = $("<canvas/>").attr('id','micro');
       this._view.ctx = this._view.canv[0].getContext('2d');
 
-
-      this._view.gcanv = $("<canvas/>").attr('id','macro');
-      this._view.gctx = this._view.gcanv[0].getContext('2d');
-
       that._state = {};
       this._state.viewport = {};
       that._state.viewport.force_slide = false;
-      that._state.viewport.width = 30;
+      that._state.viewport.width = 80 ;
 
       this._model.listen('update',function(){that._draw();})
       this._model.listen('select',function(){that._draw();})
@@ -29,11 +25,7 @@ var SegmentBar = function(id, model){
 
       this._view.canv
          .css('width',"100%")
-         .css('height',30);
-
-      this._view.gcanv
-         .css('width',"100%")
-         .css('height',20);
+         .css('height',60);
       
       var norm = function(e){
          var v = that._get_viewport(that._model.get_data());
@@ -41,34 +33,29 @@ var SegmentBar = function(id, model){
          var time = f*(v.end - v.start)+v.start;
          return { t:time };
       }
-      var gnorm = function(e){
-         var v = that._get_viewport(that._model.get_data());
-         var f = e.offsetX/that._view.gcanv.width();
-         var d = that._model.get_data();
-         var time = f*d.duration;
-         return { t:time };
-      }
+
       var delta = function(t,c){ 
          var oc = $(t).data('coord');
          var delta = {};
-         delta.t = c.t - oc.t;
+         delta.t = (c.t - oc.t)/5;
          return delta;
-
       }
+
       //segment canvas
       this._view.canv
          .data('drag', false)
          .data('coord', {x:null,y:null})
          .mousemove(function(e){
             var c = norm(e);
-            if($(this).data('drag')){
+            if($(this).data('drag') && that._model.data.break_selection != null){
                var del = delta(this,c);
                that._model.select($(this).data('coord').t+del.t);
                that._model.shift(0,del.t);
+            }else{
+               that._model.select_break($(this).data('coord').t);
             }
             $(this).data('coord',c);
             that._draw();
-
          })
          .click(function(e){
             that._model.select($(this).data('coord').t);
@@ -80,6 +67,7 @@ var SegmentBar = function(id, model){
             var c = norm(e);
             $(this).data('coord',c).data('drag',true);
             that._model.select($(this).data('coord').t);
+            that._model.select_break($(this).data('coord').t);
          })
          .mouseup(function(e){
             $(this).data('drag',false);
@@ -92,45 +80,17 @@ var SegmentBar = function(id, model){
            return false;
          });
 
-      //global canvas
-      this._view.gcanv
-         .click(function(e){
-            var c = gnorm(e);
-            that._view.canv.data('coord',c);
-            that._model.select(c.t);
-
-         })
-         .bind("contextmenu",function(e){
-            var c = gnorm(e);
-            that._view.canv.data('coord',c);
-            that._model.select(c.t);
-            return false;
-         })
-         .css({
-            'margin-bottom':'5px'
-         })
-         .mouseleave(function(e){
-            that._view.canv.data('coord',{x:null,y:null}).data('drag',false);
-         })
-         .mousemove(function(e){
-            var c = gnorm(e);
-            that._view.canv.data('coord',c);
-            that._draw();
-         });
       this._view.times = $("<div/>");
       this._view.start = $("<span/>").css('float','left').html("Start Time");
       this._view.end = $("<span/>").css('float','right').html("End Time");
       this._view.times.append(this._view.start,this._view.end)
 
-      this._root.html("").append(this._view.gcanv,this._view.canv);
+      this._root.html("").append(this._view.canv);
       this._draw();
    }
    this._resize = function(){
       this._view.canv.attr("width",this._view.canv[0].offsetWidth);
       this._view.canv.attr("height",this._view.canv[0].offsetHeight);
-
-      this._view.gcanv.attr("width",this._view.gcanv[0].offsetWidth);
-      this._view.gcanv.attr("height",this._view.gcanv[0].offsetHeight);
    }
    this._get_viewport = function(d){
       var t = d.time;
@@ -161,11 +121,6 @@ var SegmentBar = function(id, model){
       var d = this._model.get_data();
       var width = this._view.canv.width();
       var height = this._view.canv.height();
-
-
-      var gwidth = this._view.gcanv.width();
-      var gheight = this._view.gcanv.height();
-
       var viewport = this._get_viewport(d);
 
       var x = function(v){return (v-viewport.start)*width/(viewport.end - viewport.start);}
@@ -173,16 +128,13 @@ var SegmentBar = function(id, model){
       var w = function(v){return (v)*width/(viewport.end - viewport.start);}
       var h = function(v){return v*height/1;}
 
-      var gx = function(v){return v*gwidth/d.duration}
-      var gy = function(v){return v*gheight/1.0}
       var fixed = {};
       fixed.block_pad = 5;
-
       fixed.plumbob = {};
       fixed.plumbob.marker_width = 6;
       fixed.plumbob.stem_width = fixed.plumbob.marker_width/2;
+
       var prop = {};
-      
       prop.markers = {};
       prop.markers.start = 0;
       prop.markers.end = 0.25;
@@ -215,6 +167,7 @@ var SegmentBar = function(id, model){
 
       //the selected segment
       colors.selected = "#2ecc71";
+      colors.highlighted = "#801515";
       colors.hovered = "#f1c40f";
       colors.block = "black";
       colors.continuation = "lightgrey";
@@ -252,41 +205,8 @@ var SegmentBar = function(id, model){
       ctx.fillRect(x(viewport.start),y(prop.markers.start),w(viewport.end-viewport.start),h(prop.markers.end-prop.markers.start));
       
       ctx.fillStyle = colors.background.footer;
-      ctx.fillRect(x(viewport.start),y(prop.footer.start),w(viewport.end-viewport.start),h(prop.footer.end-prop.footer.start));
+      ctx.fillRect(x(viewport.start),y(prop.footer.start),w(viewport.end-viewport.start),h(prop.footer.end-prop.footer.start));   
 
-      //draw global bar
-      gctx.fillStyle = colors.global.background;
-      gctx.fillRect(gx(0),gy(prop.global.start),gx(d.duration),gy(prop.global.end));
-
-      //draw highlight bar
-      gctx.fillStyle = colors.global.highlight;
-      gctx.fillRect(gx(viewport.start),gy(prop.global.start),gx(viewport.end-viewport.start),gy(prop.global.end-prop.global.start));
-      
-      //draw segments bar
-      gctx.fillStyle = colors.global.segments;
-      gctx.fillRect(gx(0),gy(prop.global.seg.start),gx(d.time),gy(prop.global.seg.end-prop.global.seg.start));
-
-      
-      if(d.selection != null ){
-         var sstart = d.selection.start;
-         if(d.selection.subtype == 'continue')
-            gctx.fillStyle = colors.global.progress;
-         else
-            gctx.fillStyle = colors.global.selected;
-         gctx.fillRect(gx(sstart),gy(prop.global.seg.start),gx(d.time-sstart),gy(prop.global.seg.end-prop.global.seg.start));
-          
-      }
-      else{
-         gctx.fillStyle = colors.global.progress;
-         gctx.fillRect(gx(viewport.start),gy(prop.global.seg.start),gx(d.time-viewport.start),gy(prop.global.seg.end-prop.global.seg.start));
-      }
-      
-      
-
-      var gmark_draw = function(x,c){
-         gctx.fillStyle = ctx.strokeStyle = c.marker;
-         gctx.fillRect(gx(x),y(prop.global.start),3,h(prop.global.end - prop.global.start));
-      }
       var prog_block_draw = function(o,t,c){
          if(o.subtype == "continue") return;
          var s = o.start;
@@ -323,7 +243,7 @@ var SegmentBar = function(id, model){
          xcoord = s;
 
          ctx.fillStyle = ctx.strokeStyle = c.marker;
-         ctx.fillRect(x(xcoord)-wd/2+lwd/2,y(ycoord),wd,h(ht));
+         ctx.fillRect(x(xcoord)-wd/2+lwd/2,y(ycoord),wd, h(ht));
 
          var ycoord = prop.prog.start;
          var ht = (prop.prog.end - prop.prog.start);
@@ -359,10 +279,9 @@ var SegmentBar = function(id, model){
          var hover_t = this._view.canv.data('coord').t;
       }
 
-      
-
-      //go through each selection  and hilight the selection you've selected
+      //go through each selection and highlight the selection you've selected
       this._model.get_selections().for_each(function(e){
+
          //check hover
          if(!hovered && hover_t != null){
             //hovering over a segment
@@ -386,13 +305,15 @@ var SegmentBar = function(id, model){
                prog_block_draw(e,d.time,{fg:colors.progbar.elapsed,bg:colors.progbar.total});
                var br = that._model.get(e.eid);
                plumbob_draw(br.time,{marker:colors.selected,stem:colors.selected});
-               gmark_draw(br.time,{marker:colors.selected,stem:colors.selected}); 
             }
             else {
                block_draw(e,colors.block);
                var br = that._model.get(e.eid);
-               plumbob_draw(br.time,colors.pause);
-               gmark_draw(br.time,colors.pause); 
+               if(br.id == that._model.data.break_selection){
+                  plumbob_draw(br.time,colors.highlighted);
+               }else{
+                  plumbob_draw(br.time,colors.pause);
+               }
             }
             return;
          }
@@ -400,15 +321,10 @@ var SegmentBar = function(id, model){
 
       if(hover_t != null){
          plumbob_draw(hover_t,colors.cursor);
-         gmark_draw(hover_t,colors.cursor);
       }
       else{
          plumbob_draw(d.time,colors.cursor);
-         gmark_draw(d.time,colors.cursor);
       }
-
-     
-      //draw some more of the global bar
 
    }
 

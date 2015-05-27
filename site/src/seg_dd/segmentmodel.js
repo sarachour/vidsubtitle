@@ -39,6 +39,7 @@ var SegmentModel  = function(){
       this.mutex = new this.Lock();
 
       this.data.selection = this._get_continuation();
+      this.data.break_selection = null;
       
       this._evt = new Observer();
    }
@@ -114,6 +115,18 @@ var SegmentModel  = function(){
          this.data.selection = this._get_enclosing_selection(this.data.time);
       }
       return this.data.selection;
+   }
+   this.select_break = function(time){
+      var selected = false;
+      if(time != undefined && typeof time == "number"){
+         for(i=0;i<this.data.segments.arr.length;i++){
+            if(this.data.segments.arr[i].time >= time-0.4 && this.data.segments.arr[i].time <= time+0.4){
+               this.data.break_selection = i;
+               selected = true;
+            }
+         }
+      }
+      if(selected == false){ this.data.break_selection = null; }
    }
    this._get_continuation = function(){
       return this.get_selections() //update continuation
